@@ -8,6 +8,54 @@ import { type CollectionCardProps } from '../types'
 import { cs } from '../utils'
 import { Property } from './property'
 
+function extractPreviewText(block: any, recordMap: any): string | null {
+  if (!block) return null
+
+  const pageBlock = recordMap.block[block.id]?.value
+  if (!pageBlock) return null
+
+  const childIds = pageBlock.content ?? []
+  const texts: string[] = []
+  const MAX_CHARS = 1000
+
+  if (childIds.length === 0) {
+    // Fallback to block title if no children
+    const title = getTextContent(block.properties?.title)
+    if (title) return title.slice(0, MAX_CHARS)
+    return null
+  }
+
+  for (const childId of childIds.slice(0, 20)) {
+    const child = recordMap.block[childId]?.value
+    if (!child) continue
+
+    const type = child.type
+    const acceptedTypes = [
+      'text',
+      'header',
+      'sub_header',
+      'sub_sub_header',
+      'bulleted_list',
+      'numbered_list',
+      'to_do',
+      'toggle',
+      'quote',
+      'callout'
+    ]
+
+    if (acceptedTypes.includes(type)) {
+      const text = getTextContent(child.properties?.title)
+      if (text) {
+        texts.push(text)
+        if (texts.join('').length > MAX_CHARS) break
+      }
+    }
+  }
+
+  const result = texts.join('\n').trim().slice(0, MAX_CHARS)
+  return result || null
+}
+
 export function CollectionCard({
   collection,
   block,
@@ -33,6 +81,7 @@ export function CollectionCard({
   const coverPosition = (1 - page_cover_position) * 100
   const cardCoverPosition = (1 - card_cover_position) * 100
 
+  // 1. Try to find an image cover
   if (cover?.type === 'page_content' || cover?.type === 'page_content_first') {
     const contentBlockId = block.content?.find((blockId) => {
       const block = getBlockValue(recordMap.block[blockId])
@@ -68,10 +117,6 @@ export function CollectionCard({
           />
         )
       }
-    }
-
-    if (!coverContent) {
-      coverContent = <div className='notion-collection-card-cover-empty' />
     }
   } else if (cover?.type === 'page_cover') {
     const { page_cover } = block.format || {}
@@ -123,6 +168,23 @@ export function CollectionCard({
           <Property propertyId={property} schema={schema} data={data} />
         )
       }
+    }
+  }
+
+  // 2. If no image cover found, try text preview
+  // 3. If no text preview found, fallback to empty div (only if type was page_content)
+  if (!coverContent) {
+    const previewText = extractPreviewText(block, recordMap)
+
+    if (previewText) {
+      coverContent = (
+        <div className='notion-collection-card-cover-text'>{previewText}</div>
+      )
+    } else if (
+      cover?.type === 'page_content' ||
+      cover?.type === 'page_content_first'
+    ) {
+      coverContent = <div className='notion-collection-card-cover-empty' />
     }
   }
 
