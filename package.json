@@ -44,6 +44,20 @@
     "pretest": "run-s build",
     "prepare": "simple-git-hooks"
   },
+   "dependencies": {
+    "@fisch0920/medium-zoom": "catalog:",
+    "@matejmazur/react-katex": "catalog:",
+    "katex": "catalog:",
+    "notion-types": "workspace:*",
+    "notion-utils": "workspace:*",
+    "prismjs": "catalog:",
+    "react-fast-compare": "catalog:",
+    "react-hotkeys-hook": "catalog:",
+    "react-image": "catalog:",
+    "react-intersection-observer": "catalog:",
+    "react-modal": "catalog:",
+    "unionize": "catalog:"
+  },
   "devDependencies": {
     "@fisch0920/config": "catalog:",
     "@types/node": "catalog:",
@@ -60,6 +74,10 @@
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "prettier": "@fisch0920/config/prettier",
   "simple-git-hooks": {
