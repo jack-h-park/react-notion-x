@@ -41,8 +41,7 @@
     "test:typecheck": "turbo test:typecheck",
     "test:unit": "turbo test:unit",
     "release": "bumpp -r && pnpm publish -r",
-    "pretest": "run-s build",
-    "prepare": "simple-git-hooks"
+    "pretest": "run-s build"
   },
   "dependencies": {
     "@fisch0920/medium-zoom": "^1.0.7",
