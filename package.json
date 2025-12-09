@@ -11,6 +11,17 @@
     "node": ">=18"
   },
   "type": "module",
+
+  "main": "packages/react-notion-x/build/index.js",
+  "module": "packages/react-notion-x/build/index.js",
+  "types": "packages/react-notion-x/build/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./packages/react-notion-x/build/index.js",
+      "require": "./packages/react-notion-x/build/index.js",
+      "types": "./packages/react-notion-x/build/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "turbo build --filter='./packages/*'",
     "dev": "turbo dev --concurrency 50 --continue --filter='./packages/*'",
