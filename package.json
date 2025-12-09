@@ -26,7 +26,10 @@
     "./build/third-party/equation": "./packages/react-notion-x/build/third-party/equation.js",
     "./build/third-party/modal": "./packages/react-notion-x/build/third-party/modal.js",
     "./build/third-party/pdf": "./packages/react-notion-x/build/third-party/pdf.js",
-    "./build/styles.css": "./packages/react-notion-x/build/styles.css"
+    "./build/styles.css": "./packages/react-notion-x/build/styles.css",
+
+    "./styles.css": "./packages/react-notion-x/src/styles.css",
+    "./src/styles.css": "./packages/react-notion-x/src/styles.css"
   },
   "scripts": {
     "build": "turbo build --filter='./packages/*'",
