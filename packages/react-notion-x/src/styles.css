@@ -601,6 +601,133 @@ details.notion-toggle .notion-h {
   -webkit-line-clamp: 8;
 }
 
+.notion-collection-card-cover-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.notion-collection-card-cover-preview-inner {
+  width: 120%;
+  padding: 12px 14px;
+  box-sizing: border-box;
+  transform: scale(0.84);
+  transform-origin: top left;
+}
+
+.notion-collection-card-cover-preview-block {
+  margin-bottom: 10px;
+}
+
+.notion-collection-card-cover-preview-block:last-child {
+  margin-bottom: 0;
+}
+
+.notion-collection-card-cover-preview .notion-page-title-icon,
+.notion-collection-card-cover-preview .notion-collection,
+.notion-collection-card-cover-preview .notion-hr {
+  display: none;
+}
+
+.notion-collection-card-cover-preview .notion-callout,
+.notion-collection-card-cover-preview .notion-bookmark,
+.notion-collection-card-cover-preview .notion-text,
+.notion-collection-card-cover-preview .notion-quote,
+.notion-collection-card-cover-preview .notion-toggle,
+.notion-collection-card-cover-preview .notion-header,
+.notion-collection-card-cover-preview .notion-sub_header,
+.notion-collection-card-cover-preview .notion-sub_sub_header {
+  max-width: none;
+}
+
+.notion-collection-card-cover-preview .notion-bookmark {
+  width: auto;
+}
+
+.notion-collection-card-cover-preview .notion-bookmark > div:first-child {
+  min-width: 0;
+}
+
+.notion-collection-card-cover-teaser {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+  overflow: hidden;
+  color: var(--fg-color);
+}
+
+.notion-collection-card-cover-teaser-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  border: 1px solid var(--fg-color-0);
+  border-radius: 12px;
+  background: var(--bg-color-1);
+}
+
+.notion-collection-card-cover-teaser-panel-callout {
+  gap: 12px;
+}
+
+.notion-collection-card-cover-teaser-callout {
+  margin: 0;
+  align-items: flex-start;
+  max-width: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.notion-collection-card-cover-teaser-icon {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.notion-collection-card-cover-teaser-eyebrow {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--fg-color-3);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.notion-collection-card-cover-teaser-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.notion-collection-card-cover-teaser-title {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--fg-color);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.notion-collection-card-cover-teaser-body {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-color-6);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+}
+
 .notion-page-cover-wrapper span,
 .notion-page-cover-wrapper img {
   width: 100% !important;
