@@ -393,7 +393,7 @@ var require_format_number = __commonJS({
 import {
   getBlockCollectionId,
   getBlockParentPage as getBlockParentPage2,
-  getTextContent as getTextContent4
+  getTextContent as getTextContent5
 } from "notion-utils";
 import React20 from "react";
 
@@ -5408,49 +5408,424 @@ function EmptyIcon(props) {
 }
 
 // src/third-party/collection-card.tsx
-import "notion-types";
-import { getTextContent as getTextContent3 } from "notion-utils";
-import { Fragment as Fragment6, jsx as jsx51, jsxs as jsxs14 } from "react/jsx-runtime";
-function extractPreviewText(block, recordMap) {
-  var _a, _b, _c, _d, _e;
-  if (!block) return null;
-  const pageBlock = (_a = recordMap.block[block.id]) == null ? void 0 : _a.value;
-  if (!pageBlock) return null;
-  const childIds = (_b = pageBlock.content) != null ? _b : [];
-  const texts = [];
-  const MAX_CHARS = 1e3;
-  if (childIds.length === 0) {
-    const title = getTextContent3((_c = block.properties) == null ? void 0 : _c.title);
-    if (title) return title.slice(0, MAX_CHARS);
-    return null;
+import { getTextContent as getTextContent4 } from "notion-utils";
+
+// src/third-party/collection-card-cover.ts
+import { getBlockIcon as getBlockIcon2, getTextContent as getTextContent3, normalizeUrl as normalizeUrl2 } from "notion-utils";
+var headingBlockTypes = /* @__PURE__ */ new Set(["header", "sub_header", "sub_sub_header"]);
+var bodyTextBlockTypes = /* @__PURE__ */ new Set([
+  "text",
+  "bulleted_list",
+  "numbered_list",
+  "to_do",
+  "toggle"
+]);
+var imageExtensions = /* @__PURE__ */ new Set([
+  "jpg",
+  "jpeg",
+  "png",
+  "gif",
+  "webp",
+  "avif",
+  "bmp",
+  "svg"
+]);
+var transparentContainerBlockTypes = /* @__PURE__ */ new Set([
+  "column_list",
+  "column",
+  "synced_block",
+  "transclusion_container",
+  "transclusion_reference"
+]);
+var weakHeadingTexts = /* @__PURE__ */ new Set([
+  "objective",
+  "overview",
+  "summary",
+  "executive summary",
+  "context",
+  "environment",
+  "status",
+  "type"
+]);
+var genericEyebrowTexts = /* @__PURE__ */ new Set([
+  "executive summary",
+  "overview",
+  "summary",
+  "key takeaways",
+  "highlights"
+]);
+function getBlockChildren(block) {
+  return Array.isArray(block == null ? void 0 : block.content) ? block.content : [];
+}
+function traversePageContent(rootBlock, recordMap) {
+  const visited = /* @__PURE__ */ new Set();
+  const blocks = [];
+  function visit(blockId, isRoot = false) {
+    var _a;
+    if (!blockId || visited.has(blockId)) return;
+    visited.add(blockId);
+    const block = (_a = recordMap.block[blockId]) == null ? void 0 : _a.value;
+    if (!block) return;
+    if (!isRoot) {
+      if (block.type === "page" || block.type === "collection_view_page") {
+        return;
+      }
+      blocks.push(block);
+    }
+    for (const childId of getBlockChildren(block)) {
+      visit(childId);
+    }
   }
-  for (const childId of childIds.slice(0, 20)) {
-    const child = (_d = recordMap.block[childId]) == null ? void 0 : _d.value;
-    if (!child) continue;
-    const type = child.type;
-    const acceptedTypes = [
-      "text",
-      "header",
-      "sub_header",
-      "sub_sub_header",
-      "bulleted_list",
-      "numbered_list",
-      "to_do",
-      "toggle",
-      "quote",
-      "callout"
-    ];
-    if (acceptedTypes.includes(type)) {
-      const text = getTextContent3((_e = child.properties) == null ? void 0 : _e.title);
-      if (text) {
-        texts.push(text);
-        if (texts.join("").length > MAX_CHARS) break;
+  visit(rootBlock.id, true);
+  return blocks;
+}
+function getFlattenedPreviewBlocks(rootBlock, recordMap, maxBlocks = 16) {
+  var _a;
+  const result = [];
+  const queue = [...getBlockChildren(rootBlock)];
+  const visited = /* @__PURE__ */ new Set();
+  while (queue.length > 0 && result.length < maxBlocks) {
+    const blockId = queue.shift();
+    if (!blockId || visited.has(blockId)) continue;
+    visited.add(blockId);
+    const block = (_a = recordMap.block[blockId]) == null ? void 0 : _a.value;
+    if (!block) continue;
+    if (block.type === "page" || block.type === "collection_view_page") {
+      continue;
+    }
+    if (transparentContainerBlockTypes.has(block.type)) {
+      queue.unshift(...getBlockChildren(block));
+      continue;
+    }
+    result.push(block);
+  }
+  return result;
+}
+function getLoadedDescendantBlocks(rootBlock, recordMap, maxBlocks = 8) {
+  var _a;
+  const result = [];
+  const visited = /* @__PURE__ */ new Set();
+  const queue = [...getBlockChildren(rootBlock)];
+  while (queue.length > 0 && result.length < maxBlocks) {
+    const blockId = queue.shift();
+    if (!blockId || visited.has(blockId)) continue;
+    visited.add(blockId);
+    const block = (_a = recordMap.block[blockId]) == null ? void 0 : _a.value;
+    if (!block) continue;
+    if (block.type === "page" || block.type === "collection_view_page") {
+      continue;
+    }
+    result.push(block);
+    queue.push(...getBlockChildren(block));
+  }
+  return result;
+}
+function getBlockPlainText(block) {
+  var _a;
+  return getTextContent3((_a = block.properties) == null ? void 0 : _a.title).replaceAll(/\s+/g, " ").trim();
+}
+function getBlockSource(block) {
+  var _a, _b, _c, _d, _e, _f;
+  return (_f = (_e = (_c = (_b = (_a = block.properties) == null ? void 0 : _a.source) == null ? void 0 : _b[0]) == null ? void 0 : _c[0]) != null ? _e : (_d = block.format) == null ? void 0 : _d.display_source) != null ? _f : null;
+}
+function hasPreviewImage(src, recordMap) {
+  var _a, _b;
+  if (!src) return false;
+  return !!(((_a = recordMap.preview_images) == null ? void 0 : _a[src]) || ((_b = recordMap.preview_images) == null ? void 0 : _b[normalizeUrl2(src)]));
+}
+function isImageLikeUrl(url) {
+  var _a;
+  if (url.startsWith("data:image/") || url.includes("/image/") || url.includes("image.notionusercontent.com") || url.includes("secure.notion-static.com")) {
+    return true;
+  }
+  try {
+    const pathname = new URL(url).pathname;
+    const extension = (_a = pathname.split(".").pop()) == null ? void 0 : _a.toLowerCase();
+    return !!extension && imageExtensions.has(extension);
+  } catch (e) {
+    return false;
+  }
+}
+function resolveVisualCandidate(block, recordMap, mapImageUrl, objectPosition) {
+  var _a;
+  const blockTitle = getBlockPlainText(block) || "notion image";
+  if (block.type === "image") {
+    const source = getBlockSource(block);
+    if (!source) return null;
+    const src = mapImageUrl(source, block);
+    if (!src) return null;
+    return {
+      kind: "image",
+      src,
+      alt: blockTitle,
+      objectPosition
+    };
+  }
+  if (block.type === "video") {
+    const displaySource = (_a = block.format) == null ? void 0 : _a.display_source;
+    if (!displaySource || !isImageLikeUrl(displaySource)) return null;
+    const src = mapImageUrl(displaySource, block);
+    if (!src) return null;
+    return {
+      kind: "image",
+      src,
+      alt: blockTitle || "notion video preview",
+      objectPosition
+    };
+  }
+  if (block.type === "pdf" || block.type === "file") {
+    const source = getBlockSource(block);
+    const src = source ? mapImageUrl(source, block) : null;
+    if (!src || !hasPreviewImage(src, recordMap)) return null;
+    return {
+      kind: "image",
+      src,
+      alt: blockTitle || "notion file preview",
+      objectPosition
+    };
+  }
+  return null;
+}
+function clipText(text, maxChars) {
+  const normalized = text.replaceAll(/\s+/g, " ").trim();
+  if (normalized.length <= maxChars) return normalized;
+  return `${normalized.slice(0, Math.max(0, maxChars - 1)).trimEnd()}\u2026`;
+}
+function isMetadataLikeText(text) {
+  return /^([A-Z_][A-Za-z0-9_ /&(),-]{1,28}):\s+\S/.test(text);
+}
+function hasReadableContent(text) {
+  return /[\p{L}\p{N}]/u.test(text);
+}
+function isUsefulLabel(text) {
+  return text.length >= 4 && hasReadableContent(text) && !isMetadataLikeText(text);
+}
+function isStrongBodyText(text) {
+  return text.length >= 24 && hasReadableContent(text) && !isMetadataLikeText(text);
+}
+function getMeaningfulTextParts(blocks, maxParts = 3, maxChars = 240) {
+  const parts = [];
+  let totalChars = 0;
+  for (const block of blocks) {
+    if (!headingBlockTypes.has(block.type) && !bodyTextBlockTypes.has(block.type) && block.type !== "quote") {
+      continue;
+    }
+    const text = getBlockPlainText(block);
+    if (!isStrongBodyText(text) && !isUsefulLabel(text)) continue;
+    const remainingChars = maxChars - totalChars;
+    if (remainingChars <= 0) break;
+    const clipped = clipText(text, Math.min(remainingChars, text.length));
+    if (!clipped) continue;
+    parts.push(clipped);
+    totalChars += clipped.length;
+    if (parts.length >= maxParts || totalChars >= maxChars) {
+      break;
+    }
+  }
+  return parts;
+}
+function getCalloutOrToggleTexts(block, recordMap) {
+  const ownText = getBlockPlainText(block);
+  const descendantParts = getMeaningfulTextParts(
+    getLoadedDescendantBlocks(block, recordMap),
+    4,
+    260
+  ).filter((text) => text !== ownText);
+  let eyebrow;
+  let bodyParts = descendantParts;
+  if (!bodyParts.length && ownText) {
+    const inlineCalloutMatch = ownText.match(
+      /^(?:[\p{Emoji_Presentation}\p{Extended_Pictographic}]\s*)?(Executive Summary|Overview|Summary|Key Takeaways|Highlights)\s+(.*)$/u
+    );
+    if (inlineCalloutMatch) {
+      const [, inferredEyebrow, inferredBody] = inlineCalloutMatch;
+      if (inferredEyebrow && isUsefulLabel(inferredEyebrow)) {
+        eyebrow = inferredEyebrow;
+      }
+      if (inferredBody && isStrongBodyText(inferredBody)) {
+        bodyParts = [inferredBody];
       }
     }
   }
-  const result = texts.join("\n").trim().slice(0, MAX_CHARS);
-  return result || null;
+  if (!eyebrow && isUsefulLabel(ownText) && ownText.length <= 48) {
+    eyebrow = ownText;
+  }
+  if (!eyebrow && descendantParts.length > 0 && isUsefulLabel(descendantParts[0])) {
+    eyebrow = descendantParts[0];
+    bodyParts = descendantParts.slice(1);
+  }
+  const body = clipText(bodyParts.join(" "), 240);
+  return {
+    eyebrow,
+    body: isStrongBodyText(body) ? body : void 0
+  };
 }
+function getPlainTextBody(blocks, maxParts = 2, maxChars = 220) {
+  const parts = getMeaningfulTextParts(
+    blocks.filter((block) => !headingBlockTypes.has(block.type)),
+    maxParts,
+    maxChars
+  );
+  if (!parts.length) return void 0;
+  const body = clipText(parts.join(" "), maxChars);
+  return isStrongBodyText(body) ? body : void 0;
+}
+function getHeadingText(block) {
+  if (!headingBlockTypes.has(block.type)) return void 0;
+  const text = getBlockPlainText(block);
+  return text.length >= 12 && !isMetadataLikeText(text) && !weakHeadingTexts.has(text.toLowerCase()) ? clipText(text, 120) : void 0;
+}
+function normalizeIcon(icon) {
+  if (!icon) return void 0;
+  if (icon.startsWith("/") || icon.includes("://")) return void 0;
+  return icon;
+}
+function normalizeComparableText(text) {
+  return (text || "").toLowerCase().replaceAll(/[\s:;,.!?()[\]'"`+-]+/g, " ").trim();
+}
+function shouldSuppressTeaserTitle(teaserTitle, pageTitle) {
+  const normalizedTeaserTitle = normalizeComparableText(teaserTitle);
+  const normalizedPageTitle = normalizeComparableText(pageTitle);
+  if (!normalizedTeaserTitle || !normalizedPageTitle) return false;
+  return normalizedTeaserTitle === normalizedPageTitle || normalizedTeaserTitle.includes(normalizedPageTitle) || normalizedPageTitle.includes(normalizedTeaserTitle);
+}
+function finalizeTeaserCandidate(candidate) {
+  const normalizedEyebrow = normalizeComparableText(candidate.eyebrow);
+  if (!candidate.title && genericEyebrowTexts.has(normalizedEyebrow)) {
+    return {
+      ...candidate,
+      eyebrow: void 0,
+      icon: void 0
+    };
+  }
+  return candidate;
+}
+function buildTeaserCandidate(rootBlock, recordMap) {
+  const previewBlocks = getFlattenedPreviewBlocks(rootBlock, recordMap);
+  if (!previewBlocks.length) return null;
+  const headingIndex = previewBlocks.findIndex((block) => !!getHeadingText(block));
+  const rootPageTitle = getBlockPlainText(rootBlock);
+  const extractedTitle = headingIndex >= 0 ? getHeadingText(previewBlocks[headingIndex]) : void 0;
+  const title = shouldSuppressTeaserTitle(extractedTitle, rootPageTitle) ? void 0 : extractedTitle;
+  const searchBlocks = headingIndex >= 0 ? previewBlocks.slice(headingIndex + 1) : previewBlocks;
+  const preferredBlocks = searchBlocks.slice(0, 8);
+  for (const block of preferredBlocks) {
+    const text = getBlockPlainText(block);
+    if (!text && block.type !== "callout" && block.type !== "quote") {
+      continue;
+    }
+    if (isMetadataLikeText(text)) {
+      continue;
+    }
+    if (block.type === "callout" || block.type === "toggle") {
+      const teaser = getCalloutOrToggleTexts(block, recordMap);
+      if (teaser.body) {
+        return finalizeTeaserCandidate({
+          kind: "teaser",
+          tone: block.type === "callout" ? "callout" : "default",
+          title,
+          eyebrow: teaser.eyebrow,
+          body: teaser.body,
+          icon: block.type === "callout" ? normalizeIcon(getBlockIcon2(block, recordMap)) : void 0
+        });
+      }
+      continue;
+    }
+    if (block.type === "quote") {
+      const body2 = getPlainTextBody([block, ...getLoadedDescendantBlocks(block, recordMap)], 2, 220);
+      if (body2) {
+        return finalizeTeaserCandidate({
+          kind: "teaser",
+          tone: "quote",
+          title,
+          body: body2
+        });
+      }
+      continue;
+    }
+  }
+  for (const block of preferredBlocks) {
+    const text = getBlockPlainText(block);
+    if (!text && block.type !== "callout" && block.type !== "quote") {
+      continue;
+    }
+    if (isMetadataLikeText(text)) {
+      continue;
+    }
+    if (bodyTextBlockTypes.has(block.type) || headingBlockTypes.has(block.type)) {
+      const body2 = getPlainTextBody(
+        preferredBlocks.slice(preferredBlocks.indexOf(block)),
+        2,
+        220
+      );
+      if (body2) {
+        return finalizeTeaserCandidate({
+          kind: "teaser",
+          tone: "default",
+          title,
+          body: body2
+        });
+      }
+    }
+  }
+  const body = getPlainTextBody(previewBlocks, 3, 220);
+  if (body) {
+    return finalizeTeaserCandidate({
+      kind: "teaser",
+      tone: "default",
+      title,
+      body
+    });
+  }
+  return null;
+}
+function getCollectionCardCoverCandidate({
+  block,
+  cover,
+  recordMap,
+  mapImageUrl,
+  cardCoverPosition
+}) {
+  var _a;
+  if (cover.type !== "page_content") {
+    return null;
+  }
+  const objectPosition = `center ${cardCoverPosition}%`;
+  const contentBlocks = traversePageContent(block, recordMap);
+  for (const contentBlock of contentBlocks) {
+    const candidate = resolveVisualCandidate(
+      contentBlock,
+      recordMap,
+      mapImageUrl,
+      objectPosition
+    );
+    if (candidate) {
+      return candidate;
+    }
+  }
+  const pageCover = (_a = block.format) == null ? void 0 : _a.page_cover;
+  if (pageCover) {
+    const src = mapImageUrl(pageCover, block);
+    if (src) {
+      return {
+        kind: "image",
+        src,
+        alt: getBlockPlainText(block),
+        objectPosition
+      };
+    }
+  }
+  const teaserCandidate = buildTeaserCandidate(block, recordMap);
+  if (teaserCandidate) {
+    return teaserCandidate;
+  }
+  return {
+    kind: "empty"
+  };
+}
+
+// src/third-party/collection-card.tsx
+import { Fragment as Fragment6, jsx as jsx51, jsxs as jsxs14 } from "react/jsx-runtime";
 function CollectionCard({
   collection,
   block,
@@ -5461,7 +5836,7 @@ function CollectionCard({
   className,
   ...rest
 }) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
+  var _a, _b, _c;
   const ctx2 = useNotionContext();
   const {
     components,
@@ -5475,29 +5850,46 @@ function CollectionCard({
   const coverPosition = (1 - page_cover_position) * 100;
   const cardCoverPosition = (1 - card_cover_position) * 100;
   if ((cover == null ? void 0 : cover.type) === "page_content") {
-    const contentBlockId = (_a = block.content) == null ? void 0 : _a.find((blockId) => {
-      var _a2;
-      const block2 = (_a2 = recordMap.block[blockId]) == null ? void 0 : _a2.value;
-      return (block2 == null ? void 0 : block2.type) === "image";
+    const candidate = getCollectionCardCoverCandidate({
+      block,
+      cover,
+      recordMap,
+      mapImageUrl,
+      cardCoverPosition
     });
-    if (contentBlockId) {
-      const contentBlock = (_b = recordMap.block[contentBlockId]) == null ? void 0 : _b.value;
-      const source = (_g = (_e = (_d = (_c = contentBlock.properties) == null ? void 0 : _c.source) == null ? void 0 : _d[0]) == null ? void 0 : _e[0]) != null ? _g : (_f = contentBlock.format) == null ? void 0 : _f.display_source;
-      if (source) {
-        const src = mapImageUrl(source, contentBlock);
-        const caption = (_j = (_i = (_h = contentBlock.properties) == null ? void 0 : _h.caption) == null ? void 0 : _i[0]) == null ? void 0 : _j[0];
-        coverContent = /* @__PURE__ */ jsx51(
-          LazyImage,
-          {
-            src,
-            alt: caption || "notion image",
-            style: {
-              objectFit: coverAspect,
-              objectPosition: `center ${cardCoverPosition}%`
-            }
+    if ((candidate == null ? void 0 : candidate.kind) === "image") {
+      coverContent = /* @__PURE__ */ jsx51(
+        LazyImage,
+        {
+          src: candidate.src,
+          alt: candidate.alt,
+          style: {
+            objectFit: coverAspect,
+            objectPosition: candidate.objectPosition
           }
-        );
-      }
+        }
+      );
+    } else if ((candidate == null ? void 0 : candidate.kind) === "teaser") {
+      coverContent = /* @__PURE__ */ jsx51("div", { className: "notion-collection-card-cover-teaser", children: /* @__PURE__ */ jsxs14(
+        "div",
+        {
+          className: cs(
+            "notion-collection-card-cover-teaser-panel",
+            candidate.tone === "callout" && "notion-collection-card-cover-teaser-panel-callout",
+            candidate.tone === "quote" && "notion-collection-card-cover-teaser-panel-quote"
+          ),
+          children: [
+            (candidate.icon || candidate.eyebrow) && /* @__PURE__ */ jsxs14("div", { className: "notion-collection-card-cover-teaser-header", children: [
+              candidate.icon && /* @__PURE__ */ jsx51("div", { className: "notion-collection-card-cover-teaser-icon", children: candidate.icon }),
+              candidate.eyebrow && /* @__PURE__ */ jsx51("div", { className: "notion-collection-card-cover-teaser-eyebrow", children: candidate.eyebrow })
+            ] }),
+            candidate.title && /* @__PURE__ */ jsx51("div", { className: "notion-collection-card-cover-teaser-title", children: candidate.title }),
+            /* @__PURE__ */ jsx51("div", { className: "notion-collection-card-cover-teaser-body", children: candidate.body })
+          ]
+        }
+      ) });
+    } else if ((candidate == null ? void 0 : candidate.kind) === "empty") {
+      coverContent = /* @__PURE__ */ jsx51("div", { className: "notion-collection-card-cover-empty" });
     }
   } else if ((cover == null ? void 0 : cover.type) === "page_cover") {
     const { page_cover } = block.format || {};
@@ -5507,7 +5899,7 @@ function CollectionCard({
         LazyImage,
         {
           src: mapImageUrl(page_cover, block),
-          alt: getTextContent3((_k = block.properties) == null ? void 0 : _k.title),
+          alt: getTextContent4((_a = block.properties) == null ? void 0 : _a.title),
           style: {
             objectFit: coverAspect,
             objectPosition: `center ${coverPosition2}%`
@@ -5519,7 +5911,7 @@ function CollectionCard({
     const { property } = cover;
     if (!property) return null;
     const schema = collection.schema[property];
-    const data = (_l = block.properties) == null ? void 0 : _l[property];
+    const data = (_b = block.properties) == null ? void 0 : _b[property];
     if (schema && data) {
       if (schema.type === "file") {
         const files = data.filter((v) => v.length === 2).map((f) => f.flat().flat());
@@ -5543,10 +5935,7 @@ function CollectionCard({
     }
   }
   if (!coverContent) {
-    const previewText = extractPreviewText(block, recordMap);
-    if (previewText) {
-      coverContent = /* @__PURE__ */ jsx51("div", { className: "notion-collection-card-cover-text", children: previewText });
-    } else if ((cover == null ? void 0 : cover.type) === "page_content") {
+    if ((cover == null ? void 0 : cover.type) === "page_content") {
       coverContent = /* @__PURE__ */ jsx51("div", { className: "notion-collection-card-cover-empty" });
     }
   }
@@ -5574,7 +5963,7 @@ function CollectionCard({
         Property,
         {
           schema: collection.schema.title,
-          data: (_m = block == null ? void 0 : block.properties) == null ? void 0 : _m.title,
+          data: (_c = block == null ? void 0 : block.properties) == null ? void 0 : _c.title,
           block,
           collection
         }
@@ -6417,7 +6806,7 @@ function CollectionViewBlock({
     });
     return null;
   }
-  const title = getTextContent4(collection.name).trim();
+  const title = getTextContent5(collection.name).trim();
   const showTitle = ((_d = collectionView.format) == null ? void 0 : _d.hide_linked_collection_name) !== true && title;
   if (collection.icon) {
     block.format = {

@@ -247,14 +247,32 @@ export class NotionAPI {
           concurrency
         }
       )
+
+      if (fetchMissingBlocks) {
+        await this.hydrateCollectionPages(recordMap, {
+          concurrency,
+          ofetchOptions
+        })
+
+        await this.fetchMissingCollectionPageContentBlocks(
+          recordMap,
+          ofetchOptions
+        )
+      }
     }
+
+    const allContentBlockIds = this.getAllContentBlockIds(recordMap)
 
     // Optionally fetch signed URLs for any embedded files.
     // NOTE: Similar to collection data, we default to eagerly fetching signed URL info
     // because it is preferable for many use cases as opposed to making these API calls
     // lazily from the client-side.
     if (signFileUrls) {
-      await this.addSignedUrls({ recordMap, contentBlockIds, ofetchOptions })
+      await this.addSignedUrls({
+        recordMap,
+        contentBlockIds: allContentBlockIds,
+        ofetchOptions
+      })
     }
 
     if (fetchRelationPages) {
@@ -276,6 +294,132 @@ export class NotionAPI {
     }
 
     return recordMap
+  }
+
+  getCollectionPageIds(recordMap: notion.ExtendedRecordMap): string[] {
+    return Object.keys(recordMap.block).filter((blockId) => {
+      const block = recordMap.block[blockId]?.value
+
+      return (
+        !!block &&
+        block.parent_table === 'collection' &&
+        (block.type === 'page' || block.type === 'collection_view_page')
+      )
+    })
+  }
+
+  getAllContentBlockIds(recordMap: notion.ExtendedRecordMap): string[] {
+    const contentBlockIds = new Set(getPageContentBlockIds(recordMap))
+
+    for (const pageId of this.getCollectionPageIds(recordMap)) {
+      for (const blockId of getPageContentBlockIds(recordMap, pageId)) {
+        contentBlockIds.add(blockId)
+      }
+    }
+
+    return Array.from(contentBlockIds)
+  }
+
+  async fetchMissingCollectionPageContentBlocks(
+    recordMap: notion.ExtendedRecordMap,
+    ofetchOptions: OfetchOptions | undefined
+  ) {
+    while (true) {
+      const pendingBlockIds = Array.from(
+        new Set(
+          this.getCollectionPageIds(recordMap).flatMap((pageId) =>
+            getPageContentBlockIds(recordMap, pageId)
+          )
+        )
+      ).filter((id) => !recordMap.block[id])
+
+      if (!pendingBlockIds.length) {
+        break
+      }
+
+      const newBlocks = await this.getBlocks(
+        pendingBlockIds,
+        ofetchOptions
+      ).then((res) => res.recordMap.block)
+
+      recordMap.block = { ...recordMap.block, ...newBlocks }
+    }
+  }
+
+  async hydrateCollectionPages(
+    recordMap: notion.ExtendedRecordMap,
+    {
+      concurrency = 3,
+      chunkLimit = 40,
+      ofetchOptions
+    }: {
+      concurrency?: number
+      chunkLimit?: number
+      ofetchOptions: OfetchOptions | undefined
+    }
+  ) {
+    const pageIds = this.getCollectionPageIds(recordMap).filter((pageId) => {
+      const block = recordMap.block[pageId]?.value
+
+      return (
+        !!block && (!Array.isArray(block.content) || block.content.length === 0)
+      )
+    })
+
+    if (!pageIds.length) {
+      return
+    }
+
+    await pMap(
+      pageIds,
+      async (pageId) => {
+        try {
+          const page = await this.getPageRaw(pageId, {
+            chunkLimit,
+            chunkNumber: 0,
+            ofetchOptions
+          })
+
+          const pageRecordMap = page?.recordMap as notion.ExtendedRecordMap
+          if (!pageRecordMap?.block) return
+
+          recordMap.block = {
+            ...recordMap.block,
+            ...pageRecordMap.block
+          }
+
+          if (pageRecordMap.collection) {
+            recordMap.collection = {
+              ...recordMap.collection,
+              ...pageRecordMap.collection
+            }
+          }
+
+          if (pageRecordMap.collection_view) {
+            recordMap.collection_view = {
+              ...recordMap.collection_view,
+              ...pageRecordMap.collection_view
+            }
+          }
+
+          if (pageRecordMap.notion_user) {
+            recordMap.notion_user = {
+              ...recordMap.notion_user,
+              ...pageRecordMap.notion_user
+            }
+          }
+        } catch (err: any) {
+          console.warn(
+            'NotionAPI hydrateCollectionPages error',
+            { pageId },
+            err
+          )
+        }
+      },
+      {
+        concurrency
+      }
+    )
   }
 
   /**
