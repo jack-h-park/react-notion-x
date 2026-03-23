@@ -1,60 +1,12 @@
 import type React from 'react'
-import { type ImageBlock } from 'notion-types'
 import { getTextContent } from 'notion-utils'
 
 import { LazyImage } from '../components/lazy-image'
 import { dummyLink, NotionContextProvider, useNotionContext } from '../context'
 import { type CollectionCardProps } from '../types'
 import { cs } from '../utils'
+import { getCollectionCardCoverCandidate } from './collection-card-cover'
 import { Property } from './property'
-
-function extractPreviewText(block: any, recordMap: any): string | null {
-  if (!block) return null
-
-  const pageBlock = recordMap.block[block.id]?.value
-  if (!pageBlock) return null
-
-  const childIds = pageBlock.content ?? []
-  const texts: string[] = []
-  const MAX_CHARS = 1000
-
-  if (childIds.length === 0) {
-    // Fallback to block title if no children
-    const title = getTextContent(block.properties?.title)
-    if (title) return title.slice(0, MAX_CHARS)
-    return null
-  }
-
-  for (const childId of childIds.slice(0, 20)) {
-    const child = recordMap.block[childId]?.value
-    if (!child) continue
-
-    const type = child.type
-    const acceptedTypes = [
-      'text',
-      'header',
-      'sub_header',
-      'sub_sub_header',
-      'bulleted_list',
-      'numbered_list',
-      'to_do',
-      'toggle',
-      'quote',
-      'callout'
-    ]
-
-    if (acceptedTypes.includes(type)) {
-      const text = getTextContent(child.properties?.title)
-      if (text) {
-        texts.push(text)
-        if (texts.join('').length > MAX_CHARS) break
-      }
-    }
-  }
-
-  const result = texts.join('\n').trim().slice(0, MAX_CHARS)
-  return result || null
-}
 
 export function CollectionCard({
   collection,
@@ -83,34 +35,67 @@ export function CollectionCard({
 
   // 1. Try to find an image cover
   if (cover?.type === 'page_content') {
-    const contentBlockId = block.content?.find((blockId) => {
-      const block = recordMap.block[blockId]?.value
-
-      return block?.type === 'image'
+    const candidate = getCollectionCardCoverCandidate({
+      block,
+      cover,
+      recordMap,
+      mapImageUrl,
+      cardCoverPosition
     })
 
-    if (contentBlockId) {
-      const contentBlock = recordMap.block[contentBlockId]?.value as ImageBlock
+    if (candidate?.kind === 'image') {
+      coverContent = (
+        <LazyImage
+          src={candidate.src}
+          alt={candidate.alt}
+          style={{
+            objectFit: coverAspect,
+            objectPosition: candidate.objectPosition
+          }}
+        />
+      )
+    } else if (candidate?.kind === 'teaser') {
+      coverContent = (
+        <div className='notion-collection-card-cover-teaser'>
+          <div
+            className={cs(
+              'notion-collection-card-cover-teaser-panel',
+              candidate.tone === 'callout' &&
+                'notion-collection-card-cover-teaser-panel-callout',
+              candidate.tone === 'quote' &&
+                'notion-collection-card-cover-teaser-panel-quote'
+            )}
+          >
+            {(candidate.icon || candidate.eyebrow) && (
+              <div className='notion-collection-card-cover-teaser-header'>
+                {candidate.icon && (
+                  <div className='notion-collection-card-cover-teaser-icon'>
+                    {candidate.icon}
+                  </div>
+                )}
 
-      const source =
-        contentBlock.properties?.source?.[0]?.[0] ??
-        contentBlock.format?.display_source
+                {candidate.eyebrow && (
+                  <div className='notion-collection-card-cover-teaser-eyebrow'>
+                    {candidate.eyebrow}
+                  </div>
+                )}
+              </div>
+            )}
 
-      if (source) {
-        const src = mapImageUrl(source, contentBlock)
-        const caption = contentBlock.properties?.caption?.[0]?.[0]
+            {candidate.title && (
+              <div className='notion-collection-card-cover-teaser-title'>
+                {candidate.title}
+              </div>
+            )}
 
-        coverContent = (
-          <LazyImage
-            src={src}
-            alt={caption || 'notion image'}
-            style={{
-              objectFit: coverAspect,
-              objectPosition: `center ${cardCoverPosition}%`
-            }}
-          />
-        )
-      }
+            <div className='notion-collection-card-cover-teaser-body'>
+              {candidate.body}
+            </div>
+          </div>
+        </div>
+      )
+    } else if (candidate?.kind === 'empty') {
+      coverContent = <div className='notion-collection-card-cover-empty' />
     }
   } else if (cover?.type === 'page_cover') {
     const { page_cover } = block.format || {}
@@ -165,16 +150,9 @@ export function CollectionCard({
     }
   }
 
-  // 2. If no image cover found, try text preview
-  // 3. If no text preview found, fallback to empty div (only if type was page_content)
+  // 2. Fallback to empty div if page_content couldn't resolve any displayable content
   if (!coverContent) {
-    const previewText = extractPreviewText(block, recordMap)
-
-    if (previewText) {
-      coverContent = (
-        <div className='notion-collection-card-cover-text'>{previewText}</div>
-      )
-    } else if (cover?.type === 'page_content') {
+    if (cover?.type === 'page_content') {
       coverContent = <div className='notion-collection-card-cover-empty' />
     }
   }
