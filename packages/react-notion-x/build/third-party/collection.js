@@ -5691,7 +5691,7 @@ function shouldSuppressTeaserTitle(teaserTitle, pageTitle) {
 }
 function finalizeTeaserCandidate(candidate) {
   const normalizedEyebrow = normalizeComparableText(candidate.eyebrow);
-  if (!candidate.title && genericEyebrowTexts.has(normalizedEyebrow)) {
+  if (!candidate.title && !candidate.body && genericEyebrowTexts.has(normalizedEyebrow)) {
     return {
       ...candidate,
       eyebrow: void 0,
@@ -5703,12 +5703,16 @@ function finalizeTeaserCandidate(candidate) {
 function buildTeaserCandidate(rootBlock, recordMap) {
   const previewBlocks = getFlattenedPreviewBlocks(rootBlock, recordMap);
   if (!previewBlocks.length) return null;
-  const headingIndex = previewBlocks.findIndex((block) => !!getHeadingText(block));
+  const headingIndex = previewBlocks.findIndex(
+    (block) => !!getHeadingText(block)
+  );
   const rootPageTitle = getBlockPlainText(rootBlock);
-  const extractedTitle = headingIndex >= 0 ? getHeadingText(previewBlocks[headingIndex]) : void 0;
+  const extractedTitle = headingIndex !== -1 ? getHeadingText(previewBlocks[headingIndex]) : void 0;
   const title = shouldSuppressTeaserTitle(extractedTitle, rootPageTitle) ? void 0 : extractedTitle;
-  const searchBlocks = headingIndex >= 0 ? previewBlocks.slice(headingIndex + 1) : previewBlocks;
+  const searchBlocks = headingIndex !== -1 ? previewBlocks.slice(headingIndex + 1) : previewBlocks;
   const preferredBlocks = searchBlocks.slice(0, 8);
+  let pendingCalloutEyebrow;
+  let pendingCalloutIcon;
   for (const block of preferredBlocks) {
     const text = getBlockPlainText(block);
     if (!text && block.type !== "callout" && block.type !== "quote") {
@@ -5729,10 +5733,18 @@ function buildTeaserCandidate(rootBlock, recordMap) {
           icon: block.type === "callout" ? normalizeIcon(getBlockIcon2(block, recordMap)) : void 0
         });
       }
+      if (!pendingCalloutEyebrow && teaser.eyebrow) {
+        pendingCalloutEyebrow = teaser.eyebrow;
+        pendingCalloutIcon = block.type === "callout" ? normalizeIcon(getBlockIcon2(block, recordMap)) : void 0;
+      }
       continue;
     }
     if (block.type === "quote") {
-      const body2 = getPlainTextBody([block, ...getLoadedDescendantBlocks(block, recordMap)], 2, 220);
+      const body2 = getPlainTextBody(
+        [block, ...getLoadedDescendantBlocks(block, recordMap)],
+        2,
+        220
+      );
       if (body2) {
         return finalizeTeaserCandidate({
           kind: "teaser",
@@ -5742,6 +5754,12 @@ function buildTeaserCandidate(rootBlock, recordMap) {
         });
       }
       continue;
+    }
+    if (headingBlockTypes.has(block.type) && !pendingCalloutEyebrow && isUsefulLabel(text)) {
+      const normalizedText = normalizeComparableText(text);
+      if (genericEyebrowTexts.has(normalizedText)) {
+        pendingCalloutEyebrow = text;
+      }
     }
   }
   for (const block of preferredBlocks) {
@@ -5761,8 +5779,10 @@ function buildTeaserCandidate(rootBlock, recordMap) {
       if (body2) {
         return finalizeTeaserCandidate({
           kind: "teaser",
-          tone: "default",
+          tone: pendingCalloutEyebrow ? "callout" : "default",
           title,
+          eyebrow: pendingCalloutEyebrow,
+          icon: pendingCalloutIcon,
           body: body2
         });
       }
@@ -5772,8 +5792,10 @@ function buildTeaserCandidate(rootBlock, recordMap) {
   if (body) {
     return finalizeTeaserCandidate({
       kind: "teaser",
-      tone: "default",
+      tone: pendingCalloutEyebrow ? "callout" : "default",
       title,
+      eyebrow: pendingCalloutEyebrow,
+      icon: pendingCalloutIcon,
       body
     });
   }

@@ -443,7 +443,14 @@ function finalizeTeaserCandidate(
 ): ThumbnailTeaserCandidate {
   const normalizedEyebrow = normalizeComparableText(candidate.eyebrow)
 
-  if (!candidate.title && genericEyebrowTexts.has(normalizedEyebrow)) {
+  // Only suppress a generic eyebrow when there is no title AND no body to give it context.
+  // If body text exists, even a generic label like "Executive Summary" provides useful
+  // categorization for the reader and should be shown (matching Notion's reference behavior).
+  if (
+    !candidate.title &&
+    !candidate.body &&
+    genericEyebrowTexts.has(normalizedEyebrow)
+  ) {
     return {
       ...candidate,
       eyebrow: undefined,
@@ -467,7 +474,9 @@ function buildTeaserCandidate(
   const rootPageTitle = getBlockPlainText(rootBlock)
 
   const extractedTitle =
-    headingIndex !== -1 ? getHeadingText(previewBlocks[headingIndex]!) : undefined
+    headingIndex !== -1
+      ? getHeadingText(previewBlocks[headingIndex]!)
+      : undefined
   const title = shouldSuppressTeaserTitle(extractedTitle, rootPageTitle)
     ? undefined
     : extractedTitle
@@ -475,6 +484,12 @@ function buildTeaserCandidate(
     headingIndex !== -1 ? previewBlocks.slice(headingIndex + 1) : previewBlocks
 
   const preferredBlocks = searchBlocks.slice(0, 8)
+
+  // When a callout has a useful label but its children aren't loaded in the
+  // recordMap, save the eyebrow here so subsequent passes can still surface it
+  // alongside any body text found elsewhere on the page.
+  let pendingCalloutEyebrow: string | undefined
+  let pendingCalloutIcon: string | undefined
 
   for (const block of preferredBlocks) {
     const text = getBlockPlainText(block)
@@ -503,6 +518,16 @@ function buildTeaserCandidate(
         })
       }
 
+      // Callout has a useful label but body content isn't loaded yet —
+      // save as context so we can pair it with nearby body text.
+      if (!pendingCalloutEyebrow && teaser.eyebrow) {
+        pendingCalloutEyebrow = teaser.eyebrow
+        pendingCalloutIcon =
+          block.type === 'callout'
+            ? normalizeIcon(getBlockIcon(block, recordMap))
+            : undefined
+      }
+
       continue
     }
 
@@ -522,6 +547,21 @@ function buildTeaserCandidate(
       }
 
       continue
+    }
+
+    // A heading that is too generic to be a teaser title (e.g. "Executive
+    // Summary", "Overview") can still serve as an eyebrow label when it
+    // introduces a content section. Save it so we can pair it with the next
+    // body text we find.
+    if (
+      headingBlockTypes.has(block.type) &&
+      !pendingCalloutEyebrow &&
+      isUsefulLabel(text)
+    ) {
+      const normalizedText = normalizeComparableText(text)
+      if (genericEyebrowTexts.has(normalizedText)) {
+        pendingCalloutEyebrow = text
+      }
     }
   }
 
@@ -548,8 +588,10 @@ function buildTeaserCandidate(
       if (body) {
         return finalizeTeaserCandidate({
           kind: 'teaser',
-          tone: 'default',
+          tone: pendingCalloutEyebrow ? 'callout' : 'default',
           title,
+          eyebrow: pendingCalloutEyebrow,
+          icon: pendingCalloutIcon,
           body
         })
       }
@@ -560,8 +602,10 @@ function buildTeaserCandidate(
   if (body) {
     return finalizeTeaserCandidate({
       kind: 'teaser',
-      tone: 'default',
+      tone: pendingCalloutEyebrow ? 'callout' : 'default',
       title,
+      eyebrow: pendingCalloutEyebrow,
+      icon: pendingCalloutIcon,
       body
     })
   }

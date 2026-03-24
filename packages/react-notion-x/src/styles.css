@@ -588,14 +588,14 @@ details.notion-toggle .notion-h {
   padding: 18px 18px 16px;
   overflow: hidden;
   color: var(--fg-color);
-  background: var(--bg-color-0);
+  background: var(--bg-color);
 }
 
 .notion-collection-card-cover-teaser-panel {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 6px;
   min-height: 100%;
   height: 100%;
   padding: 0;
@@ -631,9 +631,11 @@ details.notion-toggle .notion-h {
 }
 
 .notion-collection-card-cover-teaser-eyebrow {
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1.35;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--fg-color-2);
   display: -webkit-box;
   overflow: hidden;
@@ -662,13 +664,14 @@ details.notion-toggle .notion-h {
 }
 
 .notion-collection-card-cover-teaser-body {
-  font-size: 14px;
-  line-height: 1.48;
+  font-size: 13px;
+  line-height: 1.5;
   color: var(--fg-color-2);
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 6;
+  line-clamp: 5;
+  -webkit-line-clamp: 5;
   word-break: break-word;
 }
 
@@ -1697,7 +1700,7 @@ svg.notion-page-icon {
 .notion-collection-card-body {
   display: flex;
   flex-direction: column;
-  padding: 4px 10px;
+  padding: 8px 10px 6px;
 }
 
 .notion-collection-card-property {
