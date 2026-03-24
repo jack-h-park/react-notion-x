@@ -212,7 +212,7 @@ describe('getCollectionCardCoverCandidate', () => {
     })
   })
 
-  test('uses callout body without generic eyebrow when no distinct teaser title exists', () => {
+  test('shows callout eyebrow with body when no distinct teaser title exists', () => {
     const recordMap = createRecordMap({
       page: {
         id: 'page',
@@ -251,7 +251,106 @@ describe('getCollectionCardCoverCandidate', () => {
     expect(candidate).toEqual({
       kind: 'teaser',
       tone: 'callout',
+      eyebrow: 'Executive Summary',
+      icon: undefined,
+      title: undefined,
       body: 'This callout stores its visible content in child blocks.'
+    })
+  })
+
+  test('pairs callout eyebrow with page body text when callout children are not loaded', () => {
+    // Simulates a gallery card where the page has a top-level paragraph and a
+    // callout labeled "Executive Summary" whose children are not yet in the
+    // recordMap (common in collection views that do not deep-load nested blocks).
+    const recordMap = createRecordMap({
+      page: {
+        id: 'page',
+        type: 'page',
+        content: ['text-1', 'callout-1']
+      },
+      'text-1': {
+        id: 'text-1',
+        type: 'text',
+        properties: {
+          title: [
+            [
+              'As a product manager, I wanted to build and operate a personal AI assistant that can reliably answer questions.'
+            ]
+          ]
+        }
+      },
+      'callout-1': {
+        id: 'callout-1',
+        type: 'callout',
+        properties: {
+          title: [['Executive Summary']]
+        }
+        // No content/children in recordMap — simulates shallow collection fetch
+      }
+    })
+
+    const candidate = getCollectionCardCoverCandidate({
+      block: recordMap.block.page.value,
+      cover: pageContentCover,
+      recordMap,
+      mapImageUrl,
+      cardCoverPosition: 50
+    })
+
+    expect(candidate).toEqual({
+      kind: 'teaser',
+      tone: 'callout',
+      eyebrow: 'Executive Summary',
+      icon: undefined,
+      title: undefined,
+      body: 'As a product manager, I wanted to build and operate a personal AI assistant that can reliably answer questions.'
+    })
+  })
+
+  test('uses generic section heading as eyebrow when followed by body text', () => {
+    // Simulates a page where "Executive Summary" is a heading block (not a
+    // callout) followed by body text. The heading is too generic to be a title
+    // but should surface as an eyebrow label in the teaser thumbnail.
+    const recordMap = createRecordMap({
+      page: {
+        id: 'page',
+        type: 'page',
+        content: ['heading-es', 'text-1']
+      },
+      'heading-es': {
+        id: 'heading-es',
+        type: 'sub_header',
+        properties: {
+          title: [['Executive Summary']]
+        }
+      },
+      'text-1': {
+        id: 'text-1',
+        type: 'text',
+        properties: {
+          title: [
+            [
+              'This project focuses on designing a Retrieval-Augmented Generation system that serves as the knowledge backbone for the portfolio.'
+            ]
+          ]
+        }
+      }
+    })
+
+    const candidate = getCollectionCardCoverCandidate({
+      block: recordMap.block.page.value,
+      cover: pageContentCover,
+      recordMap,
+      mapImageUrl,
+      cardCoverPosition: 50
+    })
+
+    expect(candidate).toEqual({
+      kind: 'teaser',
+      tone: 'callout',
+      eyebrow: 'Executive Summary',
+      title: undefined,
+      body: 'This project focuses on designing a Retrieval-Augmented Generation system that serves as the knowledge backbone for the portfolio.'
     })
   })
 
