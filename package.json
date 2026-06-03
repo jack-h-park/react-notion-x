@@ -5,7 +5,7 @@
   "repository": "jack-h-park/react-notion-x",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "license": "MIT",
-  "version": "7.7.1-jp.1",
+  "version": "7.7.1-jp.3",
   "packageManager": "pnpm@10.17.0",
   "engines": {
     "node": ">=18"
