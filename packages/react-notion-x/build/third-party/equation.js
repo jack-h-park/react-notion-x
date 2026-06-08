@@ -177,20 +177,552 @@ var require_lodash = __commonJS({
 
 // src/third-party/equation.tsx
 import Katex from "@matejmazur/react-katex";
-import "notion-types";
-import { getBlockTitle as getBlockTitle4 } from "notion-utils";
+
+// ../../node_modules/.pnpm/is-url-superb@6.1.0/node_modules/is-url-superb/index.js
+function isUrl(string, { lenient = false } = {}) {
+  if (typeof string !== "string") {
+    throw new TypeError("Expected a string");
+  }
+  string = string.trim();
+  if (string.includes(" ")) {
+    return false;
+  }
+  try {
+    new URL(string);
+    return true;
+  } catch (e) {
+    if (lenient) {
+      return isUrl(`https://${string}`);
+    }
+    return false;
+  }
+}
+
+// ../../node_modules/.pnpm/mimic-function@5.0.1/node_modules/mimic-function/index.js
+var copyProperty = (to, from, property, ignoreNonConfigurable) => {
+  if (property === "length" || property === "prototype") {
+    return;
+  }
+  if (property === "arguments" || property === "caller") {
+    return;
+  }
+  const toDescriptor = Object.getOwnPropertyDescriptor(to, property);
+  const fromDescriptor = Object.getOwnPropertyDescriptor(from, property);
+  if (!canCopyProperty(toDescriptor, fromDescriptor) && ignoreNonConfigurable) {
+    return;
+  }
+  Object.defineProperty(to, property, fromDescriptor);
+};
+var canCopyProperty = function(toDescriptor, fromDescriptor) {
+  return toDescriptor === void 0 || toDescriptor.configurable || toDescriptor.writable === fromDescriptor.writable && toDescriptor.enumerable === fromDescriptor.enumerable && toDescriptor.configurable === fromDescriptor.configurable && (toDescriptor.writable || toDescriptor.value === fromDescriptor.value);
+};
+var changePrototype = (to, from) => {
+  const fromPrototype = Object.getPrototypeOf(from);
+  if (fromPrototype === Object.getPrototypeOf(to)) {
+    return;
+  }
+  Object.setPrototypeOf(to, fromPrototype);
+};
+var wrappedToString = (withName, fromBody) => `/* Wrapped ${withName}*/
+${fromBody}`;
+var toStringDescriptor = Object.getOwnPropertyDescriptor(Function.prototype, "toString");
+var toStringName = Object.getOwnPropertyDescriptor(Function.prototype.toString, "name");
+var changeToString = (to, from, name) => {
+  const withName = name === "" ? "" : `with ${name.trim()}() `;
+  const newToString = wrappedToString.bind(null, withName, from.toString());
+  Object.defineProperty(newToString, "name", toStringName);
+  const { writable, enumerable, configurable } = toStringDescriptor;
+  Object.defineProperty(to, "toString", { value: newToString, writable, enumerable, configurable });
+};
+function mimicFunction(to, from, { ignoreNonConfigurable = false } = {}) {
+  const { name } = to;
+  for (const property of Reflect.ownKeys(from)) {
+    copyProperty(to, from, property, ignoreNonConfigurable);
+  }
+  changePrototype(to, from);
+  changeToString(to, from, name);
+  return to;
+}
+
+// ../../node_modules/.pnpm/memoize@10.1.0/node_modules/memoize/distribution/index.js
+var cacheStore = /* @__PURE__ */ new WeakMap();
+var cacheTimerStore = /* @__PURE__ */ new WeakMap();
+function memoize(function_, { cacheKey, cache = /* @__PURE__ */ new Map(), maxAge } = {}) {
+  if (maxAge === 0) {
+    return function_;
+  }
+  if (typeof maxAge === "number") {
+    const maxSetIntervalValue = 2147483647;
+    if (maxAge > maxSetIntervalValue) {
+      throw new TypeError(`The \`maxAge\` option cannot exceed ${maxSetIntervalValue}.`);
+    }
+    if (maxAge < 0) {
+      throw new TypeError("The `maxAge` option should not be a negative number.");
+    }
+  }
+  const memoized = function(...arguments_) {
+    var _a, _b;
+    const key = cacheKey ? cacheKey(arguments_) : arguments_[0];
+    const cacheItem = cache.get(key);
+    if (cacheItem) {
+      return cacheItem.data;
+    }
+    const result = function_.apply(this, arguments_);
+    const computedMaxAge = typeof maxAge === "function" ? maxAge(...arguments_) : maxAge;
+    cache.set(key, {
+      data: result,
+      maxAge: computedMaxAge ? Date.now() + computedMaxAge : Number.POSITIVE_INFINITY
+    });
+    if (computedMaxAge && computedMaxAge > 0 && computedMaxAge !== Number.POSITIVE_INFINITY) {
+      const timer = setTimeout(() => {
+        cache.delete(key);
+      }, computedMaxAge);
+      (_a = timer.unref) == null ? void 0 : _a.call(timer);
+      const timers = (_b = cacheTimerStore.get(function_)) != null ? _b : /* @__PURE__ */ new Set();
+      timers.add(timer);
+      cacheTimerStore.set(function_, timers);
+    }
+    return result;
+  };
+  mimicFunction(memoized, function_, {
+    ignoreNonConfigurable: true
+  });
+  cacheStore.set(memoized, cache);
+  return memoized;
+}
+
+// ../../node_modules/.pnpm/normalize-url@8.0.1/node_modules/normalize-url/index.js
+var DATA_URL_DEFAULT_MIME_TYPE = "text/plain";
+var DATA_URL_DEFAULT_CHARSET = "us-ascii";
+var testParameter = (name, filters) => filters.some((filter) => filter instanceof RegExp ? filter.test(name) : filter === name);
+var supportedProtocols = /* @__PURE__ */ new Set([
+  "https:",
+  "http:",
+  "file:"
+]);
+var hasCustomProtocol = (urlString) => {
+  try {
+    const { protocol } = new URL(urlString);
+    return protocol.endsWith(":") && !protocol.includes(".") && !supportedProtocols.has(protocol);
+  } catch (e) {
+    return false;
+  }
+};
+var normalizeDataURL = (urlString, { stripHash }) => {
+  var _a, _b;
+  const match = /^data:(?<type>[^,]*?),(?<data>[^#]*?)(?:#(?<hash>.*))?$/.exec(urlString);
+  if (!match) {
+    throw new Error(`Invalid URL: ${urlString}`);
+  }
+  let { type, data, hash } = match.groups;
+  const mediaType = type.split(";");
+  hash = stripHash ? "" : hash;
+  let isBase64 = false;
+  if (mediaType[mediaType.length - 1] === "base64") {
+    mediaType.pop();
+    isBase64 = true;
+  }
+  const mimeType = (_b = (_a = mediaType.shift()) == null ? void 0 : _a.toLowerCase()) != null ? _b : "";
+  const attributes = mediaType.map((attribute) => {
+    let [key, value = ""] = attribute.split("=").map((string) => string.trim());
+    if (key === "charset") {
+      value = value.toLowerCase();
+      if (value === DATA_URL_DEFAULT_CHARSET) {
+        return "";
+      }
+    }
+    return `${key}${value ? `=${value}` : ""}`;
+  }).filter(Boolean);
+  const normalizedMediaType = [
+    ...attributes
+  ];
+  if (isBase64) {
+    normalizedMediaType.push("base64");
+  }
+  if (normalizedMediaType.length > 0 || mimeType && mimeType !== DATA_URL_DEFAULT_MIME_TYPE) {
+    normalizedMediaType.unshift(mimeType);
+  }
+  return `data:${normalizedMediaType.join(";")},${isBase64 ? data.trim() : data}${hash ? `#${hash}` : ""}`;
+};
+function normalizeUrl(urlString, options) {
+  options = {
+    defaultProtocol: "http",
+    normalizeProtocol: true,
+    forceHttp: false,
+    forceHttps: false,
+    stripAuthentication: true,
+    stripHash: false,
+    stripTextFragment: true,
+    stripWWW: true,
+    removeQueryParameters: [/^utm_\w+/i],
+    removeTrailingSlash: true,
+    removeSingleSlash: true,
+    removeDirectoryIndex: false,
+    removeExplicitPort: false,
+    sortQueryParameters: true,
+    ...options
+  };
+  if (typeof options.defaultProtocol === "string" && !options.defaultProtocol.endsWith(":")) {
+    options.defaultProtocol = `${options.defaultProtocol}:`;
+  }
+  urlString = urlString.trim();
+  if (/^data:/i.test(urlString)) {
+    return normalizeDataURL(urlString, options);
+  }
+  if (hasCustomProtocol(urlString)) {
+    return urlString;
+  }
+  const hasRelativeProtocol = urlString.startsWith("//");
+  const isRelativeUrl = !hasRelativeProtocol && /^\.*\//.test(urlString);
+  if (!isRelativeUrl) {
+    urlString = urlString.replace(/^(?!(?:\w+:)?\/\/)|^\/\//, options.defaultProtocol);
+  }
+  const urlObject = new URL(urlString);
+  if (options.forceHttp && options.forceHttps) {
+    throw new Error("The `forceHttp` and `forceHttps` options cannot be used together");
+  }
+  if (options.forceHttp && urlObject.protocol === "https:") {
+    urlObject.protocol = "http:";
+  }
+  if (options.forceHttps && urlObject.protocol === "http:") {
+    urlObject.protocol = "https:";
+  }
+  if (options.stripAuthentication) {
+    urlObject.username = "";
+    urlObject.password = "";
+  }
+  if (options.stripHash) {
+    urlObject.hash = "";
+  } else if (options.stripTextFragment) {
+    urlObject.hash = urlObject.hash.replace(/#?:~:text.*?$/i, "");
+  }
+  if (urlObject.pathname) {
+    const protocolRegex = /\b[a-z][a-z\d+\-.]{1,50}:\/\//g;
+    let lastIndex = 0;
+    let result = "";
+    for (; ; ) {
+      const match = protocolRegex.exec(urlObject.pathname);
+      if (!match) {
+        break;
+      }
+      const protocol = match[0];
+      const protocolAtIndex = match.index;
+      const intermediate = urlObject.pathname.slice(lastIndex, protocolAtIndex);
+      result += intermediate.replace(/\/{2,}/g, "/");
+      result += protocol;
+      lastIndex = protocolAtIndex + protocol.length;
+    }
+    const remnant = urlObject.pathname.slice(lastIndex, urlObject.pathname.length);
+    result += remnant.replace(/\/{2,}/g, "/");
+    urlObject.pathname = result;
+  }
+  if (urlObject.pathname) {
+    try {
+      urlObject.pathname = decodeURI(urlObject.pathname);
+    } catch (e) {
+    }
+  }
+  if (options.removeDirectoryIndex === true) {
+    options.removeDirectoryIndex = [/^index\.[a-z]+$/];
+  }
+  if (Array.isArray(options.removeDirectoryIndex) && options.removeDirectoryIndex.length > 0) {
+    let pathComponents = urlObject.pathname.split("/");
+    const lastComponent = pathComponents[pathComponents.length - 1];
+    if (testParameter(lastComponent, options.removeDirectoryIndex)) {
+      pathComponents = pathComponents.slice(0, -1);
+      urlObject.pathname = pathComponents.slice(1).join("/") + "/";
+    }
+  }
+  if (urlObject.hostname) {
+    urlObject.hostname = urlObject.hostname.replace(/\.$/, "");
+    if (options.stripWWW && /^www\.(?!www\.)[a-z\-\d]{1,63}\.[a-z.\-\d]{2,63}$/.test(urlObject.hostname)) {
+      urlObject.hostname = urlObject.hostname.replace(/^www\./, "");
+    }
+  }
+  if (Array.isArray(options.removeQueryParameters)) {
+    for (const key of [...urlObject.searchParams.keys()]) {
+      if (testParameter(key, options.removeQueryParameters)) {
+        urlObject.searchParams.delete(key);
+      }
+    }
+  }
+  if (!Array.isArray(options.keepQueryParameters) && options.removeQueryParameters === true) {
+    urlObject.search = "";
+  }
+  if (Array.isArray(options.keepQueryParameters) && options.keepQueryParameters.length > 0) {
+    for (const key of [...urlObject.searchParams.keys()]) {
+      if (!testParameter(key, options.keepQueryParameters)) {
+        urlObject.searchParams.delete(key);
+      }
+    }
+  }
+  if (options.sortQueryParameters) {
+    urlObject.searchParams.sort();
+    try {
+      urlObject.search = decodeURIComponent(urlObject.search);
+    } catch (e) {
+    }
+  }
+  if (options.removeTrailingSlash) {
+    urlObject.pathname = urlObject.pathname.replace(/\/$/, "");
+  }
+  if (options.removeExplicitPort && urlObject.port) {
+    urlObject.port = "";
+  }
+  const oldUrlString = urlString;
+  urlString = urlObject.toString();
+  if (!options.removeSingleSlash && urlObject.pathname === "/" && !oldUrlString.endsWith("/") && urlObject.hash === "") {
+    urlString = urlString.replace(/\/$/, "");
+  }
+  if ((options.removeTrailingSlash || urlObject.pathname === "/") && urlObject.hash === "" && options.removeSingleSlash) {
+    urlString = urlString.replace(/\/$/, "");
+  }
+  if (hasRelativeProtocol && !options.normalizeProtocol) {
+    urlString = urlString.replace(/^http:\/\//, "//");
+  }
+  if (options.stripProtocol) {
+    urlString = urlString.replace(/^(?:https?:)?\/\//, "");
+  }
+  return urlString;
+}
+
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+function getBlockValue(block) {
+  if (!block) {
+    return void 0;
+  }
+  if (block.value) {
+    return getBlockValue(block.value);
+  }
+  if (!block.id) {
+    return void 0;
+  }
+  return block;
+}
+function getBlockCollectionId(block, recordMap) {
+  var _a, _b, _c, _d, _e, _f;
+  const collectionId = block.collection_id || ((_b = (_a = block.format) == null ? void 0 : _a.collection_pointer) == null ? void 0 : _b.id);
+  if (collectionId) {
+    return collectionId;
+  }
+  const collectionViewId = (_c = block == null ? void 0 : block.view_ids) == null ? void 0 : _c[0];
+  if (collectionViewId) {
+    const collectionView = getBlockValue(
+      (_d = recordMap.collection_view) == null ? void 0 : _d[collectionViewId]
+    );
+    if (collectionView) {
+      const collectionId2 = (_f = (_e = collectionView.format) == null ? void 0 : _e.collection_pointer) == null ? void 0 : _f.id;
+      return collectionId2;
+    }
+  }
+  return null;
+}
+var getTextContent = (text) => {
+  var _a;
+  if (!text) {
+    return "";
+  } else if (Array.isArray(text)) {
+    return (_a = text == null ? void 0 : text.reduce(
+      (prev, current) => prev + (current[0] !== "\u204D" && current[0] !== "\u2023" ? current[0] : ""),
+      ""
+    )) != null ? _a : "";
+  } else {
+    return text;
+  }
+};
+function getBlockTitle(block, recordMap) {
+  var _a;
+  if ((_a = block.properties) == null ? void 0 : _a.title) {
+    return getTextContent(block.properties.title);
+  }
+  if (block.type === "collection_view_page" || block.type === "collection_view") {
+    const collectionId = getBlockCollectionId(block, recordMap);
+    if (collectionId) {
+      const collection = getBlockValue(recordMap.collection[collectionId]);
+      if (collection) {
+        return getTextContent(collection.name);
+      }
+    }
+  }
+  return "";
+}
+var formatDate = (input, { month = "short" } = {}) => {
+  const date = new Date(input);
+  const monthLocale = date.toLocaleString("en-US", { month });
+  return `${monthLocale} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
+};
+var formatNotionDateTime = (datetime) => {
+  const dateString = `${datetime.start_date}T${datetime.start_time || "00:00"}+00:00`;
+  return formatDate(dateString);
+};
+var idToUuid = (id = "") => `${id.slice(0, 8)}-${id.slice(8, 12)}-${id.slice(12, 16)}-${id.slice(
+  16,
+  20
+)}-${id.slice(20)}`;
+var pageIdRe = /\b([\da-f]{32})\b/;
+var pageId2Re = /\b([\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12})\b/;
+var parsePageId = (id = "", { uuid = true } = {}) => {
+  if (!id) return;
+  id = id.split("?")[0];
+  if (!id) return;
+  const match = id.match(pageIdRe);
+  if (match) {
+    return uuid ? idToUuid(match[1]) : match[1];
+  }
+  const match2 = id.match(pageId2Re);
+  if (match2) {
+    return uuid ? match2[1] : match2[1].replaceAll("-", "");
+  }
+  return;
+};
+function getBlockIcon(block, recordMap) {
+  var _a, _b;
+  if ((_a = block.format) == null ? void 0 : _a.page_icon) {
+    return (_b = block.format) == null ? void 0 : _b.page_icon;
+  }
+  if (block.type === "collection_view_page" || block.type === "collection_view") {
+    const collectionId = getBlockCollectionId(block, recordMap);
+    if (collectionId) {
+      const collection = getBlockValue(recordMap.collection[collectionId]);
+      if (collection) {
+        return collection.icon;
+      }
+    }
+  }
+  return null;
+}
+var getBlockParentPage = (block, recordMap, {
+  inclusive = false
+} = {}) => {
+  let currentRecord = block;
+  while (currentRecord) {
+    if (inclusive && (currentRecord == null ? void 0 : currentRecord.type) === "page") {
+      return currentRecord;
+    }
+    const parentId = currentRecord.parent_id;
+    const parentTable = currentRecord.parent_table;
+    if (!parentId) {
+      break;
+    }
+    if (parentTable === "collection") {
+      currentRecord = getBlockValue(recordMap.collection[parentId]);
+    } else {
+      currentRecord = getBlockValue(recordMap.block[parentId]);
+      if ((currentRecord == null ? void 0 : currentRecord.type) === "page") {
+        return currentRecord;
+      }
+    }
+  }
+  return null;
+};
+var getPageBreadcrumbs = (recordMap, activePageId) => {
+  const blockMap = recordMap.block;
+  const breadcrumbs = [];
+  let currentPageId = activePageId;
+  do {
+    const block = getBlockValue(blockMap[currentPageId]);
+    if (!block) {
+      break;
+    }
+    const title = getBlockTitle(block, recordMap);
+    const icon = getBlockIcon(block, recordMap);
+    if (!(title || icon)) {
+      break;
+    }
+    breadcrumbs.push({
+      block,
+      active: currentPageId === activePageId,
+      pageId: currentPageId,
+      title,
+      icon
+    });
+    const parentBlock = getBlockParentPage(block, recordMap);
+    const parentId = parentBlock == null ? void 0 : parentBlock.id;
+    if (!parentId) {
+      break;
+    }
+    currentPageId = parentId;
+  } while (true);
+  breadcrumbs.reverse();
+  return breadcrumbs;
+};
+var GIF_REGEXP = /(?:https?:\/\/)?[^\s]+\.gif(?=$|\?|#)/;
+var defaultMapImageUrl = (url, block) => {
+  if (!url) {
+    return void 0;
+  }
+  if (url.startsWith("data:")) {
+    return url;
+  }
+  if (GIF_REGEXP.test(url)) {
+    return url;
+  }
+  if (url.startsWith("https://images.unsplash.com")) {
+    return url;
+  }
+  try {
+    const u = new URL(url);
+    if (u.pathname.startsWith("/secure.notion-static.com") && u.hostname.endsWith(".amazonaws.com")) {
+      if (u.searchParams.has("X-Amz-Credential") && u.searchParams.has("X-Amz-Signature") && u.searchParams.has("X-Amz-Algorithm")) {
+        return url;
+      }
+    }
+    if (u.hostname === "img.notionusercontent.com") {
+      return url;
+    }
+  } catch (e) {
+  }
+  if (url.startsWith("/images")) {
+    url = `https://www.notion.so${url}`;
+  }
+  url = `https://www.notion.so${url.startsWith("/image") ? url : `/image/${encodeURIComponent(url)}`}`;
+  const notionImageUrlV2 = new URL(url);
+  let table = block.parent_table === "space" ? "block" : block.parent_table;
+  if (table === "collection" || table === "team") {
+    table = "block";
+  }
+  notionImageUrlV2.searchParams.set("table", table);
+  notionImageUrlV2.searchParams.set("id", block.id);
+  notionImageUrlV2.searchParams.set("cache", "v2");
+  url = notionImageUrlV2.toString();
+  return url;
+};
+var defaultMapPageUrl = (rootPageId) => (pageId) => {
+  pageId = (pageId || "").replaceAll("-", "");
+  if (rootPageId && pageId === rootPageId) {
+    return "/";
+  } else {
+    return `/${pageId}`;
+  }
+};
+var normalizeUrl2 = memoize((url) => {
+  if (!url) {
+    return "";
+  }
+  try {
+    if (url.startsWith("https://www.notion.so/image/")) {
+      const u = new URL(url);
+      const subUrl = decodeURIComponent(u.pathname.slice("/image/".length));
+      const normalizedSubUrl = normalizeUrl2(subUrl);
+      u.pathname = `/image/${encodeURIComponent(normalizedSubUrl)}`;
+      url = u.toString();
+    }
+    return normalizeUrl(url, {
+      stripProtocol: true,
+      stripWWW: true,
+      stripHash: true,
+      stripTextFragment: true,
+      removeQueryParameters: true
+    });
+  } catch (e) {
+    return "";
+  }
+});
 
 // src/context.tsx
-import "notion-types";
-import { defaultMapImageUrl, defaultMapPageUrl } from "notion-utils";
 import React15 from "react";
 
-// src/components/asset-wrapper.tsx
-import "notion-types";
-import { parsePageId as parsePageId2 } from "notion-utils";
-
 // src/utils.ts
-import { formatDate, formatNotionDateTime, isUrl } from "notion-utils";
 var cs = (...classes) => classes.filter((a) => !!a).join(" ");
 var getHashFragmentValue = (url) => {
   return url.includes("#") ? url.replace(/^.+(#.+)$/, "$1") : "";
@@ -233,12 +765,7 @@ var getUrlParams = (url) => {
 };
 
 // src/components/text.tsx
-import "notion-types";
-import { getBlockValue, parsePageId } from "notion-utils";
 import React7 from "react";
-
-// src/components/eoi.tsx
-import "notion-types";
 
 // src/icons/type-github.tsx
 import { jsx } from "react/jsx-runtime";
@@ -445,13 +972,9 @@ function LinkMentionPreview({ metadata }) {
 }
 
 // src/components/page-title.tsx
-import "notion-types";
-import { getBlockTitle as getBlockTitle2 } from "notion-utils";
 import React6 from "react";
 
 // src/components/page-icon.tsx
-import "notion-types";
-import { getBlockIcon, getBlockTitle } from "notion-utils";
 import React5 from "react";
 
 // src/icons/default-page-icon.tsx
@@ -463,7 +986,6 @@ function DefaultPageIcon(props) {
 }
 
 // src/components/lazy-image.tsx
-import { normalizeUrl } from "notion-utils";
 import React4 from "react";
 
 // src/components/lazy-image-full.tsx
@@ -684,7 +1206,7 @@ function LazyImage({
   var _a, _b, _c;
   const { recordMap, zoom, previewImages, forceCustomImages, components } = useNotionContext();
   const zoomRef = React4.useRef(zoom ? zoom.clone() : null);
-  const previewImage = previewImages ? (_c = (_a = recordMap == null ? void 0 : recordMap.preview_images) == null ? void 0 : _a[src]) != null ? _c : (_b = recordMap == null ? void 0 : recordMap.preview_images) == null ? void 0 : _b[normalizeUrl(src)] : null;
+  const previewImage = previewImages ? (_c = (_a = recordMap == null ? void 0 : recordMap.preview_images) == null ? void 0 : _a[src]) != null ? _c : (_b = recordMap == null ? void 0 : recordMap.preview_images) == null ? void 0 : _b[normalizeUrl2(src)] : null;
   const onLoad = React4.useCallback(
     (e) => {
       if (zoomable && (e.target.src || e.target.srcset)) {
@@ -906,7 +1428,7 @@ function PageTitleImpl({
   const { recordMap } = useNotionContext();
   if (!block) return null;
   if (block.type === "collection_view_page" || block.type === "collection_view") {
-    const title = getBlockTitle2(block, recordMap);
+    const title = getBlockTitle(block, recordMap);
     if (!title) {
       return null;
     }
@@ -1140,7 +1662,6 @@ function Text({
 }
 
 // src/components/header.tsx
-import { getPageBreadcrumbs } from "notion-utils";
 import React12 from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
@@ -1154,7 +1675,6 @@ function SearchIcon(props) {
 
 // src/components/search-dialog.tsx
 var import_lodash = __toESM(require_lodash(), 1);
-import { getBlockParentPage, getBlockTitle as getBlockTitle3 } from "notion-utils";
 import React11 from "react";
 
 // src/icons/clear-icon.tsx
@@ -1290,7 +1810,7 @@ var SearchDialog = class extends React11.Component {
           var _a, _b;
           const block = (_a = searchResult.recordMap.block[result2.id]) == null ? void 0 : _a.value;
           if (!block) return;
-          const title = getBlockTitle3(block, searchResult.recordMap);
+          const title = getBlockTitle(block, searchResult.recordMap);
           if (!title) {
             return;
           }
@@ -1524,10 +2044,6 @@ function Search({
     )
   ] });
 }
-
-// src/components/asset.tsx
-import "notion-types";
-import { getTextContent } from "notion-utils";
 
 // src/components/lite-youtube-embed.tsx
 import React13 from "react";
@@ -1910,7 +2426,7 @@ function AssetWrapper({
   if (block.type === "image") {
     const caption = (_c = (_b = (_a = value == null ? void 0 : value.properties) == null ? void 0 : _a.caption) == null ? void 0 : _b[0]) == null ? void 0 : _c[0];
     if (caption) {
-      const id = parsePageId2(caption, { uuid: true });
+      const id = parsePageId(caption, { uuid: true });
       const isPage = caption.charAt(0) === "/" && id;
       if (isPage || isValidURL(caption)) {
         isURL = true;
@@ -1931,7 +2447,7 @@ function AssetWrapper({
   );
   if (isURL) {
     const caption = (_h = (_g = (_f = value == null ? void 0 : value.properties) == null ? void 0 : _f.caption) == null ? void 0 : _g[0]) == null ? void 0 : _h[0];
-    const id = parsePageId2(caption, { uuid: true });
+    const id = parsePageId(caption, { uuid: true });
     const isPage = (caption == null ? void 0 : caption.charAt(0)) === "/" && id;
     const captionHostname = extractHostname(caption);
     return /* @__PURE__ */ jsx19(
@@ -2233,7 +2749,7 @@ function Equation({
   ...rest
 }) {
   const { recordMap } = useNotionContext();
-  math = math || getBlockTitle4(block, recordMap);
+  math = math || getBlockTitle(block, recordMap);
   if (!math) return null;
   return /* @__PURE__ */ jsx24(
     "span",

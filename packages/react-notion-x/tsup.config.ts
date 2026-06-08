@@ -15,8 +15,9 @@ export default defineConfig({
   format: ['esm'],
   splitting: false,
   shims: false,
-  dts: true,
+  dts: false,
   minify: false,
   sourcemap: true,
-  external: ['react-pdf', 'react', 'react-dom']
+  external: ['react-pdf', 'react', 'react-dom'],
+  noExternal: ['notion-utils', 'notion-types']
 })
