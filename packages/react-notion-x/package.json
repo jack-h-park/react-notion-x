@@ -10,48 +10,48 @@
   "types": "./src/index.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
     },
     "./third-party/code": {
-      "types": "./src/third-party/code.tsx",
-      "default": "./src/third-party/code.tsx"
+      "types": "./build/third-party/code.d.ts",
+      "default": "./build/third-party/code.js"
     },
     "./third-party/collection": {
-      "types": "./src/third-party/collection.tsx",
-      "default": "./src/third-party/collection.tsx"
+      "types": "./build/third-party/collection.d.ts",
+      "default": "./build/third-party/collection.js"
     },
     "./third-party/equation": {
-      "types": "./src/third-party/equation.tsx",
-      "default": "./src/third-party/equation.tsx"
+      "types": "./build/third-party/equation.d.ts",
+      "default": "./build/third-party/equation.js"
     },
     "./third-party/modal": {
-      "types": "./src/third-party/modal.tsx",
-      "default": "./src/third-party/modal.tsx"
+      "types": "./build/third-party/modal.d.ts",
+      "default": "./build/third-party/modal.js"
     },
     "./third-party/pdf": {
-      "types": "./src/third-party/pdf.tsx",
-      "default": "./src/third-party/pdf.tsx"
+      "types": "./build/third-party/pdf.d.ts",
+      "default": "./build/third-party/pdf.js"
     },
     "./build/third-party/code": {
-      "types": "./src/third-party/code.tsx",
-      "default": "./src/third-party/code.tsx"
+      "types": "./build/third-party/code.d.ts",
+      "default": "./build/third-party/code.js"
     },
     "./build/third-party/collection": {
-      "types": "./src/third-party/collection.tsx",
-      "default": "./src/third-party/collection.tsx"
+      "types": "./build/third-party/collection.d.ts",
+      "default": "./build/third-party/collection.js"
     },
     "./build/third-party/equation": {
-      "types": "./src/third-party/equation.tsx",
-      "default": "./src/third-party/equation.tsx"
+      "types": "./build/third-party/equation.d.ts",
+      "default": "./build/third-party/equation.js"
     },
     "./build/third-party/modal": {
-      "types": "./src/third-party/modal.tsx",
-      "default": "./src/third-party/modal.tsx"
+      "types": "./build/third-party/modal.d.ts",
+      "default": "./build/third-party/modal.js"
     },
     "./build/third-party/pdf": {
-      "types": "./src/third-party/pdf.tsx",
-      "default": "./src/third-party/pdf.tsx"
+      "types": "./build/third-party/pdf.d.ts",
+      "default": "./build/third-party/pdf.js"
     },
     "./styles.css": "./src/styles.css",
     "./src/styles.css": "./src/styles.css"
