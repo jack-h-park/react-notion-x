@@ -175,83 +175,21 @@ var require_lodash = __commonJS({
   }
 });
 
-// src/components/header.tsx
-import { getPageBreadcrumbs } from "notion-utils";
-import React15 from "react";
-import { useHotkeys } from "react-hotkeys-hook";
+// src/components/button.tsx
+import React16 from "react";
 
 // src/context.tsx
 import "notion-types";
 import { defaultMapImageUrl, defaultMapPageUrl } from "notion-utils";
-import React10 from "react";
+import React15 from "react";
 
 // src/components/asset-wrapper.tsx
 import "notion-types";
 import { parsePageId as parsePageId2 } from "notion-utils";
 
 // src/utils.ts
-import "notion-types";
 import { formatDate, formatNotionDateTime, isUrl } from "notion-utils";
 var cs = (...classes) => classes.filter((a) => !!a).join(" ");
-var groupBlockContent = (blockMap) => {
-  var _a, _b, _c, _d;
-  const output = [];
-  let lastType;
-  let index = -1;
-  for (const id of Object.keys(blockMap)) {
-    const blockValue = (_a = blockMap[id]) == null ? void 0 : _a.value;
-    if (blockValue) {
-      if (blockValue.content)
-        for (const blockId of blockValue.content) {
-          const blockType = (_c = (_b = blockMap[blockId]) == null ? void 0 : _b.value) == null ? void 0 : _c.type;
-          if (blockType && blockType !== lastType) {
-            index++;
-            lastType = blockType;
-            output[index] = [];
-          }
-          if (index > -1) {
-            (_d = output[index]) == null ? void 0 : _d.push(blockId);
-          }
-        }
-    }
-    lastType = void 0;
-  }
-  return output;
-};
-var getListNumber = (blockId, blockMap) => {
-  var _a, _b, _c;
-  const groups = groupBlockContent(blockMap);
-  const group = groups.find((g) => g.includes(blockId));
-  if (!group) {
-    return;
-  }
-  const groupIndex = group.indexOf(blockId) + 1;
-  const startIndex = (_b = (_a = blockMap[blockId]) == null ? void 0 : _a.value.format) == null ? void 0 : _b.list_start_index;
-  return ((_c = blockMap[blockId]) == null ? void 0 : _c.value.type) === "numbered_list" ? startIndex != null ? startIndex : groupIndex : groupIndex;
-};
-var getListNestingLevel = (blockId, blockMap) => {
-  var _a, _b, _c;
-  let level = 0;
-  let currentBlockId = blockId;
-  while (true) {
-    const parentId = (_b = (_a = blockMap[currentBlockId]) == null ? void 0 : _a.value) == null ? void 0 : _b.parent_id;
-    if (!parentId) break;
-    const parentBlock = (_c = blockMap[parentId]) == null ? void 0 : _c.value;
-    if (!parentBlock) break;
-    if (parentBlock.type === "numbered_list") {
-      level++;
-      currentBlockId = parentId;
-    } else {
-      break;
-    }
-  }
-  return level;
-};
-var getListStyle = (level) => {
-  const styles = ["decimal", "lower-alpha", "lower-roman"];
-  const index = (level % styles.length + styles.length) % styles.length;
-  return styles[index];
-};
 var getHashFragmentValue = (url) => {
   return url.includes("#") ? url.replace(/^.+(#.+)$/, "$1") : "";
 };
@@ -1017,7 +955,7 @@ function Asset({
 
 // src/components/text.tsx
 import "notion-types";
-import { parsePageId } from "notion-utils";
+import { getBlockValue, parsePageId } from "notion-utils";
 import React8 from "react";
 
 // src/components/eoi.tsx
@@ -1390,17 +1328,17 @@ function Text({
     }
     const formatted = decorations.reduce(
       (element, decorator) => {
-        var _a, _b, _c, _d, _e;
+        var _a;
         switch (decorator[0]) {
           case "p": {
             const blockId = decorator[1];
-            const linkedBlock = (_a = recordMap.block[blockId]) == null ? void 0 : _a.value;
+            const linkedBlock = getBlockValue(recordMap.block[blockId]);
             if (!linkedBlock) {
               console.log('"p" missing block', blockId);
               return null;
             }
             return /* @__PURE__ */ jsx13(
-              components.PageLink,
+              components.Link,
               {
                 className: "notion-link",
                 href: mapPageUrl(blockId),
@@ -1413,7 +1351,7 @@ function Text({
             const id = decorator[1][1];
             switch (linkType) {
               case "u": {
-                const user = (_b = recordMap.notion_user[id]) == null ? void 0 : _b.value;
+                const user = getBlockValue(recordMap.notion_user[id]);
                 if (!user) {
                   console.log('"\u2023" missing user', id);
                   return null;
@@ -1431,13 +1369,13 @@ function Text({
                 );
               }
               default: {
-                const linkedBlock = (_c = recordMap.block[id]) == null ? void 0 : _c.value;
+                const linkedBlock = getBlockValue(recordMap.block[id]);
                 if (!linkedBlock) {
                   console.log('"\u2023" missing block', linkType, id);
                   return null;
                 }
                 return /* @__PURE__ */ jsx13(
-                  components.PageLink,
+                  components.Link,
                   {
                     className: "notion-link",
                     href: mapPageUrl(id),
@@ -1474,7 +1412,7 @@ function Text({
             if (rootDomain && v.includes(rootDomain) || id && v[0] === "/") {
               const href = rootDomain && v.includes(rootDomain) ? v : `${mapPageUrl(id)}${getHashFragmentValue(v)}`;
               return /* @__PURE__ */ jsx13(
-                components.PageLink,
+                components.Link,
                 {
                   className: "notion-link",
                   href,
@@ -1514,7 +1452,7 @@ function Text({
           }
           case "u": {
             const userId = decorator[1];
-            const user = (_d = recordMap.notion_user[userId]) == null ? void 0 : _d.value;
+            const user = getBlockValue(recordMap.notion_user[userId]);
             if (!user) {
               console.log("missing user", userId);
               return null;
@@ -1530,8 +1468,30 @@ function Text({
           }
           case "eoi": {
             const blockId = decorator[1];
-            const externalObjectInstance = (_e = recordMap.block[blockId]) == null ? void 0 : _e.value;
+            const externalObjectInstance = getBlockValue(
+              recordMap.block[blockId]
+            );
+            if (!externalObjectInstance) {
+              console.log('"eoi" missing block', blockId);
+              return null;
+            }
             return /* @__PURE__ */ jsx13(EOI, { block: externalObjectInstance, inline: true });
+          }
+          case "ce": {
+            const customEmojiId = decorator[1];
+            const emojiUrl = (_a = recordMap.custom_emojis) == null ? void 0 : _a[customEmojiId];
+            if (!emojiUrl) {
+              console.log("missing custom emoji", customEmojiId);
+              return null;
+            }
+            return /* @__PURE__ */ jsx13(
+              GracefulImage,
+              {
+                className: "notion-custom-emoji",
+                src: emojiUrl,
+                alt: "custom emoji"
+              }
+            );
           }
           case "si":
             return null;
@@ -1635,271 +1595,39 @@ function Checkbox({
   return /* @__PURE__ */ jsx16("span", { className: "notion-property notion-property-checkbox", children: content });
 }
 
-// src/next.tsx
-import React9 from "react";
-import isEqual from "react-fast-compare";
-import { jsx as jsx17 } from "react/jsx-runtime";
-var wrapNextImage = (NextImage) => {
-  return React9.memo(function ReactNotionXNextImage({
-    src,
-    alt,
-    width,
-    height,
-    className,
-    fill,
-    ...rest
-  }) {
-    if (fill === "undefined") {
-      fill = !(width && height);
-    }
-    return /* @__PURE__ */ jsx17(
-      NextImage,
-      {
-        className,
-        src,
-        alt,
-        width: !fill && width && height ? width : void 0,
-        height: !fill && width && height ? height : void 0,
-        fill,
-        ...rest
-      }
-    );
-  }, isEqual);
-};
-var wrapNextLegacyImage = (NextLegacyImage) => {
-  return React9.memo(function ReactNotionXNextLegacyImage({
-    src,
-    alt,
-    width,
-    height,
-    className,
-    style,
-    layout,
-    ...rest
-  }) {
-    if (!layout) {
-      layout = width && height ? "intrinsic" : "fill";
-    }
-    return /* @__PURE__ */ jsx17(
-      NextLegacyImage,
-      {
-        className,
-        src,
-        alt,
-        width: layout === "intrinsic" && width,
-        height: layout === "intrinsic" && height,
-        objectFit: style == null ? void 0 : style.objectFit,
-        objectPosition: style == null ? void 0 : style.objectPosition,
-        layout,
-        ...rest
-      }
-    );
-  }, isEqual);
-};
-function wrapNextLink(NextLink) {
-  return ({
-    href,
-    as,
-    passHref,
-    prefetch,
-    replace,
-    scroll,
-    shallow,
-    locale,
-    ...linkProps
-  }) => {
-    return /* @__PURE__ */ jsx17(
-      NextLink,
-      {
-        href,
-        as,
-        passHref,
-        prefetch,
-        replace,
-        scroll,
-        shallow,
-        locale,
-        legacyBehavior: true,
-        children: /* @__PURE__ */ jsx17("a", { ...linkProps })
-      }
-    );
-  };
-}
-
-// src/context.tsx
-import { jsx as jsx18 } from "react/jsx-runtime";
-function DefaultLink(props) {
-  return /* @__PURE__ */ jsx18("a", { target: "_blank", rel: "noopener noreferrer", ...props });
-}
-var DefaultLinkMemo = React10.memo(DefaultLink);
-function DefaultPageLink(props) {
-  return /* @__PURE__ */ jsx18("a", { ...props });
-}
-var DefaultPageLinkMemo = React10.memo(DefaultPageLink);
-function DefaultEmbed(props) {
-  return /* @__PURE__ */ jsx18(AssetWrapper, { ...props });
-}
-var DefaultHeader = Header;
-function dummyLink({ href, rel, target, title, ...rest }) {
-  return /* @__PURE__ */ jsx18("span", { ...rest });
-}
-var dummyComponent = (name) => () => {
-  console.warn(
-    `Warning: using empty component "${name}" (you should override this in NotionRenderer.components)`
-  );
-  return null;
-};
-var dummyOverrideFn = (_, defaultValueFn) => defaultValueFn();
-var defaultComponents = {
-  Image: null,
-  // disable custom images by default
-  Link: DefaultLinkMemo,
-  PageLink: DefaultPageLinkMemo,
-  Checkbox,
-  Callout: void 0,
-  // use the built-in callout rendering by default
-  Code: dummyComponent("Code"),
-  Equation: dummyComponent("Equation"),
-  Collection: dummyComponent("Collection"),
-  Property: void 0,
-  // use the built-in property rendering by default
-  propertyTextValue: dummyOverrideFn,
-  propertySelectValue: dummyOverrideFn,
-  propertyRelationValue: dummyOverrideFn,
-  propertyFormulaValue: dummyOverrideFn,
-  propertyTitleValue: dummyOverrideFn,
-  propertyPersonValue: dummyOverrideFn,
-  propertyFileValue: dummyOverrideFn,
-  propertyCheckboxValue: dummyOverrideFn,
-  propertyUrlValue: dummyOverrideFn,
-  propertyEmailValue: dummyOverrideFn,
-  propertyPhoneNumberValue: dummyOverrideFn,
-  propertyNumberValue: dummyOverrideFn,
-  propertyLastEditedTimeValue: dummyOverrideFn,
-  propertyCreatedTimeValue: dummyOverrideFn,
-  propertyDateValue: dummyOverrideFn,
-  propertyAutoIncrementIdValue: dummyOverrideFn,
-  Pdf: dummyComponent("Pdf"),
-  Tweet: dummyComponent("Tweet"),
-  Modal: dummyComponent("Modal"),
-  Header: DefaultHeader,
-  Embed: DefaultEmbed
-};
-var defaultNotionContext = {
-  recordMap: {
-    block: {},
-    collection: {},
-    collection_view: {},
-    collection_query: {},
-    notion_user: {},
-    signed_urls: {}
-  },
-  components: defaultComponents,
-  mapPageUrl: defaultMapPageUrl(),
-  mapImageUrl: defaultMapImageUrl,
-  searchNotion: void 0,
-  isShowingSearch: false,
-  onHideSearch: void 0,
-  fullPage: false,
-  darkMode: false,
-  previewImages: false,
-  forceCustomImages: false,
-  showCollectionViewDropdown: true,
-  linkTableTitleProperties: true,
-  isLinkCollectionToUrlProperty: false,
-  showTableOfContents: false,
-  minTableOfContentsItems: 3,
-  defaultPageIcon: null,
-  defaultPageCover: null,
-  defaultPageCoverPosition: 0.5,
-  zoom: null
-};
-var ctx = React10.createContext(defaultNotionContext);
-function NotionContextProvider({
-  components: themeComponents = {},
-  children,
-  mapPageUrl,
-  mapImageUrl,
-  rootPageId,
-  ...rest
-}) {
-  for (const key of Object.keys(rest)) {
-    if (rest[key] === void 0) {
-      delete rest[key];
-    }
-  }
-  const wrappedThemeComponents = React10.useMemo(
-    () => ({
-      ...themeComponents
-    }),
-    [themeComponents]
-  );
-  if (wrappedThemeComponents.nextImage && wrappedThemeComponents.nextLegacyImage) {
-    console.warn(
-      "You should not pass both nextImage and nextLegacyImage. Only nextImage component will be used."
-    );
-    wrappedThemeComponents.Image = wrapNextImage(themeComponents.nextImage);
-  } else if (wrappedThemeComponents.nextImage) {
-    wrappedThemeComponents.Image = wrapNextImage(themeComponents.nextImage);
-  } else if (wrappedThemeComponents.nextLegacyImage) {
-    wrappedThemeComponents.Image = wrapNextLegacyImage(
-      themeComponents.nextLegacyImage
-    );
-  }
-  if (wrappedThemeComponents.nextLink) {
-    wrappedThemeComponents.nextLink = wrapNextLink(themeComponents.nextLink);
-  }
-  for (const key of Object.keys(wrappedThemeComponents)) {
-    if (!wrappedThemeComponents[key]) {
-      delete wrappedThemeComponents[key];
-    }
-  }
-  const value = React10.useMemo(
-    () => ({
-      ...defaultNotionContext,
-      ...rest,
-      rootPageId,
-      mapPageUrl: mapPageUrl != null ? mapPageUrl : defaultMapPageUrl(rootPageId),
-      mapImageUrl: mapImageUrl != null ? mapImageUrl : defaultMapImageUrl,
-      components: { ...defaultComponents, ...wrappedThemeComponents }
-    }),
-    [mapImageUrl, mapPageUrl, wrappedThemeComponents, rootPageId, rest]
-  );
-  return /* @__PURE__ */ jsx18(ctx.Provider, { value, children });
-}
-var NotionContextConsumer = ctx.Consumer;
-var useNotionContext = () => {
-  return React10.useContext(ctx);
-};
+// src/components/header.tsx
+import { getPageBreadcrumbs } from "notion-utils";
+import React13 from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 // src/icons/search-icon.tsx
 import "react";
-import { jsx as jsx19 } from "react/jsx-runtime";
+import { jsx as jsx17 } from "react/jsx-runtime";
 function SearchIcon(props) {
   const { className, ...rest } = props;
-  return /* @__PURE__ */ jsx19("svg", { className: cs("notion-icon", className), viewBox: "0 0 17 17", ...rest, children: /* @__PURE__ */ jsx19("path", { d: "M6.78027 13.6729C8.24805 13.6729 9.60156 13.1982 10.709 12.4072L14.875 16.5732C15.0684 16.7666 15.3232 16.8633 15.5957 16.8633C16.167 16.8633 16.5713 16.4238 16.5713 15.8613C16.5713 15.5977 16.4834 15.3516 16.29 15.1582L12.1504 11.0098C13.0205 9.86719 13.5391 8.45215 13.5391 6.91406C13.5391 3.19629 10.498 0.155273 6.78027 0.155273C3.0625 0.155273 0.0214844 3.19629 0.0214844 6.91406C0.0214844 10.6318 3.0625 13.6729 6.78027 13.6729ZM6.78027 12.2139C3.87988 12.2139 1.48047 9.81445 1.48047 6.91406C1.48047 4.01367 3.87988 1.61426 6.78027 1.61426C9.68066 1.61426 12.0801 4.01367 12.0801 6.91406C12.0801 9.81445 9.68066 12.2139 6.78027 12.2139Z" }) });
+  return /* @__PURE__ */ jsx17("svg", { className: cs("notion-icon", className), viewBox: "0 0 17 17", ...rest, children: /* @__PURE__ */ jsx17("path", { d: "M6.78027 13.6729C8.24805 13.6729 9.60156 13.1982 10.709 12.4072L14.875 16.5732C15.0684 16.7666 15.3232 16.8633 15.5957 16.8633C16.167 16.8633 16.5713 16.4238 16.5713 15.8613C16.5713 15.5977 16.4834 15.3516 16.29 15.1582L12.1504 11.0098C13.0205 9.86719 13.5391 8.45215 13.5391 6.91406C13.5391 3.19629 10.498 0.155273 6.78027 0.155273C3.0625 0.155273 0.0214844 3.19629 0.0214844 6.91406C0.0214844 10.6318 3.0625 13.6729 6.78027 13.6729ZM6.78027 12.2139C3.87988 12.2139 1.48047 9.81445 1.48047 6.91406C1.48047 4.01367 3.87988 1.61426 6.78027 1.61426C9.68066 1.61426 12.0801 4.01367 12.0801 6.91406C12.0801 9.81445 9.68066 12.2139 6.78027 12.2139Z" }) });
 }
 
 // src/components/search-dialog.tsx
 var import_lodash = __toESM(require_lodash(), 1);
 import { getBlockParentPage, getBlockTitle as getBlockTitle3 } from "notion-utils";
-import React14 from "react";
+import React12 from "react";
 
 // src/icons/clear-icon.tsx
 import "react";
-import { jsx as jsx20 } from "react/jsx-runtime";
+import { jsx as jsx18 } from "react/jsx-runtime";
 function ClearIcon(props) {
   const { className, ...rest } = props;
-  return /* @__PURE__ */ jsx20("svg", { className: cs("notion-icon", className), ...rest, viewBox: "0 0 30 30", children: /* @__PURE__ */ jsx20("path", { d: "M15,0C6.716,0,0,6.716,0,15s6.716,15,15,15s15-6.716,15-15S23.284,0,15,0z M22,20.6L20.6,22L15,16.4L9.4,22L8,20.6l5.6-5.6 L8,9.4L9.4,8l5.6,5.6L20.6,8L22,9.4L16.4,15L22,20.6z" }) });
+  return /* @__PURE__ */ jsx18("svg", { className: cs("notion-icon", className), ...rest, viewBox: "0 0 30 30", children: /* @__PURE__ */ jsx18("path", { d: "M15,0C6.716,0,0,6.716,0,15s6.716,15,15,15s15-6.716,15-15S23.284,0,15,0z M22,20.6L20.6,22L15,16.4L9.4,22L8,20.6l5.6-5.6 L8,9.4L9.4,8l5.6,5.6L20.6,8L22,9.4L16.4,15L22,20.6z" }) });
 }
 
 // src/icons/loading-icon.tsx
 import "react";
-import { jsx as jsx21, jsxs as jsxs8 } from "react/jsx-runtime";
+import { jsx as jsx19, jsxs as jsxs8 } from "react/jsx-runtime";
 function LoadingIcon(props) {
   const { className, ...rest } = props;
   return /* @__PURE__ */ jsxs8("svg", { className: cs("notion-icon", className), ...rest, viewBox: "0 0 24 24", children: [
-    /* @__PURE__ */ jsx21("defs", { children: /* @__PURE__ */ jsxs8(
+    /* @__PURE__ */ jsx19("defs", { children: /* @__PURE__ */ jsxs8(
       "linearGradient",
       {
         x1: "28.1542969%",
@@ -1908,8 +1636,8 @@ function LoadingIcon(props) {
         y2: "17.7832031%",
         id: "linearGradient-1",
         children: [
-          /* @__PURE__ */ jsx21("stop", { stopColor: "rgba(164, 164, 164, 1)", offset: "0%" }),
-          /* @__PURE__ */ jsx21(
+          /* @__PURE__ */ jsx19("stop", { stopColor: "rgba(164, 164, 164, 1)", offset: "0%" }),
+          /* @__PURE__ */ jsx19(
             "stop",
             {
               stopColor: "rgba(164, 164, 164, 0)",
@@ -1920,8 +1648,8 @@ function LoadingIcon(props) {
         ]
       }
     ) }),
-    /* @__PURE__ */ jsx21("g", { id: "Page-1", stroke: "none", strokeWidth: "1", fill: "none", children: /* @__PURE__ */ jsx21("g", { transform: "translate(-236.000000, -286.000000)", children: /* @__PURE__ */ jsxs8("g", { transform: "translate(238.000000, 286.000000)", children: [
-      /* @__PURE__ */ jsx21(
+    /* @__PURE__ */ jsx19("g", { id: "Page-1", stroke: "none", strokeWidth: "1", fill: "none", children: /* @__PURE__ */ jsx19("g", { transform: "translate(-236.000000, -286.000000)", children: /* @__PURE__ */ jsxs8("g", { transform: "translate(238.000000, 286.000000)", children: [
+      /* @__PURE__ */ jsx19(
         "circle",
         {
           id: "Oval-2",
@@ -1932,7 +1660,7 @@ function LoadingIcon(props) {
           r: "10"
         }
       ),
-      /* @__PURE__ */ jsx21(
+      /* @__PURE__ */ jsx19(
         "path",
         {
           d: "M10,2 C4.4771525,2 0,6.4771525 0,12",
@@ -1941,7 +1669,7 @@ function LoadingIcon(props) {
           strokeWidth: "4"
         }
       ),
-      /* @__PURE__ */ jsx21(
+      /* @__PURE__ */ jsx19(
         "rect",
         {
           id: "Rectangle-1",
@@ -1958,8 +1686,8 @@ function LoadingIcon(props) {
 }
 
 // src/components/search-dialog.tsx
-import { Fragment as Fragment4, jsx as jsx22, jsxs as jsxs9 } from "react/jsx-runtime";
-var SearchDialog = class extends React14.Component {
+import { Fragment as Fragment4, jsx as jsx20, jsxs as jsxs9 } from "react/jsx-runtime";
+var SearchDialog = class extends React12.Component {
   constructor(props) {
     super(props);
     __publicField(this, "state", {
@@ -2045,7 +1773,7 @@ var SearchDialog = class extends React14.Component {
         this.setState({ isLoading: false, searchResult, searchError });
       }
     });
-    this._inputRef = React14.createRef();
+    this._inputRef = React12.createRef();
   }
   componentDidMount() {
     this._search = (0, import_lodash.default)(this._searchImpl.bind(this), 1e3);
@@ -2055,9 +1783,9 @@ var SearchDialog = class extends React14.Component {
     const { isOpen, onClose } = this.props;
     const { isLoading, query, searchResult, searchError } = this.state;
     const hasQuery = !!query.trim();
-    return /* @__PURE__ */ jsx22(NotionContextConsumer, { children: (ctx2) => {
+    return /* @__PURE__ */ jsx20(NotionContextConsumer, { children: (ctx2) => {
       const { components, defaultPageIcon, mapPageUrl } = ctx2;
-      return /* @__PURE__ */ jsx22(
+      return /* @__PURE__ */ jsx20(
         components.Modal,
         {
           isOpen,
@@ -2068,8 +1796,8 @@ var SearchDialog = class extends React14.Component {
           onAfterOpen: this._onAfterOpen,
           children: /* @__PURE__ */ jsxs9("div", { className: "quickFindMenu", children: [
             /* @__PURE__ */ jsxs9("div", { className: "searchBar", children: [
-              /* @__PURE__ */ jsx22("div", { className: "inlineIcon", children: isLoading ? /* @__PURE__ */ jsx22(LoadingIcon, { className: "loadingIcon" }) : /* @__PURE__ */ jsx22(SearchIcon, {}) }),
-              /* @__PURE__ */ jsx22(
+              /* @__PURE__ */ jsx20("div", { className: "inlineIcon", children: isLoading ? /* @__PURE__ */ jsx20(LoadingIcon, { className: "loadingIcon" }) : /* @__PURE__ */ jsx20(SearchIcon, {}) }),
+              /* @__PURE__ */ jsx20(
                 "input",
                 {
                   className: "searchInput",
@@ -2079,23 +1807,23 @@ var SearchDialog = class extends React14.Component {
                   onChange: this._onChangeQuery
                 }
               ),
-              query && /* @__PURE__ */ jsx22(
+              query && /* @__PURE__ */ jsx20(
                 "div",
                 {
                   role: "button",
                   className: "clearButton",
                   onClick: this._onClearQuery,
-                  children: /* @__PURE__ */ jsx22(ClearIcon, { className: "clearIcon" })
+                  children: /* @__PURE__ */ jsx20(ClearIcon, { className: "clearIcon" })
                 }
               )
             ] }),
-            hasQuery && searchResult && /* @__PURE__ */ jsx22(Fragment4, { children: searchResult.results.length ? /* @__PURE__ */ jsxs9(
+            hasQuery && searchResult && /* @__PURE__ */ jsx20(Fragment4, { children: searchResult.results.length ? /* @__PURE__ */ jsxs9(
               NotionContextProvider,
               {
                 ...ctx2,
                 recordMap: searchResult.recordMap,
                 children: [
-                  /* @__PURE__ */ jsx22("div", { className: "resultsPane", children: searchResult.results.map((result) => {
+                  /* @__PURE__ */ jsx20("div", { className: "resultsPane", children: searchResult.results.map((result) => {
                     var _a;
                     return /* @__PURE__ */ jsxs9(
                       components.PageLink,
@@ -2107,14 +1835,14 @@ var SearchDialog = class extends React14.Component {
                           searchResult.recordMap
                         ),
                         children: [
-                          /* @__PURE__ */ jsx22(
+                          /* @__PURE__ */ jsx20(
                             PageTitle,
                             {
                               block: result.page,
                               defaultIcon: defaultPageIcon
                             }
                           ),
-                          ((_a = result.highlight) == null ? void 0 : _a.html) && /* @__PURE__ */ jsx22(
+                          ((_a = result.highlight) == null ? void 0 : _a.html) && /* @__PURE__ */ jsx20(
                             "div",
                             {
                               className: "notion-search-result-highlight",
@@ -2128,17 +1856,17 @@ var SearchDialog = class extends React14.Component {
                       result.id
                     );
                   }) }),
-                  /* @__PURE__ */ jsx22("footer", { className: "resultsFooter", children: /* @__PURE__ */ jsxs9("div", { children: [
-                    /* @__PURE__ */ jsx22("span", { className: "resultsCount", children: searchResult.total }),
+                  /* @__PURE__ */ jsx20("footer", { className: "resultsFooter", children: /* @__PURE__ */ jsxs9("div", { children: [
+                    /* @__PURE__ */ jsx20("span", { className: "resultsCount", children: searchResult.total }),
                     searchResult.total === 1 ? " result" : " results"
                   ] }) })
                 ]
               }
             ) : /* @__PURE__ */ jsxs9("div", { className: "noResultsPane", children: [
-              /* @__PURE__ */ jsx22("div", { className: "noResults", children: "No results" }),
-              /* @__PURE__ */ jsx22("div", { className: "noResultsDetail", children: "Try different search terms" })
+              /* @__PURE__ */ jsx20("div", { className: "noResults", children: "No results" }),
+              /* @__PURE__ */ jsx20("div", { className: "noResultsDetail", children: "Try different search terms" })
             ] }) }),
-            hasQuery && !searchResult && searchError && /* @__PURE__ */ jsx22("div", { className: "noResultsPane", children: /* @__PURE__ */ jsx22("div", { className: "noResults", children: "Search error" }) })
+            hasQuery && !searchResult && searchError && /* @__PURE__ */ jsx20("div", { className: "noResultsPane", children: /* @__PURE__ */ jsx20("div", { className: "noResults", children: "Search error" }) })
           ] })
         }
       );
@@ -2147,13 +1875,13 @@ var SearchDialog = class extends React14.Component {
 };
 
 // src/components/header.tsx
-import { Fragment as Fragment5, jsx as jsx23, jsxs as jsxs10 } from "react/jsx-runtime";
+import { Fragment as Fragment5, jsx as jsx21, jsxs as jsxs10 } from "react/jsx-runtime";
 function Header({
   block
 }) {
-  return /* @__PURE__ */ jsx23("header", { className: "notion-header", children: /* @__PURE__ */ jsxs10("div", { className: "notion-nav-header", children: [
-    /* @__PURE__ */ jsx23(Breadcrumbs, { block }),
-    /* @__PURE__ */ jsx23(Search, { block })
+  return /* @__PURE__ */ jsx21("header", { className: "notion-header", children: /* @__PURE__ */ jsxs10("div", { className: "notion-nav-header", children: [
+    /* @__PURE__ */ jsx21(Breadcrumbs, { block }),
+    /* @__PURE__ */ jsx21(Search, { block })
   ] }) });
 }
 function Breadcrumbs({
@@ -2161,14 +1889,14 @@ function Breadcrumbs({
   rootOnly = false
 }) {
   const { recordMap, mapPageUrl, components } = useNotionContext();
-  const breadcrumbs = React15.useMemo(() => {
+  const breadcrumbs = React13.useMemo(() => {
     const tempBreadcrumbs = getPageBreadcrumbs(recordMap, block.id);
     if (rootOnly) {
       return [tempBreadcrumbs == null ? void 0 : tempBreadcrumbs[0]].filter(Boolean);
     }
     return tempBreadcrumbs;
   }, [recordMap, block.id, rootOnly]);
-  return /* @__PURE__ */ jsx23("div", { className: "breadcrumbs", children: breadcrumbs == null ? void 0 : breadcrumbs.map((breadcrumb, index) => {
+  return /* @__PURE__ */ jsx21("div", { className: "breadcrumbs", children: breadcrumbs == null ? void 0 : breadcrumbs.map((breadcrumb, index) => {
     if (!breadcrumb) {
       return null;
     }
@@ -2177,23 +1905,23 @@ function Breadcrumbs({
       pageLink: components.PageLink
     };
     if (breadcrumb.active) {
-      componentMap.pageLink = (props) => /* @__PURE__ */ jsx23("div", { ...props });
+      componentMap.pageLink = (props) => /* @__PURE__ */ jsx21("div", { ...props });
     } else {
       pageLinkProps.href = mapPageUrl(breadcrumb.pageId);
     }
-    return /* @__PURE__ */ jsxs10(React15.Fragment, { children: [
+    return /* @__PURE__ */ jsxs10(React13.Fragment, { children: [
       /* @__PURE__ */ jsxs10(
         componentMap.pageLink,
         {
           className: cs("breadcrumb", breadcrumb.active && "active"),
           ...pageLinkProps,
           children: [
-            breadcrumb.icon && /* @__PURE__ */ jsx23(PageIcon, { className: "icon", block: breadcrumb.block }),
-            breadcrumb.title && /* @__PURE__ */ jsx23("span", { className: "title", children: breadcrumb.title })
+            breadcrumb.icon && /* @__PURE__ */ jsx21(PageIcon, { className: "icon", block: breadcrumb.block }),
+            breadcrumb.title && /* @__PURE__ */ jsx21("span", { className: "title", children: breadcrumb.title })
           ]
         }
       ),
-      index < breadcrumbs.length - 1 && /* @__PURE__ */ jsx23("span", { className: "spacer", children: "/" })
+      index < breadcrumbs.length - 1 && /* @__PURE__ */ jsx21("span", { className: "spacer", children: "/" })
     ] }, breadcrumb.pageId);
   }) }, "breadcrumbs");
 }
@@ -2204,14 +1932,14 @@ function Search({
 }) {
   const { searchNotion, rootPageId, isShowingSearch, onHideSearch } = useNotionContext();
   const onSearchNotion = search || searchNotion;
-  const [isSearchOpen, setIsSearchOpen] = React15.useState(isShowingSearch);
-  React15.useEffect(() => {
+  const [isSearchOpen, setIsSearchOpen] = React13.useState(isShowingSearch);
+  React13.useEffect(() => {
     setIsSearchOpen(isShowingSearch);
   }, [isShowingSearch]);
-  const onOpenSearch = React15.useCallback(() => {
+  const onOpenSearch = React13.useCallback(() => {
     setIsSearchOpen(true);
   }, []);
-  const onCloseSearch = React15.useCallback(() => {
+  const onCloseSearch = React13.useCallback(() => {
     setIsSearchOpen(false);
     if (onHideSearch) {
       onHideSearch();
@@ -2236,12 +1964,12 @@ function Search({
         className: cs("breadcrumb", "button", "notion-search-button"),
         onClick: onOpenSearch,
         children: [
-          /* @__PURE__ */ jsx23(SearchIcon, { className: "searchIcon" }),
-          title && /* @__PURE__ */ jsx23("span", { className: "title", children: title })
+          /* @__PURE__ */ jsx21(SearchIcon, { className: "searchIcon" }),
+          title && /* @__PURE__ */ jsx21("span", { className: "title", children: title })
         ]
       }
     ),
-    isSearchOpen && hasSearch && /* @__PURE__ */ jsx23(
+    isSearchOpen && hasSearch && /* @__PURE__ */ jsx21(
       SearchDialog,
       {
         isOpen: isSearchOpen,
@@ -2253,25 +1981,502 @@ function Search({
   ] });
 }
 
+// src/next.tsx
+import React14 from "react";
+import isEqual from "react-fast-compare";
+import { jsx as jsx22 } from "react/jsx-runtime";
+var wrapNextImage = (NextImage) => {
+  return React14.memo(function ReactNotionXNextImage({
+    src,
+    alt,
+    width,
+    height,
+    className,
+    fill,
+    ...rest
+  }) {
+    if (fill === "undefined") {
+      fill = !(width && height);
+    }
+    return /* @__PURE__ */ jsx22(
+      NextImage,
+      {
+        className,
+        src,
+        alt,
+        width: !fill && width && height ? width : void 0,
+        height: !fill && width && height ? height : void 0,
+        fill,
+        ...rest
+      }
+    );
+  }, isEqual);
+};
+var wrapNextLegacyImage = (NextLegacyImage) => {
+  return React14.memo(function ReactNotionXNextLegacyImage({
+    src,
+    alt,
+    width,
+    height,
+    className,
+    style,
+    layout,
+    ...rest
+  }) {
+    if (!layout) {
+      layout = width && height ? "intrinsic" : "fill";
+    }
+    return /* @__PURE__ */ jsx22(
+      NextLegacyImage,
+      {
+        className,
+        src,
+        alt,
+        width: layout === "intrinsic" && width,
+        height: layout === "intrinsic" && height,
+        objectFit: style == null ? void 0 : style.objectFit,
+        objectPosition: style == null ? void 0 : style.objectPosition,
+        layout,
+        ...rest
+      }
+    );
+  }, isEqual);
+};
+function wrapNextLink(NextLink) {
+  return ({
+    href,
+    as,
+    passHref,
+    prefetch,
+    replace,
+    scroll,
+    shallow,
+    locale,
+    ...linkProps
+  }) => {
+    return /* @__PURE__ */ jsx22(
+      NextLink,
+      {
+        href,
+        as,
+        passHref,
+        prefetch,
+        replace,
+        scroll,
+        shallow,
+        locale,
+        legacyBehavior: true,
+        children: /* @__PURE__ */ jsx22("a", { ...linkProps })
+      }
+    );
+  };
+}
+
+// src/context.tsx
+import { jsx as jsx23 } from "react/jsx-runtime";
+function DefaultLink(props) {
+  return /* @__PURE__ */ jsx23("a", { target: "_blank", rel: "noopener noreferrer", ...props });
+}
+var DefaultLinkMemo = React15.memo(DefaultLink);
+function DefaultPageLink(props) {
+  return /* @__PURE__ */ jsx23("a", { ...props });
+}
+var DefaultPageLinkMemo = React15.memo(DefaultPageLink);
+function DefaultEmbed(props) {
+  return /* @__PURE__ */ jsx23(AssetWrapper, { ...props });
+}
+var DefaultHeader = Header;
+function dummyLink({ href, rel, target, title, ...rest }) {
+  return /* @__PURE__ */ jsx23("span", { ...rest });
+}
+var dummyComponent = (name) => () => {
+  console.warn(
+    `Warning: using empty component "${name}" (you should override this in NotionRenderer.components)`
+  );
+  return null;
+};
+var dummyOverrideFn = (_, defaultValueFn) => defaultValueFn();
+var defaultComponents = {
+  Image: null,
+  // disable custom images by default
+  Link: DefaultLinkMemo,
+  PageLink: DefaultPageLinkMemo,
+  Checkbox,
+  Callout: void 0,
+  // use the built-in callout rendering by default
+  Button: void 0,
+  // use the built-in button rendering by default
+  Code: dummyComponent("Code"),
+  Equation: dummyComponent("Equation"),
+  Collection: dummyComponent("Collection"),
+  Property: void 0,
+  // use the built-in property rendering by default
+  propertyTextValue: dummyOverrideFn,
+  propertySelectValue: dummyOverrideFn,
+  propertyRelationValue: dummyOverrideFn,
+  propertyFormulaValue: dummyOverrideFn,
+  propertyTitleValue: dummyOverrideFn,
+  propertyPersonValue: dummyOverrideFn,
+  propertyFileValue: dummyOverrideFn,
+  propertyCheckboxValue: dummyOverrideFn,
+  propertyUrlValue: dummyOverrideFn,
+  propertyEmailValue: dummyOverrideFn,
+  propertyPhoneNumberValue: dummyOverrideFn,
+  propertyNumberValue: dummyOverrideFn,
+  propertyLastEditedTimeValue: dummyOverrideFn,
+  propertyCreatedTimeValue: dummyOverrideFn,
+  propertyDateValue: dummyOverrideFn,
+  propertyAutoIncrementIdValue: dummyOverrideFn,
+  Pdf: dummyComponent("Pdf"),
+  Tweet: dummyComponent("Tweet"),
+  Modal: dummyComponent("Modal"),
+  Header: DefaultHeader,
+  Embed: DefaultEmbed
+};
+var defaultNotionContext = {
+  recordMap: {
+    block: {},
+    collection: {},
+    collection_view: {},
+    collection_query: {},
+    notion_user: {},
+    signed_urls: {}
+  },
+  components: defaultComponents,
+  mapPageUrl: defaultMapPageUrl(),
+  mapImageUrl: defaultMapImageUrl,
+  searchNotion: void 0,
+  isShowingSearch: false,
+  onHideSearch: void 0,
+  fullPage: false,
+  darkMode: false,
+  previewImages: false,
+  forceCustomImages: false,
+  showCollectionViewDropdown: true,
+  linkTableTitleProperties: true,
+  isLinkCollectionToUrlProperty: false,
+  showTableOfContents: false,
+  minTableOfContentsItems: 3,
+  defaultPageIcon: null,
+  defaultPageCover: null,
+  defaultPageCoverPosition: 0.5,
+  zoom: null
+};
+var ctx = React15.createContext(defaultNotionContext);
+function NotionContextProvider({
+  components: themeComponents = {},
+  children,
+  mapPageUrl,
+  mapImageUrl,
+  rootPageId,
+  ...rest
+}) {
+  for (const key of Object.keys(rest)) {
+    if (rest[key] === void 0) {
+      delete rest[key];
+    }
+  }
+  const wrappedThemeComponents = React15.useMemo(
+    () => ({
+      ...themeComponents
+    }),
+    [themeComponents]
+  );
+  if (wrappedThemeComponents.nextImage && wrappedThemeComponents.nextLegacyImage) {
+    console.warn(
+      "You should not pass both nextImage and nextLegacyImage. Only nextImage component will be used."
+    );
+    wrappedThemeComponents.Image = wrapNextImage(themeComponents.nextImage);
+  } else if (wrappedThemeComponents.nextImage) {
+    wrappedThemeComponents.Image = wrapNextImage(themeComponents.nextImage);
+  } else if (wrappedThemeComponents.nextLegacyImage) {
+    wrappedThemeComponents.Image = wrapNextLegacyImage(
+      themeComponents.nextLegacyImage
+    );
+  }
+  if (wrappedThemeComponents.nextLink) {
+    wrappedThemeComponents.nextLink = wrapNextLink(themeComponents.nextLink);
+  }
+  for (const key of Object.keys(wrappedThemeComponents)) {
+    if (!wrappedThemeComponents[key]) {
+      delete wrappedThemeComponents[key];
+    }
+  }
+  const value = React15.useMemo(
+    () => ({
+      ...defaultNotionContext,
+      ...rest,
+      rootPageId,
+      mapPageUrl: mapPageUrl != null ? mapPageUrl : defaultMapPageUrl(rootPageId),
+      mapImageUrl: mapImageUrl != null ? mapImageUrl : defaultMapImageUrl,
+      components: { ...defaultComponents, ...wrappedThemeComponents }
+    }),
+    [mapImageUrl, mapPageUrl, wrappedThemeComponents, rootPageId, rest]
+  );
+  return /* @__PURE__ */ jsx23(ctx.Provider, { value, children });
+}
+var NotionContextConsumer = ctx.Consumer;
+var useNotionContext = () => {
+  return React15.useContext(ctx);
+};
+
+// src/components/button.tsx
+import { getBlockValue as getBlockValue2 } from "notion-utils";
+import { jsx as jsx24 } from "react/jsx-runtime";
+function Button({
+  block,
+  blockId,
+  className
+}) {
+  var _a, _b, _c, _d, _e;
+  const { recordMap, mapPageUrl } = useNotionContext();
+  const [isSuccess, setIsSuccess] = React16.useState(false);
+  const [isLoading, setIsLoading] = React16.useState(false);
+  if (!block || block.type !== "button") {
+    console.warn("Invalid button block:", { block });
+    return null;
+  }
+  const automationId = (_a = block.format) == null ? void 0 : _a.automation_id;
+  const blockColor = ((_b = block.format) == null ? void 0 : _b.block_color) || "default";
+  const title = (_c = block.properties) == null ? void 0 : _c.title;
+  if (!automationId) {
+    return /* @__PURE__ */ jsx24("div", { className: cs("notion-button-block", blockId), children: /* @__PURE__ */ jsx24(
+      "button",
+      {
+        type: "button",
+        className: cs("notion-button", `notion-${blockColor}`, className),
+        children: title ? /* @__PURE__ */ jsx24(Text, { value: title, block }) : "Button"
+      }
+    ) });
+  }
+  const automation = getBlockValue2(
+    (_d = recordMap.automation) == null ? void 0 : _d[automationId]
+  );
+  if (!automation) {
+    const buttonText2 = title ? getTextContent2(title) : "Button";
+    return /* @__PURE__ */ jsx24("div", { className: cs("notion-button-block", blockId), children: /* @__PURE__ */ jsx24(
+      "button",
+      {
+        type: "button",
+        className: cs("notion-button", `notion-${blockColor}`, className),
+        children: buttonText2
+      }
+    ) });
+  }
+  const buttonText = ((_e = automation.properties) == null ? void 0 : _e.name) || (title ? getTextContent2(title) : "Button");
+  const handleClick = async (e) => {
+    e.preventDefault();
+    if (isLoading) return;
+    setIsSuccess(false);
+    setIsLoading(true);
+    try {
+      await executeAction();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const executeAction = async () => {
+    var _a2, _b2, _c2, _d2, _e2, _f, _g, _h, _i, _j;
+    const firstActionId = (_a2 = automation.action_ids) == null ? void 0 : _a2[0];
+    if (!firstActionId) {
+      console.warn("No actions defined for automation:", automationId);
+      return;
+    }
+    const actionData = getBlockValue2(
+      (_b2 = recordMap.automation_action) == null ? void 0 : _b2[firstActionId]
+    );
+    if (!actionData) {
+      console.warn("No action data found for ID:", firstActionId);
+      return;
+    }
+    switch (actionData.type) {
+      case "open_page": {
+        const target = (_c2 = actionData.config) == null ? void 0 : _c2.target;
+        if ((target == null ? void 0 : target.type) === "url" && target.url) {
+          window.open(target.url, "_blank", "noopener,noreferrer");
+        } else if ((target == null ? void 0 : target.type) === "page" && target.pageId) {
+          const pageUrl = mapPageUrl(target.pageId);
+          if (pageUrl) {
+            window.location.href = pageUrl;
+          }
+        }
+        break;
+      }
+      case "send_webhook":
+      case "http_request": {
+        const webhookUrl = (_e2 = (_d2 = actionData.config) == null ? void 0 : _d2.url) == null ? void 0 : _e2.trim();
+        if (webhookUrl) {
+          try {
+            if (typeof window !== "undefined" && "/api/webhook-proxy") {
+              const pageBlockId = Object.keys(recordMap.block || {}).find(
+                (id) => {
+                  var _a3;
+                  const b = (_a3 = recordMap.block[id]) == null ? void 0 : _a3.value;
+                  return b && "type" in b && b.type === "page";
+                }
+              );
+              const pageBlock = pageBlockId ? (_f = recordMap.block[pageBlockId]) == null ? void 0 : _f.value : null;
+              if (!pageBlock) {
+                console.warn("No page block found for webhook payload");
+                return;
+              }
+              const payload = {
+                source: {
+                  type: "automation",
+                  automation_id: automationId,
+                  action_id: actionData.id,
+                  event_id: crypto.randomUUID(),
+                  user_id: pageBlock.created_by_id || "unknown",
+                  attempt: 1
+                },
+                data: {
+                  object: "page",
+                  id: pageBlock.id,
+                  created_time: new Date(pageBlock.created_time).toISOString(),
+                  last_edited_time: new Date(
+                    pageBlock.last_edited_time
+                  ).toISOString(),
+                  created_by: {
+                    object: "user",
+                    id: pageBlock.created_by_id || "unknown"
+                  },
+                  last_edited_by: {
+                    object: "user",
+                    id: pageBlock.last_edited_by_id || "unknown"
+                  },
+                  cover: ((_g = pageBlock.format) == null ? void 0 : _g.page_cover) ? {
+                    type: "external",
+                    external: {
+                      url: pageBlock.format.page_cover.startsWith("/") ? `https://www.notion.so${pageBlock.format.page_cover}` : pageBlock.format.page_cover
+                    }
+                  } : null,
+                  icon: ((_h = pageBlock.format) == null ? void 0 : _h.page_icon) ? {
+                    type: "external",
+                    external: { url: pageBlock.format.page_icon }
+                  } : null,
+                  parent: {
+                    type: "workspace",
+                    workspace: true
+                  },
+                  archived: !pageBlock.alive,
+                  in_trash: false,
+                  is_locked: false,
+                  properties: {
+                    title: {
+                      id: "title",
+                      type: "title",
+                      title: ((_i = pageBlock.properties) == null ? void 0 : _i.title) ? pageBlock.properties.title.map((t) => {
+                        const text = typeof t === "string" ? t : t[0] || "";
+                        return {
+                          type: "text",
+                          text: { content: text, link: null },
+                          annotations: {
+                            bold: false,
+                            italic: false,
+                            strikethrough: false,
+                            underline: false,
+                            code: false,
+                            color: "default"
+                          },
+                          plain_text: text,
+                          href: null
+                        };
+                      }) : []
+                    }
+                  },
+                  url: `https://www.notion.so/${pageBlock.id}`,
+                  public_url: window.location.href,
+                  request_id: crypto.randomUUID()
+                }
+              };
+              const headers = {
+                "Content-Type": "application/json"
+              };
+              if ((_j = actionData.config) == null ? void 0 : _j.customHeaders) {
+                for (const header of actionData.config.customHeaders) {
+                  headers[header.key] = header.value;
+                }
+              }
+              console.log("Sending webhook:", {
+                url: webhookUrl,
+                payload,
+                headers
+              });
+              const response = await fetch("/api/webhook-proxy", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ url: webhookUrl, payload, headers })
+              });
+              const result = await response.json();
+              if (!response.ok || !result.success) {
+                console.error("Webhook request failed:", result);
+              } else {
+                console.log("Webhook sent successfully:", result);
+                setIsSuccess(true);
+                setTimeout(() => setIsSuccess(false), 2e3);
+              }
+            } else {
+              console.warn(
+                "Webhook functionality requires /api/webhook-proxy endpoint"
+              );
+            }
+          } catch (err) {
+            console.error("Error sending webhook:", err);
+          }
+        }
+        break;
+      }
+      default:
+        console.warn("Unsupported action type:", actionData.type);
+    }
+  };
+  return /* @__PURE__ */ jsx24("div", { className: cs("notion-button-block", blockId), children: /* @__PURE__ */ jsx24(
+    "button",
+    {
+      type: "button",
+      className: cs(
+        "notion-button",
+        `notion-${blockColor}`,
+        isSuccess ? "notion-success" : "",
+        className
+      ),
+      onClick: handleClick,
+      title: buttonText,
+      disabled: isLoading,
+      children: buttonText
+    }
+  ) });
+}
+function getTextContent2(text) {
+  return text.map((t) => typeof t === "string" ? t : t[0] || "").join("");
+}
+
 // src/renderer.tsx
 import mediumZoom from "@fisch0920/medium-zoom";
 import "notion-types";
-import * as React20 from "react";
+import { getBlockValue as getBlockValue5 } from "notion-utils";
+import * as React22 from "react";
 
 // src/block.tsx
 import {
   getBlockCollectionId,
   getBlockIcon as getBlockIcon2,
   getBlockParentPage as getBlockParentPage2,
+  getBlockValue as getBlockValue4,
+  getListNestingLevel,
+  getListNumber,
+  getListStyle,
   getPageTableOfContents,
-  getTextContent as getTextContent2,
-  uuidToId as uuidToId2
+  getTextContent as getTextContent4,
+  uuidToId as uuidToId3
 } from "notion-utils";
-import React19 from "react";
+import React21 from "react";
 
 // src/components/audio.tsx
 import "notion-types";
-import { jsx as jsx24 } from "react/jsx-runtime";
+import { jsx as jsx25 } from "react/jsx-runtime";
 function Audio({
   block,
   className
@@ -2287,7 +2492,7 @@ function Audio({
     url.searchParams.set("spaceId", block.space_id);
     source = url.toString();
   }
-  return /* @__PURE__ */ jsx24("div", { className: cs("notion-audio", className), children: /* @__PURE__ */ jsx24("audio", { controls: true, preload: "none", src: source }) });
+  return /* @__PURE__ */ jsx25("div", { className: cs("notion-audio", className), children: /* @__PURE__ */ jsx25("audio", { controls: true, preload: "none", src: source }) });
 }
 
 // src/components/file.tsx
@@ -2295,14 +2500,14 @@ import "notion-types";
 
 // src/icons/file-icon.tsx
 import "react";
-import { jsx as jsx25 } from "react/jsx-runtime";
+import { jsx as jsx26 } from "react/jsx-runtime";
 function FileIcon(props) {
   const { className, ...rest } = props;
-  return /* @__PURE__ */ jsx25("svg", { className, ...rest, viewBox: "0 0 30 30", children: /* @__PURE__ */ jsx25("path", { d: "M22,8v12c0,3.866-3.134,7-7,7s-7-3.134-7-7V8c0-2.762,2.238-5,5-5s5,2.238,5,5v12c0,1.657-1.343,3-3,3s-3-1.343-3-3V8h-2v12c0,2.762,2.238,5,5,5s5-2.238,5-5V8c0-3.866-3.134-7-7-7S6,4.134,6,8v12c0,4.971,4.029,9,9,9s9-4.029,9-9V8H22z" }) });
+  return /* @__PURE__ */ jsx26("svg", { className, ...rest, viewBox: "0 0 30 30", children: /* @__PURE__ */ jsx26("path", { d: "M22,8v12c0,3.866-3.134,7-7,7s-7-3.134-7-7V8c0-2.762,2.238-5,5-5s5,2.238,5,5v12c0,1.657-1.343,3-3,3s-3-1.343-3-3V8h-2v12c0,2.762,2.238,5,5,5s5-2.238,5-5V8c0-3.866-3.134-7-7-7S6,4.134,6,8v12c0,4.971,4.029,9,9,9s9-4.029,9-9V8H22z" }) });
 }
 
 // src/components/file.tsx
-import { jsx as jsx26, jsxs as jsxs11 } from "react/jsx-runtime";
+import { jsx as jsx27, jsxs as jsxs11 } from "react/jsx-runtime";
 function File({
   block,
   className
@@ -2318,7 +2523,7 @@ function File({
     url.searchParams.set("spaceId", block.space_id);
     source = url.toString();
   }
-  return /* @__PURE__ */ jsx26("div", { className: cs("notion-file", className), children: /* @__PURE__ */ jsxs11(
+  return /* @__PURE__ */ jsx27("div", { className: cs("notion-file", className), children: /* @__PURE__ */ jsxs11(
     components.Link,
     {
       className: "notion-file-link",
@@ -2326,10 +2531,10 @@ function File({
       target: "_blank",
       rel: "noopener noreferrer",
       children: [
-        /* @__PURE__ */ jsx26(FileIcon, { className: "notion-file-icon" }),
+        /* @__PURE__ */ jsx27(FileIcon, { className: "notion-file-icon" }),
         /* @__PURE__ */ jsxs11("div", { className: "notion-file-info", children: [
-          /* @__PURE__ */ jsx26("div", { className: "notion-file-title", children: /* @__PURE__ */ jsx26(Text, { value: ((_d = block.properties) == null ? void 0 : _d.title) || [["File"]], block }) }),
-          ((_e = block.properties) == null ? void 0 : _e.size) && /* @__PURE__ */ jsx26("div", { className: "notion-file-size", children: /* @__PURE__ */ jsx26(Text, { value: block.properties.size, block }) })
+          /* @__PURE__ */ jsx27("div", { className: "notion-file-title", children: /* @__PURE__ */ jsx27(Text, { value: ((_d = block.properties) == null ? void 0 : _d.title) || [["File"]], block }) }),
+          ((_e = block.properties) == null ? void 0 : _e.size) && /* @__PURE__ */ jsx27("div", { className: "notion-file-size", children: /* @__PURE__ */ jsx27(Text, { value: block.properties.size, block }) })
         ] })
       ]
     }
@@ -2338,7 +2543,7 @@ function File({
 
 // src/components/google-drive.tsx
 import "notion-types";
-import { jsx as jsx27, jsxs as jsxs12 } from "react/jsx-runtime";
+import { jsx as jsx28, jsxs as jsxs12 } from "react/jsx-runtime";
 function GoogleDrive({
   block,
   className
@@ -2353,7 +2558,7 @@ function GoogleDrive({
     domain = url.hostname;
   } catch (e) {
   }
-  return /* @__PURE__ */ jsx27("div", { className: cs("notion-google-drive", className), children: /* @__PURE__ */ jsxs12(
+  return /* @__PURE__ */ jsx28("div", { className: cs("notion-google-drive", className), children: /* @__PURE__ */ jsxs12(
     components.Link,
     {
       className: "notion-google-drive-link",
@@ -2361,7 +2566,7 @@ function GoogleDrive({
       target: "_blank",
       rel: "noopener noreferrer",
       children: [
-        /* @__PURE__ */ jsx27("div", { className: "notion-google-drive-preview", children: /* @__PURE__ */ jsx27(
+        /* @__PURE__ */ jsx28("div", { className: "notion-google-drive-preview", children: /* @__PURE__ */ jsx28(
           GracefulImage,
           {
             src: mapImageUrl(properties.thumbnail, block),
@@ -2370,9 +2575,9 @@ function GoogleDrive({
           }
         ) }),
         /* @__PURE__ */ jsxs12("div", { className: "notion-google-drive-body", children: [
-          properties.title && /* @__PURE__ */ jsx27("div", { className: "notion-google-drive-body-title", children: properties.title }),
+          properties.title && /* @__PURE__ */ jsx28("div", { className: "notion-google-drive-body-title", children: properties.title }),
           properties.icon && domain && /* @__PURE__ */ jsxs12("div", { className: "notion-google-drive-body-source", children: [
-            properties.icon && /* @__PURE__ */ jsx27(
+            properties.icon && /* @__PURE__ */ jsx28(
               "div",
               {
                 className: "notion-google-drive-body-source-icon",
@@ -2381,7 +2586,7 @@ function GoogleDrive({
                 }
               }
             ),
-            domain && /* @__PURE__ */ jsx27("div", { className: "notion-google-drive-body-source-domain", children: domain })
+            domain && /* @__PURE__ */ jsx28("div", { className: "notion-google-drive-body-source-domain", children: domain })
           ] })
         ] })
       ]
@@ -2392,8 +2597,8 @@ function GoogleDrive({
 // src/components/page-aside.tsx
 var import_lodash2 = __toESM(require_lodash(), 1);
 import { uuidToId } from "notion-utils";
-import React17 from "react";
-import { jsx as jsx28, jsxs as jsxs13 } from "react/jsx-runtime";
+import React18 from "react";
+import { jsx as jsx29, jsxs as jsxs13 } from "react/jsx-runtime";
 function PageAside({
   toc,
   activeSection,
@@ -2404,7 +2609,7 @@ function PageAside({
   className
 }) {
   const throttleMs = 100;
-  const actionSectionScrollSpy = React17.useMemo(
+  const actionSectionScrollSpy = React18.useMemo(
     () => (0, import_lodash2.default)(() => {
       const sections = document.getElementsByClassName("notion-h");
       let prevBBox = null;
@@ -2426,13 +2631,12 @@ function PageAside({
       }
       setActiveSection(currentSectionId);
     }, throttleMs),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       // explicitly not taking a dependency on activeSection
       setActiveSection
     ]
   );
-  React17.useEffect(() => {
+  React18.useEffect(() => {
     if (!hasToc) {
       return;
     }
@@ -2447,10 +2651,10 @@ function PageAside({
   }
   return /* @__PURE__ */ jsxs13("aside", { className: cs("notion-aside", className), children: [
     hasToc && /* @__PURE__ */ jsxs13("div", { className: "notion-aside-table-of-contents", children: [
-      /* @__PURE__ */ jsx28("div", { className: "notion-aside-table-of-contents-header", children: "Table of Contents" }),
-      /* @__PURE__ */ jsx28("nav", { className: "notion-table-of-contents", children: toc.map((tocItem) => {
+      /* @__PURE__ */ jsx29("div", { className: "notion-aside-table-of-contents-header", children: "Table of Contents" }),
+      /* @__PURE__ */ jsx29("nav", { className: "notion-table-of-contents", children: toc.map((tocItem) => {
         const id = uuidToId(tocItem.id);
-        return /* @__PURE__ */ jsx28(
+        return /* @__PURE__ */ jsx29(
           "a",
           {
             href: `#${id}`,
@@ -2459,7 +2663,7 @@ function PageAside({
               `notion-table-of-contents-item-indent-level-${tocItem.indentLevel}`,
               activeSection === id && "notion-table-of-contents-active-item"
             ),
-            children: /* @__PURE__ */ jsx28(
+            children: /* @__PURE__ */ jsx29(
               "span",
               {
                 className: "notion-table-of-contents-item-body",
@@ -2481,7 +2685,7 @@ function PageAside({
 
 // src/components/sync-pointer-block.tsx
 import "notion-types";
-import { jsx as jsx29 } from "react/jsx-runtime";
+import { jsx as jsx30 } from "react/jsx-runtime";
 function SyncPointerBlock({
   block,
   level
@@ -2498,7 +2702,7 @@ function SyncPointerBlock({
   if (!referencePointerId) {
     return null;
   }
-  return /* @__PURE__ */ jsx29(
+  return /* @__PURE__ */ jsx30(
     NotionBlockRenderer,
     {
       level,
@@ -2508,12 +2712,162 @@ function SyncPointerBlock({
   );
 }
 
+// src/components/tab-block.tsx
+import { getBlockValue as getBlockValue3, getTextContent as getTextContent3, uuidToId as uuidToId2 } from "notion-utils";
+import React19 from "react";
+import { jsx as jsx31, jsxs as jsxs14 } from "react/jsx-runtime";
+function TabBlock(props) {
+  var _a, _b;
+  const { recordMap } = useNotionContext();
+  const { block, blockId, level, ...forwardProps } = props;
+  const tabIds = (_a = block.content) != null ? _a : [];
+  const [activeIndex, setActiveIndex] = React19.useState(0);
+  const tabScrollRef = React19.useRef(null);
+  const [scrollFadeLeft, setScrollFadeLeft] = React19.useState(false);
+  const [scrollFadeRight, setScrollFadeRight] = React19.useState(false);
+  const updateTabScrollFades = React19.useCallback(() => {
+    const el = tabScrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const maxScroll = scrollWidth - clientWidth;
+    const epsilon = 1;
+    setScrollFadeLeft(scrollLeft > epsilon);
+    setScrollFadeRight(maxScroll > epsilon && scrollLeft < maxScroll - epsilon);
+  }, []);
+  React19.useLayoutEffect(() => {
+    updateTabScrollFades();
+  }, [tabIds, updateTabScrollFades]);
+  React19.useEffect(() => {
+    const el = tabScrollRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => updateTabScrollFades());
+    ro.observe(el);
+    const list = el.firstElementChild;
+    if (list) ro.observe(list);
+    window.addEventListener("resize", updateTabScrollFades);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", updateTabScrollFades);
+    };
+  }, [tabIds, updateTabScrollFades]);
+  React19.useEffect(() => {
+    if (!tabIds.length) return;
+    setActiveIndex((i) => Math.min(i, tabIds.length - 1));
+  }, [tabIds.length]);
+  const renderSubtree = (childBlockId, lvl) => {
+    var _a2;
+    const b = getBlockValue3(recordMap.block[childBlockId]);
+    if (!b) return null;
+    return /* @__PURE__ */ jsx31(Block, { ...forwardProps, block: b, level: lvl, children: (_a2 = b.content) == null ? void 0 : _a2.map((cid) => renderSubtree(cid, lvl + 1)) }, childBlockId);
+  };
+  if (!tabIds.length) {
+    return /* @__PURE__ */ jsx31("div", { className: cs("notion-tab-block", "notion-blank", blockId) });
+  }
+  const safeIndex = Math.min(activeIndex, tabIds.length - 1);
+  const activeTabId = tabIds[safeIndex];
+  if (!activeTabId) {
+    return /* @__PURE__ */ jsx31("div", { className: cs("notion-tab-block", "notion-blank", blockId) });
+  }
+  const activeTabBlock = getBlockValue3(recordMap.block[activeTabId]);
+  const panelBlocks = (_b = activeTabBlock == null ? void 0 : activeTabBlock.content) != null ? _b : [];
+  const baseId = `notion-tab-${uuidToId2(block.id)}`;
+  return /* @__PURE__ */ jsx31(
+    "div",
+    {
+      className: cs("notion-selectable", "notion-tab-block", blockId),
+      "data-block-id": uuidToId2(block.id),
+      dir: "ltr",
+      children: /* @__PURE__ */ jsxs14("div", { className: "notion-tab-block-inner", children: [
+        /* @__PURE__ */ jsxs14("div", { className: "notion-tab-header-row", children: [
+          /* @__PURE__ */ jsxs14("div", { className: "notion-tab-scroll-host", children: [
+            /* @__PURE__ */ jsx31(
+              "div",
+              {
+                ref: tabScrollRef,
+                className: "notion-tab-scroll",
+                onScroll: updateTabScrollFades,
+                children: /* @__PURE__ */ jsx31(
+                  "div",
+                  {
+                    role: "tablist",
+                    "aria-label": "Tab block",
+                    className: "notion-tab-list-inner",
+                    children: tabIds.map((tabId, i) => {
+                      var _a2;
+                      const tabLabelBlock = getBlockValue3(recordMap.block[tabId]);
+                      const rawTitle = tabLabelBlock ? getTextContent3((_a2 = tabLabelBlock.properties) == null ? void 0 : _a2.title) : "";
+                      const label = rawTitle.trim() !== "" ? rawTitle : `Tab ${i + 1}`;
+                      const isSelected = i === safeIndex;
+                      return /* @__PURE__ */ jsx31("div", { className: "notion-tab-pill-wrap", children: /* @__PURE__ */ jsx31(
+                        "button",
+                        {
+                          type: "button",
+                          role: "tab",
+                          id: `${baseId}-tab-${i}`,
+                          "aria-selected": isSelected,
+                          "aria-controls": `${baseId}-panel`,
+                          "aria-posinset": i + 1,
+                          "aria-setsize": tabIds.length,
+                          tabIndex: isSelected ? 0 : -1,
+                          onClick: () => setActiveIndex(i),
+                          className: cs(
+                            "notion-tab-button",
+                            isSelected && "notion-tab-button-active"
+                          ),
+                          children: /* @__PURE__ */ jsx31("span", { className: "notion-tab-button-label notranslate", children: label })
+                        }
+                      ) }, tabId);
+                    })
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsx31(
+              "div",
+              {
+                className: cs(
+                  "notion-tab-scroll-fade notion-tab-scroll-fade-left",
+                  scrollFadeLeft && "notion-tab-scroll-fade-visible"
+                ),
+                "aria-hidden": true
+              }
+            ),
+            /* @__PURE__ */ jsx31(
+              "div",
+              {
+                className: cs(
+                  "notion-tab-scroll-fade notion-tab-scroll-fade-right",
+                  scrollFadeRight && "notion-tab-scroll-fade-visible"
+                ),
+                "aria-hidden": true
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsx31("div", { className: "notion-tab-add-placeholder", "aria-hidden": true })
+        ] }),
+        /* @__PURE__ */ jsx31(
+          "div",
+          {
+            role: "tabpanel",
+            id: `${baseId}-panel`,
+            "aria-labelledby": `${baseId}-tab-${safeIndex}`,
+            className: "notion-tab-panel",
+            children: panelBlocks.map(
+              (childId) => renderSubtree(childId, level + 1)
+            )
+          }
+        )
+      ] })
+    }
+  );
+}
+
 // src/icons/link-icon.tsx
 import "react";
-import { jsx as jsx30 } from "react/jsx-runtime";
+import { jsx as jsx32 } from "react/jsx-runtime";
 function LinkIcon(props) {
   const { className, ...rest } = props;
-  return /* @__PURE__ */ jsx30(
+  return /* @__PURE__ */ jsx32(
     "svg",
     {
       className,
@@ -2521,7 +2875,7 @@ function LinkIcon(props) {
       viewBox: "0 0 16 16",
       width: "16",
       height: "16",
-      children: /* @__PURE__ */ jsx30(
+      children: /* @__PURE__ */ jsx32(
         "path",
         {
           fillRule: "evenodd",
@@ -2533,11 +2887,11 @@ function LinkIcon(props) {
 }
 
 // src/block.tsx
-import { Fragment as Fragment6, jsx as jsx31, jsxs as jsxs14 } from "react/jsx-runtime";
+import { Fragment as Fragment6, jsx as jsx33, jsxs as jsxs15 } from "react/jsx-runtime";
 var tocIndentLevelCache = {};
 var pageCoverStyleCache = {};
 function Block(props) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O;
   const ctx2 = useNotionContext();
   const {
     components,
@@ -2552,7 +2906,7 @@ function Block(props) {
     defaultPageCover,
     defaultPageCoverPosition
   } = ctx2;
-  const [activeSection, setActiveSection] = React19.useState(null);
+  const [activeSection, setActiveSection] = React21.useState(null);
   const {
     block,
     children,
@@ -2576,7 +2930,7 @@ function Block(props) {
     ;
     block.type = "collection_view_page";
   }
-  const blockId = hideBlockId ? "notion-block" : `notion-block-${uuidToId2(block.id)}`;
+  const blockId = hideBlockId ? "notion-block" : `notion-block-${uuidToId3(block.id)}`;
   switch (block.type) {
     case "collection_view_page":
     // fallthrough
@@ -2591,7 +2945,9 @@ function Block(props) {
         } = block.format || {};
         if (fullPage) {
           const properties = block.type === "page" ? block.properties : {
-            title: (_b = (_a = recordMap.collection[getBlockCollectionId(block, recordMap)]) == null ? void 0 : _a.value) == null ? void 0 : _b.name
+            title: (_a = getBlockValue4(
+              recordMap.collection[getBlockCollectionId(block, recordMap)]
+            )) == null ? void 0 : _a.name
           };
           const coverPosition = (1 - (page_cover_position || 0.5)) * 100;
           const pageCoverObjectPosition = `center ${coverPosition}%`;
@@ -2601,7 +2957,7 @@ function Block(props) {
               objectPosition: pageCoverObjectPosition
             };
           }
-          const pageIcon = (_c = getBlockIcon2(block, recordMap)) != null ? _c : defaultPageIcon;
+          const pageIcon = (_b = getBlockIcon2(block, recordMap)) != null ? _b : defaultPageIcon;
           const isPageIconUrl = pageIcon && isUrl(pageIcon);
           const toc = getPageTableOfContents(
             block,
@@ -2610,7 +2966,7 @@ function Block(props) {
           const hasToc = showTableOfContents && toc.length >= minTableOfContentsItems;
           const hasAside = !!((hasToc || pageAside) && !page_full_width);
           const hasPageCover = !!(pageCover || page_cover);
-          return /* @__PURE__ */ jsxs14(
+          return /* @__PURE__ */ jsxs15(
             "div",
             {
               className: cs(
@@ -2621,22 +2977,22 @@ function Block(props) {
                 className
               ),
               children: [
-                /* @__PURE__ */ jsx31("div", { className: "notion-viewport" }),
-                /* @__PURE__ */ jsxs14("div", { className: "notion-frame", children: [
-                  !disableHeader && /* @__PURE__ */ jsx31(components.Header, { block }),
+                /* @__PURE__ */ jsx33("div", { className: "notion-viewport" }),
+                /* @__PURE__ */ jsxs15("div", { className: "notion-frame", children: [
+                  !disableHeader && /* @__PURE__ */ jsx33(components.Header, { block }),
                   header,
-                  /* @__PURE__ */ jsxs14("div", { className: "notion-page-scroller", children: [
-                    hasPageCover && (pageCover != null ? pageCover : /* @__PURE__ */ jsx31("div", { className: "notion-page-cover-wrapper", children: /* @__PURE__ */ jsx31(
+                  /* @__PURE__ */ jsxs15("div", { className: "notion-page-scroller", children: [
+                    hasPageCover && (pageCover != null ? pageCover : /* @__PURE__ */ jsx33("div", { className: "notion-page-cover-wrapper", children: /* @__PURE__ */ jsx33(
                       LazyImage,
                       {
                         src: mapImageUrl(page_cover, block),
-                        alt: getTextContent2(properties == null ? void 0 : properties.title),
+                        alt: getTextContent4(properties == null ? void 0 : properties.title),
                         priority: true,
                         className: "notion-page-cover",
                         style: pageCoverStyle
                       }
                     ) })),
-                    /* @__PURE__ */ jsxs14(
+                    /* @__PURE__ */ jsxs15(
                       "main",
                       {
                         className: cs(
@@ -2650,7 +3006,7 @@ function Block(props) {
                           bodyClassName
                         ),
                         children: [
-                          page_icon && /* @__PURE__ */ jsx31(
+                          page_icon && /* @__PURE__ */ jsx33(
                             PageIcon,
                             {
                               block,
@@ -2659,9 +3015,9 @@ function Block(props) {
                             }
                           ),
                           pageHeader,
-                          /* @__PURE__ */ jsx31("h1", { className: "notion-title", children: pageTitle != null ? pageTitle : /* @__PURE__ */ jsx31(Text, { value: properties == null ? void 0 : properties.title, block }) }),
-                          (block.type === "collection_view_page" || block.type === "page" && block.parent_table === "collection") && /* @__PURE__ */ jsx31(components.Collection, { block, ctx: ctx2 }),
-                          block.type !== "collection_view_page" && /* @__PURE__ */ jsxs14(
+                          /* @__PURE__ */ jsx33("h1", { className: "notion-title", children: pageTitle != null ? pageTitle : /* @__PURE__ */ jsx33(Text, { value: properties == null ? void 0 : properties.title, block }) }),
+                          (block.type === "collection_view_page" || block.type === "page" && block.parent_table === "collection") && /* @__PURE__ */ jsx33(components.Collection, { block, ctx: ctx2 }),
+                          block.type !== "collection_view_page" && /* @__PURE__ */ jsxs15(
                             "div",
                             {
                               className: cs(
@@ -2670,8 +3026,8 @@ function Block(props) {
                                 hasToc && "notion-page-content-has-toc"
                               ),
                               children: [
-                                /* @__PURE__ */ jsx31("article", { className: "notion-page-content-inner", children }),
-                                hasAside && /* @__PURE__ */ jsx31(
+                                /* @__PURE__ */ jsx33("article", { className: "notion-page-content-inner", children }),
+                                hasAside && /* @__PURE__ */ jsx33(
                                   PageAside,
                                   {
                                     toc,
@@ -2696,7 +3052,7 @@ function Block(props) {
             }
           );
         } else {
-          return /* @__PURE__ */ jsxs14(
+          return /* @__PURE__ */ jsxs15(
             "main",
             {
               className: cs(
@@ -2710,9 +3066,9 @@ function Block(props) {
                 bodyClassName
               ),
               children: [
-                /* @__PURE__ */ jsx31("div", { className: "notion-viewport" }),
+                /* @__PURE__ */ jsx33("div", { className: "notion-viewport" }),
                 pageHeader,
-                (block.type === "collection_view_page" || block.type === "page" && block.parent_table === "collection") && /* @__PURE__ */ jsx31(components.Collection, { block, ctx: ctx2 }),
+                (block.type === "collection_view_page" || block.type === "page" && block.parent_table === "collection") && /* @__PURE__ */ jsx33(components.Collection, { block, ctx: ctx2 }),
                 block.type !== "collection_view_page" && children,
                 pageFooter
               ]
@@ -2720,8 +3076,8 @@ function Block(props) {
           );
         }
       } else {
-        const blockColor = (_d = block.format) == null ? void 0 : _d.block_color;
-        return /* @__PURE__ */ jsx31(
+        const blockColor = (_c = block.format) == null ? void 0 : _c.block_color;
+        return /* @__PURE__ */ jsx33(
           components.PageLink,
           {
             className: cs(
@@ -2730,7 +3086,7 @@ function Block(props) {
               blockId
             ),
             href: mapPageUrl(block.id),
-            children: /* @__PURE__ */ jsx31(PageTitle, { block })
+            children: /* @__PURE__ */ jsx33(PageTitle, { block })
           }
         );
       }
@@ -2738,11 +3094,13 @@ function Block(props) {
     // fallthrough
     case "sub_header":
     // fallthrough
-    case "sub_sub_header": {
+    case "sub_sub_header":
+    // fallthrough
+    case "header_4": {
       if (!block.properties) return null;
-      const blockColor = (_e = block.format) == null ? void 0 : _e.block_color;
-      const id = uuidToId2(block.id);
-      const title = getTextContent2(block.properties.title) || `Notion Header ${id}`;
+      const blockColor = (_d = block.format) == null ? void 0 : _d.block_color;
+      const id = uuidToId3(block.id);
+      const title = getTextContent4(block.properties.title) || `Notion Header ${id}`;
       let indentLevel = tocIndentLevelCache[block.id];
       let indentLevelClass;
       if (indentLevel === void 0) {
@@ -2762,44 +3120,48 @@ function Block(props) {
       const isH1 = block.type === "header";
       const isH2 = block.type === "sub_header";
       const isH3 = block.type === "sub_sub_header";
+      const isH4 = block.type === "header_4";
       const classNameStr = cs(
         isH1 && "notion-h notion-h1",
         isH2 && "notion-h notion-h2",
         isH3 && "notion-h notion-h3",
+        isH4 && "notion-h notion-h4",
         blockColor && `notion-${blockColor}`,
         indentLevelClass,
         blockId
       );
-      const innerHeader = /* @__PURE__ */ jsxs14("span", { children: [
-        /* @__PURE__ */ jsx31("div", { id, className: "notion-header-anchor" }),
-        !((_f = block.format) == null ? void 0 : _f.toggleable) && /* @__PURE__ */ jsx31("a", { className: "notion-hash-link", href: `#${id}`, title, children: /* @__PURE__ */ jsx31(LinkIcon, {}) }),
-        /* @__PURE__ */ jsx31("span", { className: "notion-h-title", children: /* @__PURE__ */ jsx31(Text, { value: block.properties.title, block }) })
+      const innerHeader = /* @__PURE__ */ jsxs15("span", { children: [
+        /* @__PURE__ */ jsx33("div", { id, className: "notion-header-anchor" }),
+        !((_e = block.format) == null ? void 0 : _e.toggleable) && /* @__PURE__ */ jsx33("a", { className: "notion-hash-link", href: `#${id}`, title, children: /* @__PURE__ */ jsx33(LinkIcon, {}) }),
+        /* @__PURE__ */ jsx33("span", { className: "notion-h-title", children: /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }) })
       ] });
       let headerBlock = null;
       if (isH1) {
-        headerBlock = /* @__PURE__ */ jsx31("h2", { className: classNameStr, "data-id": id, children: innerHeader });
+        headerBlock = /* @__PURE__ */ jsx33("h2", { className: classNameStr, "data-id": id, children: innerHeader });
       } else if (isH2) {
-        headerBlock = /* @__PURE__ */ jsx31("h3", { className: classNameStr, "data-id": id, children: innerHeader });
+        headerBlock = /* @__PURE__ */ jsx33("h3", { className: classNameStr, "data-id": id, children: innerHeader });
+      } else if (isH3) {
+        headerBlock = /* @__PURE__ */ jsx33("h4", { className: classNameStr, "data-id": id, children: innerHeader });
       } else {
-        headerBlock = /* @__PURE__ */ jsx31("h4", { className: classNameStr, "data-id": id, children: innerHeader });
+        headerBlock = /* @__PURE__ */ jsx33("h5", { className: classNameStr, "data-id": id, children: innerHeader });
       }
-      if ((_g = block.format) == null ? void 0 : _g.toggleable) {
-        return /* @__PURE__ */ jsxs14("details", { className: cs("notion-toggle", blockId), children: [
-          /* @__PURE__ */ jsx31("summary", { children: headerBlock }),
-          /* @__PURE__ */ jsx31("div", { children })
+      if ((_f = block.format) == null ? void 0 : _f.toggleable) {
+        return /* @__PURE__ */ jsxs15("details", { className: cs("notion-toggle", blockId), children: [
+          /* @__PURE__ */ jsx33("summary", { children: headerBlock }),
+          /* @__PURE__ */ jsx33("div", { children })
         ] });
       } else {
         return headerBlock;
       }
     }
     case "divider":
-      return /* @__PURE__ */ jsx31("hr", { className: cs("notion-hr", blockId) });
+      return /* @__PURE__ */ jsx33("hr", { className: cs("notion-hr", blockId) });
     case "text": {
-      if (!block.properties && !((_h = block.content) == null ? void 0 : _h.length)) {
-        return /* @__PURE__ */ jsx31("div", { className: cs("notion-blank", blockId), children: "\xA0" });
+      if (!block.properties && !((_g = block.content) == null ? void 0 : _g.length)) {
+        return /* @__PURE__ */ jsx33("div", { className: cs("notion-blank", blockId), children: "\xA0" });
       }
-      const blockColor = (_i = block.format) == null ? void 0 : _i.block_color;
-      return /* @__PURE__ */ jsxs14(
+      const blockColor = (_h = block.format) == null ? void 0 : _h.block_color;
+      return /* @__PURE__ */ jsxs15(
         "div",
         {
           className: cs(
@@ -2808,8 +3170,8 @@ function Block(props) {
             blockId
           ),
           children: [
-            ((_j = block.properties) == null ? void 0 : _j.title) && /* @__PURE__ */ jsx31(Text, { value: block.properties.title, block }),
-            children && /* @__PURE__ */ jsx31("div", { className: "notion-text-children", children })
+            ((_i = block.properties) == null ? void 0 : _i.title) && /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }),
+            children && /* @__PURE__ */ jsx33("div", { className: "notion-text-children", children })
           ]
         }
       );
@@ -2817,7 +3179,7 @@ function Block(props) {
     case "bulleted_list":
     // fallthrough
     case "numbered_list": {
-      const wrapList = (content, start2) => block.type === "bulleted_list" ? /* @__PURE__ */ jsx31("ul", { className: cs("notion-list", "notion-list-disc", blockId), children: content }) : /* @__PURE__ */ jsx31(
+      const wrapList = (content, start2) => block.type === "bulleted_list" ? /* @__PURE__ */ jsx33("ul", { className: cs("notion-list", "notion-list-disc", blockId), children: content }) : /* @__PURE__ */ jsx33(
         "ol",
         {
           start: start2,
@@ -2831,20 +3193,20 @@ function Block(props) {
         }
       );
       let output = null;
-      const isTopLevel = block.type !== ((_l = (_k = recordMap.block[block.parent_id]) == null ? void 0 : _k.value) == null ? void 0 : _l.type);
+      const isTopLevel = block.type !== ((_j = getBlockValue4(recordMap.block[block.parent_id])) == null ? void 0 : _j.type);
       const start = getListNumber(block.id, recordMap.block);
       if (block.content) {
-        const listItem = block.properties ? /* @__PURE__ */ jsx31("li", { children: /* @__PURE__ */ jsx31(Text, { value: block.properties.title, block }) }) : null;
+        const listItem = block.properties ? /* @__PURE__ */ jsx33("li", { children: /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }) }) : null;
         if (block.type === "bulleted_list") {
-          output = /* @__PURE__ */ jsxs14(Fragment6, { children: [
+          output = /* @__PURE__ */ jsxs15(Fragment6, { children: [
             listItem,
-            /* @__PURE__ */ jsx31("ul", { className: cs("notion-list", "notion-list-disc", blockId), children })
+            /* @__PURE__ */ jsx33("ul", { className: cs("notion-list", "notion-list-disc", blockId), children })
           ] });
         } else {
           const nestingLevel = getListNestingLevel(block.id, recordMap.block);
-          output = /* @__PURE__ */ jsxs14(Fragment6, { children: [
+          output = /* @__PURE__ */ jsxs15(Fragment6, { children: [
             listItem,
-            /* @__PURE__ */ jsx31(
+            /* @__PURE__ */ jsx33(
               "ol",
               {
                 className: cs("notion-list", "notion-list-numbered", blockId),
@@ -2857,12 +3219,12 @@ function Block(props) {
           ] });
         }
       } else {
-        output = block.properties ? /* @__PURE__ */ jsx31("li", { children: /* @__PURE__ */ jsx31(Text, { value: block.properties.title, block }) }) : null;
+        output = block.properties ? /* @__PURE__ */ jsx33("li", { children: /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }) }) : null;
       }
       return isTopLevel ? wrapList(output, start) : output;
     }
     case "embed":
-      return /* @__PURE__ */ jsx31(components.Embed, { blockId, block });
+      return /* @__PURE__ */ jsx33(components.Embed, { blockId, block });
     case "replit":
     // fallthrough
     case "tweet":
@@ -2884,15 +3246,15 @@ function Block(props) {
     case "gist":
     // fallthrough
     case "video":
-      return /* @__PURE__ */ jsx31(AssetWrapper, { blockId, block });
+      return /* @__PURE__ */ jsx33(AssetWrapper, { blockId, block });
     case "drive": {
-      const properties = (_m = block.format) == null ? void 0 : _m.drive_properties;
+      const properties = (_k = block.format) == null ? void 0 : _k.drive_properties;
       if (!properties) {
-        if ((_n = block.format) == null ? void 0 : _n.display_source) {
-          return /* @__PURE__ */ jsx31(AssetWrapper, { blockId, block });
+        if ((_l = block.format) == null ? void 0 : _l.display_source) {
+          return /* @__PURE__ */ jsx33(AssetWrapper, { blockId, block });
         }
       }
-      return /* @__PURE__ */ jsx31(
+      return /* @__PURE__ */ jsx33(
         GoogleDrive,
         {
           block,
@@ -2901,11 +3263,11 @@ function Block(props) {
       );
     }
     case "audio":
-      return /* @__PURE__ */ jsx31(Audio, { block, className: blockId });
+      return /* @__PURE__ */ jsx33(Audio, { block, className: blockId });
     case "file":
-      return /* @__PURE__ */ jsx31(File, { block, className: blockId });
+      return /* @__PURE__ */ jsx33(File, { block, className: blockId });
     case "equation":
-      return /* @__PURE__ */ jsx31(
+      return /* @__PURE__ */ jsx33(
         components.Equation,
         {
           block,
@@ -2914,25 +3276,25 @@ function Block(props) {
         }
       );
     case "code":
-      return /* @__PURE__ */ jsx31(components.Code, { block });
+      return /* @__PURE__ */ jsx33(components.Code, { block });
     case "column_list":
-      return /* @__PURE__ */ jsx31("div", { className: cs("notion-row", blockId), children });
+      return /* @__PURE__ */ jsx33("div", { className: cs("notion-row", blockId), children });
     case "column": {
       const spacerWidth = `min(32px, 4vw)`;
-      const ratio = ((_o = block.format) == null ? void 0 : _o.column_ratio) || 0.5;
-      const parent = (_p = recordMap.block[block.parent_id]) == null ? void 0 : _p.value;
-      const columns = ((_q = parent == null ? void 0 : parent.content) == null ? void 0 : _q.length) || Math.max(2, Math.ceil(1 / ratio));
+      const ratio = ((_m = block.format) == null ? void 0 : _m.column_ratio) || 0.5;
+      const parent = getBlockValue4(recordMap.block[block.parent_id]);
+      const columns = ((_n = parent == null ? void 0 : parent.content) == null ? void 0 : _n.length) || Math.max(2, Math.ceil(1 / ratio));
       const width = `calc((100% - (${columns - 1} * ${spacerWidth})) * ${ratio})`;
       const style = { width };
-      return /* @__PURE__ */ jsxs14(Fragment6, { children: [
-        /* @__PURE__ */ jsx31("div", { className: cs("notion-column", blockId), style, children }),
-        /* @__PURE__ */ jsx31("div", { className: "notion-spacer" })
+      return /* @__PURE__ */ jsxs15(Fragment6, { children: [
+        /* @__PURE__ */ jsx33("div", { className: cs("notion-column", blockId), style, children }),
+        /* @__PURE__ */ jsx33("div", { className: "notion-spacer" })
       ] });
     }
     case "quote": {
       if (!block.properties) return null;
-      const blockColor = (_r = block.format) == null ? void 0 : _r.block_color;
-      return /* @__PURE__ */ jsxs14(
+      const blockColor = (_o = block.format) == null ? void 0 : _o.block_color;
+      return /* @__PURE__ */ jsxs15(
         "blockquote",
         {
           className: cs(
@@ -2941,30 +3303,30 @@ function Block(props) {
             blockId
           ),
           children: [
-            /* @__PURE__ */ jsx31("div", { children: /* @__PURE__ */ jsx31(Text, { value: block.properties.title, block }) }),
+            /* @__PURE__ */ jsx33("div", { children: /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }) }),
             children
           ]
         }
       );
     }
     case "collection_view":
-      return /* @__PURE__ */ jsx31(components.Collection, { block, className: blockId, ctx: ctx2 });
+      return /* @__PURE__ */ jsx33(components.Collection, { block, className: blockId, ctx: ctx2 });
     case "callout":
       if (components.Callout) {
-        return /* @__PURE__ */ jsx31(components.Callout, { block, className: blockId });
+        return /* @__PURE__ */ jsx33(components.Callout, { block, className: blockId });
       } else {
-        return /* @__PURE__ */ jsxs14(
+        return /* @__PURE__ */ jsxs15(
           "div",
           {
             className: cs(
               "notion-callout",
-              ((_s = block.format) == null ? void 0 : _s.block_color) && `notion-${(_t = block.format) == null ? void 0 : _t.block_color}_co`,
+              ((_p = block.format) == null ? void 0 : _p.block_color) && `notion-${(_q = block.format) == null ? void 0 : _q.block_color}_co`,
               blockId
             ),
             children: [
-              /* @__PURE__ */ jsx31(PageIcon, { block, hideDefaultIcon: true }),
-              /* @__PURE__ */ jsxs14("div", { className: "notion-callout-text", children: [
-                /* @__PURE__ */ jsx31(Text, { value: (_u = block.properties) == null ? void 0 : _u.title, block }),
+              /* @__PURE__ */ jsx33(PageIcon, { block, hideDefaultIcon: true }),
+              /* @__PURE__ */ jsxs15("div", { className: "notion-callout-text", children: [
+                /* @__PURE__ */ jsx33(Text, { value: (_r = block.properties) == null ? void 0 : _r.title, block }),
                 children
               ] })
             ]
@@ -2974,10 +3336,10 @@ function Block(props) {
     case "bookmark": {
       if (!block.properties) return null;
       const link = block.properties.link;
-      if (!link || !((_v = link[0]) == null ? void 0 : _v[0])) return null;
-      let title = getTextContent2(block.properties.title);
+      if (!link || !((_s = link[0]) == null ? void 0 : _s[0])) return null;
+      let title = getTextContent4(block.properties.title);
       if (!title) {
-        title = getTextContent2(link);
+        title = getTextContent4(link);
       }
       if (title) {
         if (title.startsWith("http")) {
@@ -2988,37 +3350,37 @@ function Block(props) {
           }
         }
       }
-      return /* @__PURE__ */ jsx31("div", { className: "notion-row", children: /* @__PURE__ */ jsxs14(
+      return /* @__PURE__ */ jsx33("div", { className: "notion-row", children: /* @__PURE__ */ jsxs15(
         components.Link,
         {
           target: "_blank",
           rel: "noopener noreferrer",
           className: cs(
             "notion-bookmark",
-            ((_w = block.format) == null ? void 0 : _w.block_color) && `notion-${block.format.block_color}`,
+            ((_t = block.format) == null ? void 0 : _t.block_color) && `notion-${block.format.block_color}`,
             blockId
           ),
           href: link[0][0],
           children: [
-            /* @__PURE__ */ jsxs14("div", { children: [
-              title && /* @__PURE__ */ jsx31("div", { className: "notion-bookmark-title", children: /* @__PURE__ */ jsx31(Text, { value: [[title]], block }) }),
-              ((_x = block.properties) == null ? void 0 : _x.description) && /* @__PURE__ */ jsx31("div", { className: "notion-bookmark-description", children: /* @__PURE__ */ jsx31(Text, { value: (_y = block.properties) == null ? void 0 : _y.description, block }) }),
-              /* @__PURE__ */ jsxs14("div", { className: "notion-bookmark-link", children: [
-                ((_z = block.format) == null ? void 0 : _z.bookmark_icon) && /* @__PURE__ */ jsx31("div", { className: "notion-bookmark-link-icon", children: /* @__PURE__ */ jsx31(
+            /* @__PURE__ */ jsxs15("div", { children: [
+              title && /* @__PURE__ */ jsx33("div", { className: "notion-bookmark-title", children: /* @__PURE__ */ jsx33(Text, { value: [[title]], block }) }),
+              ((_u = block.properties) == null ? void 0 : _u.description) && /* @__PURE__ */ jsx33("div", { className: "notion-bookmark-description", children: /* @__PURE__ */ jsx33(Text, { value: (_v = block.properties) == null ? void 0 : _v.description, block }) }),
+              /* @__PURE__ */ jsxs15("div", { className: "notion-bookmark-link", children: [
+                ((_w = block.format) == null ? void 0 : _w.bookmark_icon) && /* @__PURE__ */ jsx33("div", { className: "notion-bookmark-link-icon", children: /* @__PURE__ */ jsx33(
                   LazyImage,
                   {
-                    src: mapImageUrl((_A = block.format) == null ? void 0 : _A.bookmark_icon, block),
+                    src: mapImageUrl((_x = block.format) == null ? void 0 : _x.bookmark_icon, block),
                     alt: title
                   }
                 ) }),
-                /* @__PURE__ */ jsx31("div", { className: "notion-bookmark-link-text", children: /* @__PURE__ */ jsx31(Text, { value: link, block }) })
+                /* @__PURE__ */ jsx33("div", { className: "notion-bookmark-link-text", children: /* @__PURE__ */ jsx33(Text, { value: link, block }) })
               ] })
             ] }),
-            ((_B = block.format) == null ? void 0 : _B.bookmark_cover) && /* @__PURE__ */ jsx31("div", { className: "notion-bookmark-image", children: /* @__PURE__ */ jsx31(
+            ((_y = block.format) == null ? void 0 : _y.bookmark_cover) && /* @__PURE__ */ jsx33("div", { className: "notion-bookmark-image", children: /* @__PURE__ */ jsx33(
               LazyImage,
               {
-                src: mapImageUrl((_C = block.format) == null ? void 0 : _C.bookmark_cover, block),
-                alt: getTextContent2((_D = block.properties) == null ? void 0 : _D.title),
+                src: mapImageUrl((_z = block.format) == null ? void 0 : _z.bookmark_cover, block),
+                alt: getTextContent4((_A = block.properties) == null ? void 0 : _A.title),
                 style: {
                   objectFit: "cover"
                 }
@@ -3029,16 +3391,27 @@ function Block(props) {
       ) });
     }
     case "toggle":
-      return /* @__PURE__ */ jsxs14("details", { className: cs("notion-toggle", blockId), children: [
-        /* @__PURE__ */ jsx31("summary", { children: /* @__PURE__ */ jsx31(Text, { value: (_E = block.properties) == null ? void 0 : _E.title, block }) }),
-        /* @__PURE__ */ jsx31("div", { children })
+      return /* @__PURE__ */ jsxs15("details", { className: cs("notion-toggle", blockId), children: [
+        /* @__PURE__ */ jsx33("summary", { children: /* @__PURE__ */ jsx33(Text, { value: (_B = block.properties) == null ? void 0 : _B.title, block }) }),
+        /* @__PURE__ */ jsx33("div", { children })
       ] });
+    case "button": {
+      const ButtonComponent = components.Button || Button;
+      return /* @__PURE__ */ jsx33(
+        ButtonComponent,
+        {
+          blockId,
+          block,
+          className: blockId
+        }
+      );
+    }
     case "table_of_contents": {
       const page = getBlockParentPage2(block, recordMap);
       if (!page) return null;
       const toc = getPageTableOfContents(page, recordMap);
-      const blockColor = (_F = block.format) == null ? void 0 : _F.block_color;
-      return /* @__PURE__ */ jsx31(
+      const blockColor = (_C = block.format) == null ? void 0 : _C.block_color;
+      return /* @__PURE__ */ jsx33(
         "div",
         {
           className: cs(
@@ -3046,12 +3419,12 @@ function Block(props) {
             blockColor && `notion-${blockColor}`,
             blockId
           ),
-          children: toc.map((tocItem) => /* @__PURE__ */ jsx31(
+          children: toc.map((tocItem) => /* @__PURE__ */ jsx33(
             "a",
             {
-              href: `#${uuidToId2(tocItem.id)}`,
+              href: `#${uuidToId3(tocItem.id)}`,
               className: "notion-table-of-contents-item",
-              children: /* @__PURE__ */ jsx31(
+              children: /* @__PURE__ */ jsx33(
                 "span",
                 {
                   className: "notion-table-of-contents-item-body",
@@ -3069,58 +3442,63 @@ function Block(props) {
       );
     }
     case "to_do": {
-      const isChecked = ((_I = (_H = (_G = block.properties) == null ? void 0 : _G.checked) == null ? void 0 : _H[0]) == null ? void 0 : _I[0]) === "Yes";
-      return /* @__PURE__ */ jsxs14("div", { className: cs("notion-to-do", blockId), children: [
-        /* @__PURE__ */ jsxs14("div", { className: "notion-to-do-item", children: [
-          /* @__PURE__ */ jsx31(components.Checkbox, { blockId, isChecked }),
-          /* @__PURE__ */ jsx31(
+      const isChecked = ((_F = (_E = (_D = block.properties) == null ? void 0 : _D.checked) == null ? void 0 : _E[0]) == null ? void 0 : _F[0]) === "Yes";
+      return /* @__PURE__ */ jsxs15("div", { className: cs("notion-to-do", blockId), children: [
+        /* @__PURE__ */ jsxs15("div", { className: "notion-to-do-item", children: [
+          /* @__PURE__ */ jsx33(components.Checkbox, { blockId, isChecked }),
+          /* @__PURE__ */ jsx33(
             "div",
             {
               className: cs(
                 "notion-to-do-body",
                 isChecked && `notion-to-do-checked`
               ),
-              children: /* @__PURE__ */ jsx31(Text, { value: (_J = block.properties) == null ? void 0 : _J.title, block })
+              children: /* @__PURE__ */ jsx33(Text, { value: (_G = block.properties) == null ? void 0 : _G.title, block })
             }
           )
         ] }),
-        /* @__PURE__ */ jsx31("div", { className: "notion-to-do-children", children })
+        /* @__PURE__ */ jsx33("div", { className: "notion-to-do-children", children })
       ] });
     }
     case "transclusion_container":
-      return /* @__PURE__ */ jsx31("div", { className: cs("notion-sync-block", blockId), children });
+      return /* @__PURE__ */ jsx33("div", { className: cs("notion-sync-block", blockId), children });
     case "transclusion_reference":
-      return /* @__PURE__ */ jsx31(SyncPointerBlock, { ...props, level: level + 1 });
+      return /* @__PURE__ */ jsx33(SyncPointerBlock, { ...props, level: level + 1 });
     case "alias": {
-      const blockPointerId = (_L = (_K = block == null ? void 0 : block.format) == null ? void 0 : _K.alias_pointer) == null ? void 0 : _L.id;
-      const linkedBlock = (_M = recordMap.block[blockPointerId]) == null ? void 0 : _M.value;
+      const blockPointerId = (_I = (_H = block == null ? void 0 : block.format) == null ? void 0 : _H.alias_pointer) == null ? void 0 : _I.id;
+      const linkedBlock = getBlockValue4(recordMap.block[blockPointerId]);
       if (!linkedBlock) {
         console.log('"alias" missing block', blockPointerId);
         return null;
       }
-      return /* @__PURE__ */ jsx31(
+      return /* @__PURE__ */ jsx33(
         components.PageLink,
         {
           className: cs("notion-page-link", blockPointerId),
           href: mapPageUrl(blockPointerId),
-          children: /* @__PURE__ */ jsx31(PageTitle, { block: linkedBlock })
+          children: /* @__PURE__ */ jsx33(PageTitle, { block: linkedBlock })
         }
       );
     }
     case "table":
-      return /* @__PURE__ */ jsx31("table", { className: cs("notion-simple-table", blockId), children: /* @__PURE__ */ jsx31("tbody", { children }) });
+      return /* @__PURE__ */ jsx33("table", { className: cs("notion-simple-table", blockId), children: /* @__PURE__ */ jsx33("tbody", { children }) });
     case "table_row": {
-      const tableBlock = (_N = recordMap.block[block.parent_id]) == null ? void 0 : _N.value;
-      const order = (_O = tableBlock.format) == null ? void 0 : _O.table_block_column_order;
-      const formatMap = (_P = tableBlock.format) == null ? void 0 : _P.table_block_column_format;
-      const backgroundColor = (_Q = block.format) == null ? void 0 : _Q.block_color;
-      const hasRowHeader = ((_R = tableBlock.format) == null ? void 0 : _R.table_block_column_header) === true;
-      const hasColumnHeader = ((_S = tableBlock.format) == null ? void 0 : _S.table_block_row_header) === true;
-      const isHeaderRow = hasRowHeader && ((_T = tableBlock.content) == null ? void 0 : _T[0]) === block.id;
+      const tableBlock = getBlockValue4(
+        recordMap.block[block.parent_id]
+      );
+      if (!tableBlock) {
+        return null;
+      }
+      const order = (_J = tableBlock.format) == null ? void 0 : _J.table_block_column_order;
+      const formatMap = (_K = tableBlock.format) == null ? void 0 : _K.table_block_column_format;
+      const backgroundColor = (_L = block.format) == null ? void 0 : _L.block_color;
+      const hasRowHeader = ((_M = tableBlock.format) == null ? void 0 : _M.table_block_column_header) === true;
+      const hasColumnHeader = ((_N = tableBlock.format) == null ? void 0 : _N.table_block_row_header) === true;
+      const isHeaderRow = hasRowHeader && ((_O = tableBlock.content) == null ? void 0 : _O[0]) === block.id;
       if (!tableBlock || !order) {
         return null;
       }
-      return /* @__PURE__ */ jsx31(
+      return /* @__PURE__ */ jsx33(
         "tr",
         {
           className: cs(
@@ -3133,7 +3511,7 @@ function Block(props) {
             var _a2, _b2, _c2;
             const color = (_a2 = formatMap == null ? void 0 : formatMap[column]) == null ? void 0 : _a2.color;
             const isHeaderColumn = hasColumnHeader && columnIndex === 0;
-            return /* @__PURE__ */ jsx31(
+            return /* @__PURE__ */ jsx33(
               "td",
               {
                 className: cs(
@@ -3143,7 +3521,7 @@ function Block(props) {
                 style: {
                   width: ((_b2 = formatMap == null ? void 0 : formatMap[column]) == null ? void 0 : _b2.width) || 120
                 },
-                children: /* @__PURE__ */ jsx31("div", { className: "notion-simple-table-cell", children: /* @__PURE__ */ jsx31(
+                children: /* @__PURE__ */ jsx33("div", { className: "notion-simple-table-cell", children: /* @__PURE__ */ jsx33(
                   Text,
                   {
                     value: ((_c2 = block.properties) == null ? void 0 : _c2[column]) || [["\u3164"]],
@@ -3157,8 +3535,20 @@ function Block(props) {
         }
       );
     }
+    case "tab": {
+      const { children: _tabChildren, ...tabBlockProps } = props;
+      return /* @__PURE__ */ jsx33(
+        TabBlock,
+        {
+          ...tabBlockProps,
+          block,
+          blockId,
+          level
+        }
+      );
+    }
     case "external_object_instance":
-      return /* @__PURE__ */ jsx31(EOI, { block, className: blockId });
+      return /* @__PURE__ */ jsx33(EOI, { block, className: blockId });
     default:
       if (true) {
         console.log(
@@ -3166,12 +3556,12 @@ function Block(props) {
           JSON.stringify(block, null, 2)
         );
       }
-      return /* @__PURE__ */ jsx31("div", {});
+      return /* @__PURE__ */ jsx33("div", {});
   }
 }
 
 // src/renderer.tsx
-import { jsx as jsx32 } from "react/jsx-runtime";
+import { jsx as jsx34 } from "react/jsx-runtime";
 function NotionRenderer({
   components,
   recordMap,
@@ -3197,7 +3587,7 @@ function NotionRenderer({
   defaultPageCoverPosition,
   ...rest
 }) {
-  const zoom = React20.useMemo(
+  const zoom = React22.useMemo(
     () => !!globalThis.window && mediumZoom({
       background: "rgba(0, 0, 0, 0.8)",
       minZoomScale: 2,
@@ -3205,7 +3595,7 @@ function NotionRenderer({
     }),
     []
   );
-  return /* @__PURE__ */ jsx32(
+  return /* @__PURE__ */ jsx34(
     NotionContextProvider,
     {
       components,
@@ -3230,7 +3620,7 @@ function NotionRenderer({
       defaultPageCover,
       defaultPageCoverPosition,
       zoom: isImageZoomable ? zoom : null,
-      children: /* @__PURE__ */ jsx32(NotionBlockRenderer, { ...rest })
+      children: /* @__PURE__ */ jsx34(NotionBlockRenderer, { ...rest })
     }
   );
 }
@@ -3239,17 +3629,17 @@ function NotionBlockRenderer({
   blockId,
   ...props
 }) {
-  var _a, _b;
+  var _a;
   const { recordMap } = useNotionContext();
   const id = blockId || Object.keys(recordMap.block)[0];
-  const block = (_a = recordMap.block[id]) == null ? void 0 : _a.value;
+  const block = getBlockValue5(recordMap.block[id]);
   if (!block) {
     if (true) {
       console.warn("missing block", blockId);
     }
     return null;
   }
-  return /* @__PURE__ */ jsx32(Block, { level, block, ...props, children: (_b = block == null ? void 0 : block.content) == null ? void 0 : _b.map((contentBlockId) => /* @__PURE__ */ jsx32(
+  return /* @__PURE__ */ jsx34(Block, { level, block, ...props, children: (_a = block == null ? void 0 : block.content) == null ? void 0 : _a.map((contentBlockId) => /* @__PURE__ */ jsx34(
     NotionBlockRenderer,
     {
       blockId: contentBlockId,
@@ -3277,6 +3667,7 @@ function getMediumZoomMargin() {
 }
 export {
   Breadcrumbs,
+  Button,
   Header,
   NotionContextConsumer,
   NotionContextProvider,
@@ -3290,9 +3681,6 @@ export {
   formatDate,
   formatNotionDateTime,
   getHashFragmentValue,
-  getListNestingLevel,
-  getListNumber,
-  getListStyle,
   getUrlParams,
   getYoutubeId,
   isBrowser,

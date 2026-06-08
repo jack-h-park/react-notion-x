@@ -243,7 +243,7 @@ import React16 from "react";
 
 // src/components/text.tsx
 import "notion-types";
-import { parsePageId as parsePageId2 } from "notion-utils";
+import { getBlockValue, parsePageId as parsePageId2 } from "notion-utils";
 import React15 from "react";
 
 // src/context.tsx
@@ -255,16 +255,7 @@ import React13 from "react";
 import "notion-types";
 import { parsePageId } from "notion-utils";
 
-// src/components/header.tsx
-import { getPageBreadcrumbs } from "notion-utils";
-import React9 from "react";
-import { useHotkeys } from "react-hotkeys-hook";
-
-// src/icons/search-icon.tsx
-import "react";
-
 // src/utils.ts
-import "notion-types";
 import { formatDate, formatNotionDateTime, isUrl } from "notion-utils";
 var cs = (...classes) => classes.filter((a) => !!a).join(" ");
 var getHashFragmentValue = (url) => {
@@ -307,7 +298,13 @@ var getUrlParams = (url) => {
   return;
 };
 
+// src/components/header.tsx
+import { getPageBreadcrumbs } from "notion-utils";
+import React9 from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+
 // src/icons/search-icon.tsx
+import "react";
 import { jsx } from "react/jsx-runtime";
 function SearchIcon(props) {
   const { className, ...rest } = props;
@@ -1904,6 +1901,8 @@ var defaultComponents = {
   Checkbox,
   Callout: void 0,
   // use the built-in callout rendering by default
+  Button: void 0,
+  // use the built-in button rendering by default
   Code: dummyComponent("Code"),
   Equation: dummyComponent("Equation"),
   Collection: dummyComponent("Collection"),
@@ -2099,17 +2098,17 @@ function Text({
     }
     const formatted = decorations.reduce(
       (element, decorator) => {
-        var _a, _b, _c, _d, _e;
+        var _a;
         switch (decorator[0]) {
           case "p": {
             const blockId = decorator[1];
-            const linkedBlock = (_a = recordMap.block[blockId]) == null ? void 0 : _a.value;
+            const linkedBlock = getBlockValue(recordMap.block[blockId]);
             if (!linkedBlock) {
               console.log('"p" missing block', blockId);
               return null;
             }
             return /* @__PURE__ */ jsx23(
-              components.PageLink,
+              components.Link,
               {
                 className: "notion-link",
                 href: mapPageUrl(blockId),
@@ -2122,7 +2121,7 @@ function Text({
             const id = decorator[1][1];
             switch (linkType) {
               case "u": {
-                const user = (_b = recordMap.notion_user[id]) == null ? void 0 : _b.value;
+                const user = getBlockValue(recordMap.notion_user[id]);
                 if (!user) {
                   console.log('"\u2023" missing user', id);
                   return null;
@@ -2140,13 +2139,13 @@ function Text({
                 );
               }
               default: {
-                const linkedBlock = (_c = recordMap.block[id]) == null ? void 0 : _c.value;
+                const linkedBlock = getBlockValue(recordMap.block[id]);
                 if (!linkedBlock) {
                   console.log('"\u2023" missing block', linkType, id);
                   return null;
                 }
                 return /* @__PURE__ */ jsx23(
-                  components.PageLink,
+                  components.Link,
                   {
                     className: "notion-link",
                     href: mapPageUrl(id),
@@ -2183,7 +2182,7 @@ function Text({
             if (rootDomain && v.includes(rootDomain) || id && v[0] === "/") {
               const href = rootDomain && v.includes(rootDomain) ? v : `${mapPageUrl(id)}${getHashFragmentValue(v)}`;
               return /* @__PURE__ */ jsx23(
-                components.PageLink,
+                components.Link,
                 {
                   className: "notion-link",
                   href,
@@ -2223,7 +2222,7 @@ function Text({
           }
           case "u": {
             const userId = decorator[1];
-            const user = (_d = recordMap.notion_user[userId]) == null ? void 0 : _d.value;
+            const user = getBlockValue(recordMap.notion_user[userId]);
             if (!user) {
               console.log("missing user", userId);
               return null;
@@ -2239,8 +2238,30 @@ function Text({
           }
           case "eoi": {
             const blockId = decorator[1];
-            const externalObjectInstance = (_e = recordMap.block[blockId]) == null ? void 0 : _e.value;
+            const externalObjectInstance = getBlockValue(
+              recordMap.block[blockId]
+            );
+            if (!externalObjectInstance) {
+              console.log('"eoi" missing block', blockId);
+              return null;
+            }
             return /* @__PURE__ */ jsx23(EOI, { block: externalObjectInstance, inline: true });
+          }
+          case "ce": {
+            const customEmojiId = decorator[1];
+            const emojiUrl = (_a = recordMap.custom_emojis) == null ? void 0 : _a[customEmojiId];
+            if (!emojiUrl) {
+              console.log("missing custom emoji", customEmojiId);
+              return null;
+            }
+            return /* @__PURE__ */ jsx23(
+              GracefulImage,
+              {
+                className: "notion-custom-emoji",
+                src: emojiUrl,
+                alt: "custom emoji"
+              }
+            );
           }
           case "si":
             return null;

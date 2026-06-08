@@ -393,9 +393,10 @@ var require_format_number = __commonJS({
 import {
   getBlockCollectionId,
   getBlockParentPage as getBlockParentPage2,
+  getBlockValue as getBlockValue7,
   getTextContent as getTextContent5
 } from "notion-utils";
-import React20 from "react";
+import React24 from "react";
 
 // src/components/page-icon.tsx
 import "notion-types";
@@ -411,16 +412,7 @@ import React13 from "react";
 import "notion-types";
 import { parsePageId as parsePageId2 } from "notion-utils";
 
-// src/components/header.tsx
-import { getPageBreadcrumbs } from "notion-utils";
-import React9 from "react";
-import { useHotkeys } from "react-hotkeys-hook";
-
-// src/icons/search-icon.tsx
-import "react";
-
 // src/utils.ts
-import "notion-types";
 import { formatDate, formatNotionDateTime, isUrl } from "notion-utils";
 var cs = (...classes) => classes.filter((a) => !!a).join(" ");
 var getHashFragmentValue = (url) => {
@@ -463,107 +455,18 @@ var getUrlParams = (url) => {
   return;
 };
 
-// src/icons/search-icon.tsx
-import { jsx } from "react/jsx-runtime";
-function SearchIcon(props) {
-  const { className, ...rest } = props;
-  return /* @__PURE__ */ jsx("svg", { className: cs("notion-icon", className), viewBox: "0 0 17 17", ...rest, children: /* @__PURE__ */ jsx("path", { d: "M6.78027 13.6729C8.24805 13.6729 9.60156 13.1982 10.709 12.4072L14.875 16.5732C15.0684 16.7666 15.3232 16.8633 15.5957 16.8633C16.167 16.8633 16.5713 16.4238 16.5713 15.8613C16.5713 15.5977 16.4834 15.3516 16.29 15.1582L12.1504 11.0098C13.0205 9.86719 13.5391 8.45215 13.5391 6.91406C13.5391 3.19629 10.498 0.155273 6.78027 0.155273C3.0625 0.155273 0.0214844 3.19629 0.0214844 6.91406C0.0214844 10.6318 3.0625 13.6729 6.78027 13.6729ZM6.78027 12.2139C3.87988 12.2139 1.48047 9.81445 1.48047 6.91406C1.48047 4.01367 3.87988 1.61426 6.78027 1.61426C9.68066 1.61426 12.0801 4.01367 12.0801 6.91406C12.0801 9.81445 9.68066 12.2139 6.78027 12.2139Z" }) });
-}
-
-// src/components/search-dialog.tsx
-var import_lodash = __toESM(require_lodash(), 1);
-import { getBlockParentPage, getBlockTitle as getBlockTitle2 } from "notion-utils";
-import React8 from "react";
-
-// src/icons/clear-icon.tsx
-import "react";
-import { jsx as jsx2 } from "react/jsx-runtime";
-function ClearIcon(props) {
-  const { className, ...rest } = props;
-  return /* @__PURE__ */ jsx2("svg", { className: cs("notion-icon", className), ...rest, viewBox: "0 0 30 30", children: /* @__PURE__ */ jsx2("path", { d: "M15,0C6.716,0,0,6.716,0,15s6.716,15,15,15s15-6.716,15-15S23.284,0,15,0z M22,20.6L20.6,22L15,16.4L9.4,22L8,20.6l5.6-5.6 L8,9.4L9.4,8l5.6,5.6L20.6,8L22,9.4L16.4,15L22,20.6z" }) });
-}
-
-// src/icons/loading-icon.tsx
-import "react";
-import { jsx as jsx3, jsxs } from "react/jsx-runtime";
-function LoadingIcon(props) {
-  const { className, ...rest } = props;
-  return /* @__PURE__ */ jsxs("svg", { className: cs("notion-icon", className), ...rest, viewBox: "0 0 24 24", children: [
-    /* @__PURE__ */ jsx3("defs", { children: /* @__PURE__ */ jsxs(
-      "linearGradient",
-      {
-        x1: "28.1542969%",
-        y1: "63.7402344%",
-        x2: "74.6289062%",
-        y2: "17.7832031%",
-        id: "linearGradient-1",
-        children: [
-          /* @__PURE__ */ jsx3("stop", { stopColor: "rgba(164, 164, 164, 1)", offset: "0%" }),
-          /* @__PURE__ */ jsx3(
-            "stop",
-            {
-              stopColor: "rgba(164, 164, 164, 0)",
-              stopOpacity: "0",
-              offset: "100%"
-            }
-          )
-        ]
-      }
-    ) }),
-    /* @__PURE__ */ jsx3("g", { id: "Page-1", stroke: "none", strokeWidth: "1", fill: "none", children: /* @__PURE__ */ jsx3("g", { transform: "translate(-236.000000, -286.000000)", children: /* @__PURE__ */ jsxs("g", { transform: "translate(238.000000, 286.000000)", children: [
-      /* @__PURE__ */ jsx3(
-        "circle",
-        {
-          id: "Oval-2",
-          stroke: "url(#linearGradient-1)",
-          strokeWidth: "4",
-          cx: "10",
-          cy: "12",
-          r: "10"
-        }
-      ),
-      /* @__PURE__ */ jsx3(
-        "path",
-        {
-          d: "M10,2 C4.4771525,2 0,6.4771525 0,12",
-          id: "Oval-2",
-          stroke: "rgba(164, 164, 164, 1)",
-          strokeWidth: "4"
-        }
-      ),
-      /* @__PURE__ */ jsx3(
-        "rect",
-        {
-          id: "Rectangle-1",
-          fill: "rgba(164, 164, 164, 1)",
-          x: "8",
-          y: "0",
-          width: "4",
-          height: "4",
-          rx: "8"
-        }
-      )
-    ] }) }) })
-  ] });
-}
-
-// src/components/page-title.tsx
-import "notion-types";
-import { getBlockTitle } from "notion-utils";
-import React7 from "react";
-
 // src/components/text.tsx
 import "notion-types";
-import { parsePageId } from "notion-utils";
-import React6 from "react";
+import { getBlockValue, parsePageId } from "notion-utils";
+import React4 from "react";
 
 // src/components/eoi.tsx
 import "notion-types";
 
 // src/icons/type-github.tsx
-import { jsx as jsx4 } from "react/jsx-runtime";
+import { jsx } from "react/jsx-runtime";
 function SvgTypeGitHub(props) {
-  return /* @__PURE__ */ jsx4("svg", { viewBox: "0 0 260 260", ...props, children: /* @__PURE__ */ jsx4("g", { children: /* @__PURE__ */ jsx4(
+  return /* @__PURE__ */ jsx("svg", { viewBox: "0 0 260 260", ...props, children: /* @__PURE__ */ jsx("g", { children: /* @__PURE__ */ jsx(
     "path",
     {
       d: "M128.00106,0 C57.3172926,0 0,57.3066942 0,128.00106 C0,184.555281 36.6761997,232.535542 87.534937,249.460899 C93.9320223,250.645779 96.280588,246.684165 96.280588,243.303333 C96.280588,240.251045 96.1618878,230.167899 96.106777,219.472176 C60.4967585,227.215235 52.9826207,204.369712 52.9826207,204.369712 C47.1599584,189.574598 38.770408,185.640538 38.770408,185.640538 C27.1568785,177.696113 39.6458206,177.859325 39.6458206,177.859325 C52.4993419,178.762293 59.267365,191.04987 59.267365,191.04987 C70.6837675,210.618423 89.2115753,204.961093 96.5158685,201.690482 C97.6647155,193.417512 100.981959,187.77078 104.642583,184.574357 C76.211799,181.33766 46.324819,170.362144 46.324819,121.315702 C46.324819,107.340889 51.3250588,95.9223682 59.5132437,86.9583937 C58.1842268,83.7344152 53.8029229,70.715562 60.7532354,53.0843636 C60.7532354,53.0843636 71.5019501,49.6441813 95.9626412,66.2049595 C106.172967,63.368876 117.123047,61.9465949 128.00106,61.8978432 C138.879073,61.9465949 149.837632,63.368876 160.067033,66.2049595 C184.49805,49.6441813 195.231926,53.0843636 195.231926,53.0843636 C202.199197,70.715562 197.815773,83.7344152 196.486756,86.9583937 C204.694018,95.9223682 209.660343,107.340889 209.660343,121.315702 C209.660343,170.478725 179.716133,181.303747 151.213281,184.472614 C155.80443,188.444828 159.895342,196.234518 159.895342,208.176593 C159.895342,225.303317 159.746968,239.087361 159.746968,243.303333 C159.746968,246.709601 162.05102,250.70089 168.53925,249.443941 C219.370432,232.499507 256,184.536204 256,128.00106 C256,57.3066942 198.691187,0 128.00106,0 Z M47.9405593,182.340212 C47.6586465,182.976105 46.6581745,183.166873 45.7467277,182.730227 C44.8183235,182.312656 44.2968914,181.445722 44.5978808,180.80771 C44.8734344,180.152739 45.876026,179.97045 46.8023103,180.409216 C47.7328342,180.826786 48.2627451,181.702199 47.9405593,182.340212 Z M54.2367892,187.958254 C53.6263318,188.524199 52.4329723,188.261363 51.6232682,187.366874 C50.7860088,186.474504 50.6291553,185.281144 51.2480912,184.70672 C51.8776254,184.140775 53.0349512,184.405731 53.8743302,185.298101 C54.7115892,186.201069 54.8748019,187.38595 54.2367892,187.958254 Z M58.5562413,195.146347 C57.7719732,195.691096 56.4895886,195.180261 55.6968417,194.042013 C54.9125733,192.903764 54.9125733,191.538713 55.713799,190.991845 C56.5086651,190.444977 57.7719732,190.936735 58.5753181,192.066505 C59.3574669,193.22383 59.3574669,194.58888 58.5562413,195.146347 Z M65.8613592,203.471174 C65.1597571,204.244846 63.6654083,204.03712 62.5716717,202.981538 C61.4524999,201.94927 61.1409122,200.484596 61.8446341,199.710926 C62.5547146,198.935137 64.0575422,199.15346 65.1597571,200.200564 C66.2704506,201.230712 66.6095936,202.705984 65.8613592,203.471174 Z M75.3025151,206.281542 C74.9930474,207.284134 73.553809,207.739857 72.1039724,207.313809 C70.6562556,206.875043 69.7087748,205.700761 70.0012857,204.687571 C70.302275,203.678621 71.7478721,203.20382 73.2083069,203.659543 C74.6539041,204.09619 75.6035048,205.261994 75.3025151,206.281542 Z M86.046947,207.473627 C86.0829806,208.529209 84.8535871,209.404622 83.3316829,209.4237 C81.8013,209.457614 80.563428,208.603398 80.5464708,207.564772 C80.5464708,206.498591 81.7483088,205.631657 83.2786917,205.606221 C84.8005962,205.576546 86.046947,206.424403 86.046947,207.473627 Z M96.6021471,207.069023 C96.7844366,208.099171 95.7267341,209.156872 94.215428,209.438785 C92.7295577,209.710099 91.3539086,209.074206 91.1652603,208.052538 C90.9808515,206.996955 92.0576306,205.939253 93.5413813,205.66582 C95.054807,205.402984 96.4092596,206.021919 96.6021471,207.069023 Z",
@@ -574,7 +477,7 @@ function SvgTypeGitHub(props) {
 var type_github_default = SvgTypeGitHub;
 
 // src/components/mention-preview-card.tsx
-import { jsx as jsx5, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx2, jsxs } from "react/jsx-runtime";
 function capitalizeFirstLetter(str) {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -586,29 +489,29 @@ function MentionPreviewCard({
   title,
   domain
 }) {
-  return /* @__PURE__ */ jsxs2("div", { className: "notion-external-subtitle", children: [
-    externalImage && /* @__PURE__ */ jsxs2("div", { className: "notion-preview-card-domain-warp", children: [
-      /* @__PURE__ */ jsx5("div", { className: "notion-preview-card-logo", children: externalImage }),
-      /* @__PURE__ */ jsx5("div", { className: "notion-preview-card-domain", children: capitalizeFirstLetter(domain.split(".")[0]) })
+  return /* @__PURE__ */ jsxs("div", { className: "notion-external-subtitle", children: [
+    externalImage && /* @__PURE__ */ jsxs("div", { className: "notion-preview-card-domain-warp", children: [
+      /* @__PURE__ */ jsx2("div", { className: "notion-preview-card-logo", children: externalImage }),
+      /* @__PURE__ */ jsx2("div", { className: "notion-preview-card-domain", children: capitalizeFirstLetter(domain.split(".")[0]) })
     ] }),
-    /* @__PURE__ */ jsx5("div", { className: "notion-preview-card-title", children: title }),
-    owner && /* @__PURE__ */ jsxs2("div", { className: "notion-external-subtitle-item", children: [
-      /* @__PURE__ */ jsx5("div", { className: "notion-external-subtitle-item-name", children: "Owner" }),
-      /* @__PURE__ */ jsx5("span", { className: "notion-external-subtitle-item-desc", children: owner })
+    /* @__PURE__ */ jsx2("div", { className: "notion-preview-card-title", children: title }),
+    owner && /* @__PURE__ */ jsxs("div", { className: "notion-external-subtitle-item", children: [
+      /* @__PURE__ */ jsx2("div", { className: "notion-external-subtitle-item-name", children: "Owner" }),
+      /* @__PURE__ */ jsx2("span", { className: "notion-external-subtitle-item-desc", children: owner })
     ] }),
-    lastUpdated && /* @__PURE__ */ jsxs2("div", { className: "notion-external-subtitle-item", children: [
-      /* @__PURE__ */ jsx5("div", { className: "notion-external-subtitle-item-name", children: "Updated" }),
-      /* @__PURE__ */ jsx5("span", { className: "notion-external-subtitle-item-desc", children: lastUpdated })
+    lastUpdated && /* @__PURE__ */ jsxs("div", { className: "notion-external-subtitle-item", children: [
+      /* @__PURE__ */ jsx2("div", { className: "notion-external-subtitle-item-name", children: "Updated" }),
+      /* @__PURE__ */ jsx2("span", { className: "notion-external-subtitle-item-desc", children: lastUpdated })
     ] }),
-    domain === "github.com" && /* @__PURE__ */ jsxs2("div", { className: "notion-preview-card-github-shields", children: [
-      /* @__PURE__ */ jsx5(
+    domain === "github.com" && /* @__PURE__ */ jsxs("div", { className: "notion-preview-card-github-shields", children: [
+      /* @__PURE__ */ jsx2(
         "img",
         {
           src: `https://img.shields.io/github/stars/${owner}/${title}?logo=github`,
           alt: ""
         }
       ),
-      /* @__PURE__ */ jsx5(
+      /* @__PURE__ */ jsx2(
         "img",
         {
           src: `https://img.shields.io/github/last-commit/${owner}/${title}`,
@@ -620,7 +523,7 @@ function MentionPreviewCard({
 }
 
 // src/components/eoi.tsx
-import { jsx as jsx6, jsxs as jsxs3 } from "react/jsx-runtime";
+import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
 function EOI({
   block,
   inline,
@@ -639,7 +542,7 @@ function EOI({
   let externalImage;
   switch (domain) {
     case "github.com":
-      externalImage = /* @__PURE__ */ jsx6(type_github_default, {});
+      externalImage = /* @__PURE__ */ jsx3(type_github_default, {});
       if (owner) {
         const parts = owner.split("/");
         owner = parts.at(-1);
@@ -654,7 +557,7 @@ function EOI({
       }
       return null;
   }
-  return /* @__PURE__ */ jsxs3(
+  return /* @__PURE__ */ jsxs2(
     components.Link,
     {
       target: "_blank",
@@ -666,15 +569,15 @@ function EOI({
         className
       ),
       children: [
-        externalImage && /* @__PURE__ */ jsx6("div", { className: "notion-external-image", children: externalImage }),
-        /* @__PURE__ */ jsxs3("div", { className: "notion-external-description", children: [
-          /* @__PURE__ */ jsx6("div", { className: "notion-external-title", children: title }),
-          !inline && owner ? /* @__PURE__ */ jsxs3("div", { className: "notion-external-block-desc", children: [
+        externalImage && /* @__PURE__ */ jsx3("div", { className: "notion-external-image", children: externalImage }),
+        /* @__PURE__ */ jsxs2("div", { className: "notion-external-description", children: [
+          /* @__PURE__ */ jsx3("div", { className: "notion-external-title", children: title }),
+          !inline && owner ? /* @__PURE__ */ jsxs2("div", { className: "notion-external-block-desc", children: [
             owner,
-            lastUpdated && /* @__PURE__ */ jsx6("span", { children: " \u2022 " }),
+            lastUpdated && /* @__PURE__ */ jsx3("span", { children: " \u2022 " }),
             lastUpdated && `Updated ${lastUpdated}`
           ] }) : null,
-          inline && (owner || lastUpdated) && /* @__PURE__ */ jsx6(
+          inline && (owner || lastUpdated) && /* @__PURE__ */ jsx3(
             MentionPreviewCard,
             {
               title,
@@ -693,26 +596,26 @@ function EOI({
 // src/components/graceful-image.tsx
 import "react";
 import { Img } from "react-image";
-import { jsx as jsx7 } from "react/jsx-runtime";
+import { jsx as jsx4 } from "react/jsx-runtime";
 function GracefulImage(props) {
   if (isBrowser) {
-    return /* @__PURE__ */ jsx7(Img, { ...props });
+    return /* @__PURE__ */ jsx4(Img, { ...props });
   } else {
-    return /* @__PURE__ */ jsx7("img", { ...props });
+    return /* @__PURE__ */ jsx4("img", { ...props });
   }
 }
 
 // src/components/link-mention.tsx
 import "react";
-import { jsx as jsx8, jsxs as jsxs4 } from "react/jsx-runtime";
+import { jsx as jsx5, jsxs as jsxs3 } from "react/jsx-runtime";
 function LinkMention({ metadata }) {
-  return /* @__PURE__ */ jsxs4("span", { className: "notion-link-mention", children: [
-    /* @__PURE__ */ jsx8(LinkMentionInline, { metadata }),
-    /* @__PURE__ */ jsx8(LinkMentionPreview, { metadata })
+  return /* @__PURE__ */ jsxs3("span", { className: "notion-link-mention", children: [
+    /* @__PURE__ */ jsx5(LinkMentionInline, { metadata }),
+    /* @__PURE__ */ jsx5(LinkMentionPreview, { metadata })
   ] });
 }
 function LinkMentionInline({ metadata }) {
-  return /* @__PURE__ */ jsxs4(
+  return /* @__PURE__ */ jsxs3(
     "a",
     {
       href: metadata.href,
@@ -720,7 +623,7 @@ function LinkMentionInline({ metadata }) {
       rel: "noopener noreferrer",
       className: "notion-link-mention-link",
       children: [
-        /* @__PURE__ */ jsx8(
+        /* @__PURE__ */ jsx5(
           "img",
           {
             className: "notion-link-mention-icon",
@@ -728,15 +631,15 @@ function LinkMentionInline({ metadata }) {
             alt: metadata.link_provider
           }
         ),
-        metadata.link_provider && /* @__PURE__ */ jsx8("span", { className: "notion-link-mention-provider", children: metadata.link_provider }),
-        /* @__PURE__ */ jsx8("span", { className: "notion-link-mention-title", children: metadata.title })
+        metadata.link_provider && /* @__PURE__ */ jsx5("span", { className: "notion-link-mention-provider", children: metadata.link_provider }),
+        /* @__PURE__ */ jsx5("span", { className: "notion-link-mention-title", children: metadata.title })
       ]
     }
   );
 }
 function LinkMentionPreview({ metadata }) {
-  return /* @__PURE__ */ jsx8("div", { className: "notion-link-mention-preview", children: /* @__PURE__ */ jsxs4("article", { className: "notion-link-mention-card", children: [
-    /* @__PURE__ */ jsx8(
+  return /* @__PURE__ */ jsx5("div", { className: "notion-link-mention-preview", children: /* @__PURE__ */ jsxs3("article", { className: "notion-link-mention-card", children: [
+    /* @__PURE__ */ jsx5(
       "img",
       {
         className: "notion-link-mention-preview-thumbnail",
@@ -745,11 +648,11 @@ function LinkMentionPreview({ metadata }) {
         referrerPolicy: "same-origin"
       }
     ),
-    /* @__PURE__ */ jsxs4("div", { className: "notion-link-mention-preview-content", children: [
-      /* @__PURE__ */ jsx8("p", { className: "notion-link-mention-preview-title", children: metadata.title }),
-      /* @__PURE__ */ jsx8("p", { className: "notion-link-mention-preview-description", children: metadata.description }),
-      /* @__PURE__ */ jsxs4("div", { className: "notion-link-mention-preview-footer", children: [
-        /* @__PURE__ */ jsx8(
+    /* @__PURE__ */ jsxs3("div", { className: "notion-link-mention-preview-content", children: [
+      /* @__PURE__ */ jsx5("p", { className: "notion-link-mention-preview-title", children: metadata.title }),
+      /* @__PURE__ */ jsx5("p", { className: "notion-link-mention-preview-description", children: metadata.description }),
+      /* @__PURE__ */ jsxs3("div", { className: "notion-link-mention-preview-footer", children: [
+        /* @__PURE__ */ jsx5(
           "img",
           {
             className: "notion-link-mention-preview-icon",
@@ -758,14 +661,63 @@ function LinkMentionPreview({ metadata }) {
             referrerPolicy: "same-origin"
           }
         ),
-        /* @__PURE__ */ jsx8("span", { className: "notion-link-mention-preview-provider", children: metadata.link_provider })
+        /* @__PURE__ */ jsx5("span", { className: "notion-link-mention-preview-provider", children: metadata.link_provider })
       ] })
     ] })
   ] }) });
 }
 
+// src/components/page-title.tsx
+import "notion-types";
+import { getBlockTitle } from "notion-utils";
+import React3 from "react";
+import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
+function PageTitleImpl({
+  block,
+  className,
+  defaultIcon,
+  ...rest
+}) {
+  var _a, _b;
+  const { recordMap } = useNotionContext();
+  if (!block) return null;
+  if (block.type === "collection_view_page" || block.type === "collection_view") {
+    const title = getBlockTitle(block, recordMap);
+    if (!title) {
+      return null;
+    }
+    const titleDecoration = [[title]];
+    return /* @__PURE__ */ jsxs4("span", { className: cs("notion-page-title", className), ...rest, children: [
+      /* @__PURE__ */ jsx6(
+        PageIcon,
+        {
+          block,
+          defaultIcon,
+          className: "notion-page-title-icon"
+        }
+      ),
+      /* @__PURE__ */ jsx6("span", { className: "notion-page-title-text", children: /* @__PURE__ */ jsx6(Text, { value: titleDecoration, block }) })
+    ] });
+  }
+  if (!((_a = block.properties) == null ? void 0 : _a.title)) {
+    return null;
+  }
+  return /* @__PURE__ */ jsxs4("span", { className: cs("notion-page-title", className), ...rest, children: [
+    /* @__PURE__ */ jsx6(
+      PageIcon,
+      {
+        block,
+        defaultIcon,
+        className: "notion-page-title-icon"
+      }
+    ),
+    /* @__PURE__ */ jsx6("span", { className: "notion-page-title-text", children: /* @__PURE__ */ jsx6(Text, { value: (_b = block.properties) == null ? void 0 : _b.title, block }) })
+  ] });
+}
+var PageTitle = React3.memo(PageTitleImpl);
+
 // src/components/text.tsx
-import { Fragment, jsx as jsx9 } from "react/jsx-runtime";
+import { Fragment, jsx as jsx7 } from "react/jsx-runtime";
 function Text({
   value,
   block,
@@ -773,31 +725,31 @@ function Text({
   linkProtocol
 }) {
   const { components, recordMap, mapPageUrl, mapImageUrl, rootDomain } = useNotionContext();
-  return /* @__PURE__ */ jsx9(React6.Fragment, { children: value == null ? void 0 : value.map(([text, decorations], index) => {
+  return /* @__PURE__ */ jsx7(React4.Fragment, { children: value == null ? void 0 : value.map(([text, decorations], index) => {
     if (!decorations) {
       if (text === ",") {
-        return /* @__PURE__ */ jsx9("span", { style: { padding: "0.5em" } }, index);
+        return /* @__PURE__ */ jsx7("span", { style: { padding: "0.5em" } }, index);
       } else {
-        return /* @__PURE__ */ jsx9(React6.Fragment, { children: text }, index);
+        return /* @__PURE__ */ jsx7(React4.Fragment, { children: text }, index);
       }
     }
     const formatted = decorations.reduce(
       (element, decorator) => {
-        var _a, _b, _c, _d, _e;
+        var _a;
         switch (decorator[0]) {
           case "p": {
             const blockId = decorator[1];
-            const linkedBlock = (_a = recordMap.block[blockId]) == null ? void 0 : _a.value;
+            const linkedBlock = getBlockValue(recordMap.block[blockId]);
             if (!linkedBlock) {
               console.log('"p" missing block', blockId);
               return null;
             }
-            return /* @__PURE__ */ jsx9(
-              components.PageLink,
+            return /* @__PURE__ */ jsx7(
+              components.Link,
               {
                 className: "notion-link",
                 href: mapPageUrl(blockId),
-                children: /* @__PURE__ */ jsx9(PageTitle, { block: linkedBlock })
+                children: /* @__PURE__ */ jsx7(PageTitle, { block: linkedBlock })
               }
             );
           }
@@ -806,7 +758,7 @@ function Text({
             const id = decorator[1][1];
             switch (linkType) {
               case "u": {
-                const user = (_b = recordMap.notion_user[id]) == null ? void 0 : _b.value;
+                const user = getBlockValue(recordMap.notion_user[id]);
                 if (!user) {
                   console.log('"\u2023" missing user', id);
                   return null;
@@ -814,7 +766,7 @@ function Text({
                 const src = mapImageUrl(user.profile_photo, block);
                 if (!src) return null;
                 const name = [user.given_name, user.family_name].filter(Boolean).join(" ");
-                return /* @__PURE__ */ jsx9(
+                return /* @__PURE__ */ jsx7(
                   GracefulImage,
                   {
                     className: "notion-user",
@@ -824,39 +776,39 @@ function Text({
                 );
               }
               default: {
-                const linkedBlock = (_c = recordMap.block[id]) == null ? void 0 : _c.value;
+                const linkedBlock = getBlockValue(recordMap.block[id]);
                 if (!linkedBlock) {
                   console.log('"\u2023" missing block', linkType, id);
                   return null;
                 }
-                return /* @__PURE__ */ jsx9(
-                  components.PageLink,
+                return /* @__PURE__ */ jsx7(
+                  components.Link,
                   {
                     className: "notion-link",
                     href: mapPageUrl(id),
                     ...linkProps,
                     target: "_blank",
                     rel: "noopener noreferrer",
-                    children: /* @__PURE__ */ jsx9(PageTitle, { block: linkedBlock })
+                    children: /* @__PURE__ */ jsx7(PageTitle, { block: linkedBlock })
                   }
                 );
               }
             }
           }
           case "h":
-            return /* @__PURE__ */ jsx9("span", { className: `notion-${decorator[1]}`, children: element });
+            return /* @__PURE__ */ jsx7("span", { className: `notion-${decorator[1]}`, children: element });
           case "c":
-            return /* @__PURE__ */ jsx9("code", { className: "notion-inline-code", children: element });
+            return /* @__PURE__ */ jsx7("code", { className: "notion-inline-code", children: element });
           case "b":
-            return /* @__PURE__ */ jsx9("b", { children: element });
+            return /* @__PURE__ */ jsx7("b", { children: element });
           case "i":
-            return /* @__PURE__ */ jsx9("em", { children: element });
+            return /* @__PURE__ */ jsx7("em", { children: element });
           case "s":
-            return /* @__PURE__ */ jsx9("s", { children: element });
+            return /* @__PURE__ */ jsx7("s", { children: element });
           case "_":
-            return /* @__PURE__ */ jsx9("span", { className: "notion-inline-underscore", children: element });
+            return /* @__PURE__ */ jsx7("span", { className: "notion-inline-underscore", children: element });
           case "e":
-            return /* @__PURE__ */ jsx9(components.Equation, { math: decorator[1], inline: true });
+            return /* @__PURE__ */ jsx7(components.Equation, { math: decorator[1], inline: true });
           case "m":
             return element;
           //still need to return the base element
@@ -866,8 +818,8 @@ function Text({
             const id = parsePageId(pathname, { uuid: true });
             if (rootDomain && v.includes(rootDomain) || id && v[0] === "/") {
               const href = rootDomain && v.includes(rootDomain) ? v : `${mapPageUrl(id)}${getHashFragmentValue(v)}`;
-              return /* @__PURE__ */ jsx9(
-                components.PageLink,
+              return /* @__PURE__ */ jsx7(
+                components.Link,
                 {
                   className: "notion-link",
                   href,
@@ -876,7 +828,7 @@ function Text({
                 }
               );
             } else {
-              return /* @__PURE__ */ jsx9(
+              return /* @__PURE__ */ jsx7(
                 components.Link,
                 {
                   className: "notion-link",
@@ -907,7 +859,7 @@ function Text({
           }
           case "u": {
             const userId = decorator[1];
-            const user = (_d = recordMap.notion_user[userId]) == null ? void 0 : _d.value;
+            const user = getBlockValue(recordMap.notion_user[userId]);
             if (!user) {
               console.log("missing user", userId);
               return null;
@@ -915,16 +867,38 @@ function Text({
             const src = mapImageUrl(user.profile_photo, block);
             if (!src) return null;
             const name = [user.given_name, user.family_name].filter(Boolean).join(" ");
-            return /* @__PURE__ */ jsx9(GracefulImage, { className: "notion-user", src, alt: name });
+            return /* @__PURE__ */ jsx7(GracefulImage, { className: "notion-user", src, alt: name });
           }
           case "lm": {
             const metadata = decorator[1];
-            return /* @__PURE__ */ jsx9(LinkMention, { metadata });
+            return /* @__PURE__ */ jsx7(LinkMention, { metadata });
           }
           case "eoi": {
             const blockId = decorator[1];
-            const externalObjectInstance = (_e = recordMap.block[blockId]) == null ? void 0 : _e.value;
-            return /* @__PURE__ */ jsx9(EOI, { block: externalObjectInstance, inline: true });
+            const externalObjectInstance = getBlockValue(
+              recordMap.block[blockId]
+            );
+            if (!externalObjectInstance) {
+              console.log('"eoi" missing block', blockId);
+              return null;
+            }
+            return /* @__PURE__ */ jsx7(EOI, { block: externalObjectInstance, inline: true });
+          }
+          case "ce": {
+            const customEmojiId = decorator[1];
+            const emojiUrl = (_a = recordMap.custom_emojis) == null ? void 0 : _a[customEmojiId];
+            if (!emojiUrl) {
+              console.log("missing custom emoji", customEmojiId);
+              return null;
+            }
+            return /* @__PURE__ */ jsx7(
+              GracefulImage,
+              {
+                className: "notion-custom-emoji",
+                src: emojiUrl,
+                alt: "custom emoji"
+              }
+            );
           }
           case "si":
             return null;
@@ -935,57 +909,101 @@ function Text({
             return element;
         }
       },
-      /* @__PURE__ */ jsx9(Fragment, { children: text })
+      /* @__PURE__ */ jsx7(Fragment, { children: text })
     );
-    return /* @__PURE__ */ jsx9(React6.Fragment, { children: formatted }, index);
+    return /* @__PURE__ */ jsx7(React4.Fragment, { children: formatted }, index);
   }) });
 }
 
-// src/components/page-title.tsx
+// src/components/header.tsx
+import { getPageBreadcrumbs } from "notion-utils";
+import React9 from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+
+// src/icons/search-icon.tsx
+import "react";
+import { jsx as jsx8 } from "react/jsx-runtime";
+function SearchIcon(props) {
+  const { className, ...rest } = props;
+  return /* @__PURE__ */ jsx8("svg", { className: cs("notion-icon", className), viewBox: "0 0 17 17", ...rest, children: /* @__PURE__ */ jsx8("path", { d: "M6.78027 13.6729C8.24805 13.6729 9.60156 13.1982 10.709 12.4072L14.875 16.5732C15.0684 16.7666 15.3232 16.8633 15.5957 16.8633C16.167 16.8633 16.5713 16.4238 16.5713 15.8613C16.5713 15.5977 16.4834 15.3516 16.29 15.1582L12.1504 11.0098C13.0205 9.86719 13.5391 8.45215 13.5391 6.91406C13.5391 3.19629 10.498 0.155273 6.78027 0.155273C3.0625 0.155273 0.0214844 3.19629 0.0214844 6.91406C0.0214844 10.6318 3.0625 13.6729 6.78027 13.6729ZM6.78027 12.2139C3.87988 12.2139 1.48047 9.81445 1.48047 6.91406C1.48047 4.01367 3.87988 1.61426 6.78027 1.61426C9.68066 1.61426 12.0801 4.01367 12.0801 6.91406C12.0801 9.81445 9.68066 12.2139 6.78027 12.2139Z" }) });
+}
+
+// src/components/search-dialog.tsx
+var import_lodash = __toESM(require_lodash(), 1);
+import { getBlockParentPage, getBlockTitle as getBlockTitle2 } from "notion-utils";
+import React8 from "react";
+
+// src/icons/clear-icon.tsx
+import "react";
+import { jsx as jsx9 } from "react/jsx-runtime";
+function ClearIcon(props) {
+  const { className, ...rest } = props;
+  return /* @__PURE__ */ jsx9("svg", { className: cs("notion-icon", className), ...rest, viewBox: "0 0 30 30", children: /* @__PURE__ */ jsx9("path", { d: "M15,0C6.716,0,0,6.716,0,15s6.716,15,15,15s15-6.716,15-15S23.284,0,15,0z M22,20.6L20.6,22L15,16.4L9.4,22L8,20.6l5.6-5.6 L8,9.4L9.4,8l5.6,5.6L20.6,8L22,9.4L16.4,15L22,20.6z" }) });
+}
+
+// src/icons/loading-icon.tsx
+import "react";
 import { jsx as jsx10, jsxs as jsxs5 } from "react/jsx-runtime";
-function PageTitleImpl({
-  block,
-  className,
-  defaultIcon,
-  ...rest
-}) {
-  var _a, _b;
-  const { recordMap } = useNotionContext();
-  if (!block) return null;
-  if (block.type === "collection_view_page" || block.type === "collection_view") {
-    const title = getBlockTitle(block, recordMap);
-    if (!title) {
-      return null;
-    }
-    const titleDecoration = [[title]];
-    return /* @__PURE__ */ jsxs5("span", { className: cs("notion-page-title", className), ...rest, children: [
+function LoadingIcon(props) {
+  const { className, ...rest } = props;
+  return /* @__PURE__ */ jsxs5("svg", { className: cs("notion-icon", className), ...rest, viewBox: "0 0 24 24", children: [
+    /* @__PURE__ */ jsx10("defs", { children: /* @__PURE__ */ jsxs5(
+      "linearGradient",
+      {
+        x1: "28.1542969%",
+        y1: "63.7402344%",
+        x2: "74.6289062%",
+        y2: "17.7832031%",
+        id: "linearGradient-1",
+        children: [
+          /* @__PURE__ */ jsx10("stop", { stopColor: "rgba(164, 164, 164, 1)", offset: "0%" }),
+          /* @__PURE__ */ jsx10(
+            "stop",
+            {
+              stopColor: "rgba(164, 164, 164, 0)",
+              stopOpacity: "0",
+              offset: "100%"
+            }
+          )
+        ]
+      }
+    ) }),
+    /* @__PURE__ */ jsx10("g", { id: "Page-1", stroke: "none", strokeWidth: "1", fill: "none", children: /* @__PURE__ */ jsx10("g", { transform: "translate(-236.000000, -286.000000)", children: /* @__PURE__ */ jsxs5("g", { transform: "translate(238.000000, 286.000000)", children: [
       /* @__PURE__ */ jsx10(
-        PageIcon,
+        "circle",
         {
-          block,
-          defaultIcon,
-          className: "notion-page-title-icon"
+          id: "Oval-2",
+          stroke: "url(#linearGradient-1)",
+          strokeWidth: "4",
+          cx: "10",
+          cy: "12",
+          r: "10"
         }
       ),
-      /* @__PURE__ */ jsx10("span", { className: "notion-page-title-text", children: /* @__PURE__ */ jsx10(Text, { value: titleDecoration, block }) })
-    ] });
-  }
-  if (!((_a = block.properties) == null ? void 0 : _a.title)) {
-    return null;
-  }
-  return /* @__PURE__ */ jsxs5("span", { className: cs("notion-page-title", className), ...rest, children: [
-    /* @__PURE__ */ jsx10(
-      PageIcon,
-      {
-        block,
-        defaultIcon,
-        className: "notion-page-title-icon"
-      }
-    ),
-    /* @__PURE__ */ jsx10("span", { className: "notion-page-title-text", children: /* @__PURE__ */ jsx10(Text, { value: (_b = block.properties) == null ? void 0 : _b.title, block }) })
+      /* @__PURE__ */ jsx10(
+        "path",
+        {
+          d: "M10,2 C4.4771525,2 0,6.4771525 0,12",
+          id: "Oval-2",
+          stroke: "rgba(164, 164, 164, 1)",
+          strokeWidth: "4"
+        }
+      ),
+      /* @__PURE__ */ jsx10(
+        "rect",
+        {
+          id: "Rectangle-1",
+          fill: "rgba(164, 164, 164, 1)",
+          x: "8",
+          y: "0",
+          width: "4",
+          height: "4",
+          rx: "8"
+        }
+      )
+    ] }) }) })
   ] });
 }
-var PageTitle = React7.memo(PageTitleImpl);
 
 // src/components/search-dialog.tsx
 import { Fragment as Fragment2, jsx as jsx11, jsxs as jsxs6 } from "react/jsx-runtime";
@@ -2216,6 +2234,8 @@ var defaultComponents = {
   Checkbox,
   Callout: void 0,
   // use the built-in callout rendering by default
+  Button: void 0,
+  // use the built-in button rendering by default
   Code: dummyComponent("Code"),
   Equation: dummyComponent("Equation"),
   Collection: dummyComponent("Collection"),
@@ -2474,6 +2494,7 @@ function CollectionViewIcon({ type, ...rest }) {
 
 // src/third-party/collection-row.tsx
 import "notion-types";
+import { getBlockValue as getBlockValue2 } from "notion-utils";
 
 // src/third-party/collection-column-title.tsx
 import "notion-types";
@@ -3182,7 +3203,7 @@ var secondsInWeek = secondsInDay * 7;
 var secondsInYear = secondsInDay * daysInYear;
 var secondsInMonth = secondsInYear / 12;
 var secondsInQuarter = secondsInMonth * 3;
-var constructFromSymbol = Symbol.for("constructDateFrom");
+var constructFromSymbol = /* @__PURE__ */ Symbol.for("constructDateFrom");
 
 // ../../node_modules/.pnpm/date-fns@4.1.0/node_modules/date-fns/constructFrom.js
 function constructFrom(date, value) {
@@ -4933,25 +4954,50 @@ function PropertyImpl(props) {
   );
   const renderUrlValue = React16.useMemo(
     () => function UrlProperty() {
+      var _a2;
       if (!data) return null;
-      const d = structuredClone(data);
-      if (inline) {
-        try {
-          const url = new URL(d[0][0]);
-          d[0][0] = url.hostname.replace(/^www\./, "");
-        } catch (e) {
+      const rawUrl = (_a2 = data[0]) == null ? void 0 : _a2[0];
+      if (!rawUrl) return null;
+      let domain = rawUrl;
+      let path = "";
+      let fullUrl = rawUrl;
+      try {
+        const url = new URL(rawUrl);
+        domain = url.hostname.replace(/^www\./, "");
+        const rawPath = url.pathname === "/" ? "" : url.pathname;
+        fullUrl = url.href;
+        if (rawPath && rawPath.length > 20) {
+          const head = rawPath.slice(0, 8);
+          const tail = rawPath.slice(-8);
+          path = `${head}...${tail}`;
+        } else {
+          path = rawPath;
         }
-      }
-      return /* @__PURE__ */ jsx48(
-        Text,
-        {
-          value: d,
-          block,
-          inline,
-          linkProps: {
-            target: "_blank",
-            rel: "noreferrer noopener"
+      } catch (e) {
+        return /* @__PURE__ */ jsx48(
+          Text,
+          {
+            value: data,
+            block,
+            inline,
+            linkProps: {
+              target: "_blank",
+              rel: "noreferrer noopener"
+            }
           }
+        );
+      }
+      return /* @__PURE__ */ jsxs12(
+        "a",
+        {
+          href: fullUrl,
+          target: "_blank",
+          rel: "noreferrer noopener",
+          className: "notion-link",
+          children: [
+            /* @__PURE__ */ jsx48("span", { className: "notion-url-domain", children: domain }),
+            path && /* @__PURE__ */ jsx48("span", { className: "notion-url-path", children: path })
+          ]
         }
       );
     },
@@ -5243,7 +5289,13 @@ function PropertyImpl(props) {
       case "select":
       // intentional fallthrough
       case "multi_select": {
-        const values = (((_c = data == null ? void 0 : data[0]) == null ? void 0 : _c[0]) || "").split(",");
+        const originalValues = (((_c = data == null ? void 0 : data[0]) == null ? void 0 : _c[0]) || "").split(",");
+        const values = originalValues.filter(
+          (value) => {
+            var _a2;
+            return (_a2 = schema.options) == null ? void 0 : _a2.some((option) => value === option.value);
+          }
+        );
         content = values.map((value, index) => {
           var _a2;
           const option = (_a2 = schema.options) == null ? void 0 : _a2.find(
@@ -5341,16 +5393,16 @@ function CollectionRow({
   pageHeader = false,
   className
 }) {
-  var _a, _b, _c, _d;
+  var _a, _b, _c;
   const { recordMap } = useNotionContext();
   const collectionId = block.parent_id;
-  const collection = (_a = recordMap.collection[collectionId]) == null ? void 0 : _a.value;
+  const collection = getBlockValue2(recordMap.collection[collectionId]);
   const schemas = collection == null ? void 0 : collection.schema;
   if (!collection || !schemas) {
     return null;
   }
   let propertyIds = Object.keys(schemas).filter((id) => id !== "title");
-  if ((_b = collection.format) == null ? void 0 : _b.property_visibility) {
+  if ((_a = collection.format) == null ? void 0 : _a.property_visibility) {
     propertyIds = propertyIds.filter(
       (id) => {
         var _a2, _b2, _c2;
@@ -5360,9 +5412,9 @@ function CollectionRow({
       }
     );
   }
-  if ((_c = collection.format) == null ? void 0 : _c.collection_page_properties) {
+  if ((_b = collection.format) == null ? void 0 : _b.collection_page_properties) {
     const idToIndex = Object.fromEntries(
-      (_d = collection.format) == null ? void 0 : _d.collection_page_properties.map((p, i) => [
+      (_c = collection.format) == null ? void 0 : _c.collection_page_properties.map((p, i) => [
         p.property,
         i
       ])
@@ -5393,10 +5445,11 @@ function CollectionRow({
 }
 
 // src/third-party/collection-view.tsx
-import React19 from "react";
+import React23 from "react";
 
 // src/third-party/collection-view-board.tsx
 import "notion-types";
+import { getBlockValue as getBlockValue3 } from "notion-utils";
 import React18 from "react";
 
 // src/icons/empty-icon.tsx
@@ -5809,7 +5862,7 @@ function getCollectionCardCoverCandidate({
   cardCoverPosition
 }) {
   var _a;
-  if (cover.type !== "page_content") {
+  if (cover.type !== "page_content" && cover.type !== "page_content_first") {
     return null;
   }
   const objectPosition = `center ${cardCoverPosition}%`;
@@ -5871,7 +5924,7 @@ function CollectionCard({
   const { page_cover_position = 0.5, card_cover_position = 0.5 } = block.format || {};
   const coverPosition = (1 - page_cover_position) * 100;
   const cardCoverPosition = (1 - card_cover_position) * 100;
-  if ((cover == null ? void 0 : cover.type) === "page_content") {
+  if ((cover == null ? void 0 : cover.type) === "page_content" || (cover == null ? void 0 : cover.type) === "page_content_first") {
     const candidate = getCollectionCardCoverCandidate({
       block,
       cover,
@@ -5957,7 +6010,7 @@ function CollectionCard({
     }
   }
   if (!coverContent) {
-    if ((cover == null ? void 0 : cover.type) === "page_content") {
+    if ((cover == null ? void 0 : cover.type) === "page_content" || (cover == null ? void 0 : cover.type) === "page_content_first") {
       coverContent = /* @__PURE__ */ jsx51("div", { className: "notion-collection-card-cover-empty" });
     }
   }
@@ -6237,8 +6290,10 @@ function Board({
             return null;
           }
           return /* @__PURE__ */ jsx53("div", { className: "notion-board-group", children: (_e = group.blockIds) == null ? void 0 : _e.map((blockId) => {
-            var _a3, _b3;
-            const block = (_a3 = recordMap.block[blockId]) == null ? void 0 : _a3.value;
+            var _a3;
+            const block = getBlockValue3(
+              recordMap.block[blockId]
+            );
             if (!block) return null;
             return /* @__PURE__ */ jsx53(
               CollectionCard,
@@ -6249,7 +6304,7 @@ function Board({
                 cover: board_cover,
                 coverSize: board_cover_size,
                 coverAspect: board_cover_aspect,
-                properties: (_b3 = collectionView.format) == null ? void 0 : _b3.board_properties
+                properties: (_a3 = collectionView.format) == null ? void 0 : _a3.board_properties
               },
               blockId
             );
@@ -6262,7 +6317,9 @@ function Board({
 
 // src/third-party/collection-view-gallery.tsx
 import "notion-types";
-import { jsx as jsx54 } from "react/jsx-runtime";
+import { getBlockValue as getBlockValue4 } from "notion-utils";
+import React19 from "react";
+import { jsx as jsx54, jsxs as jsxs17 } from "react/jsx-runtime";
 var defaultBlockIds = [];
 function CollectionViewGallery({
   collection,
@@ -6305,39 +6362,76 @@ function Gallery({
   const {
     gallery_cover = { type: "none" },
     gallery_cover_size = "medium",
-    gallery_cover_aspect = "cover"
+    gallery_cover_aspect = "cover",
+    inline_collection_first_load_limit
   } = collectionView.format || {};
-  return /* @__PURE__ */ jsx54("div", { className: "notion-gallery", children: /* @__PURE__ */ jsx54("div", { className: "notion-gallery-view", children: /* @__PURE__ */ jsx54(
-    "div",
-    {
-      className: cs(
-        "notion-gallery-grid",
-        `notion-gallery-grid-size-${gallery_cover_size}`
-      ),
-      children: blockIds == null ? void 0 : blockIds.map((blockId) => {
-        var _a, _b;
-        const block = (_a = recordMap.block[blockId]) == null ? void 0 : _a.value;
-        if (!block) return null;
-        return /* @__PURE__ */ jsx54(
-          CollectionCard,
-          {
-            collection,
-            block,
-            cover: gallery_cover,
-            coverSize: gallery_cover_size,
-            coverAspect: gallery_cover_aspect,
-            properties: (_b = collectionView.format) == null ? void 0 : _b.gallery_properties
-          },
-          blockId
-        );
-      })
-    }
-  ) }) });
+  const [isExpanded, setIsExpanded] = React19.useState(false);
+  const loadLimit = inline_collection_first_load_limit == null ? void 0 : inline_collection_first_load_limit.limit;
+  const shouldLimit = typeof loadLimit === "number";
+  const showLoadMore = shouldLimit && !isExpanded && ((blockIds == null ? void 0 : blockIds.length) || 0) > loadLimit;
+  const visibleBlockIds = showLoadMore ? blockIds == null ? void 0 : blockIds.slice(0, loadLimit) : blockIds;
+  return /* @__PURE__ */ jsxs17("div", { className: "notion-gallery", children: [
+    /* @__PURE__ */ jsx54("div", { className: "notion-gallery-view", children: /* @__PURE__ */ jsx54(
+      "div",
+      {
+        className: cs(
+          "notion-gallery-grid",
+          `notion-gallery-grid-size-${gallery_cover_size}`
+        ),
+        children: visibleBlockIds == null ? void 0 : visibleBlockIds.map((blockId) => {
+          var _a;
+          const block = getBlockValue4(recordMap.block[blockId]);
+          if (!block) return null;
+          return /* @__PURE__ */ jsx54(
+            CollectionCard,
+            {
+              collection,
+              block,
+              cover: gallery_cover,
+              coverSize: gallery_cover_size,
+              coverAspect: gallery_cover_aspect,
+              properties: (_a = collectionView.format) == null ? void 0 : _a.gallery_properties
+            },
+            blockId
+          );
+        })
+      }
+    ) }),
+    showLoadMore && /* @__PURE__ */ jsxs17(
+      "div",
+      {
+        className: "notion-collection-load-more",
+        onClick: () => setIsExpanded(true),
+        children: [
+          /* @__PURE__ */ jsxs17(
+            "svg",
+            {
+              viewBox: "0 0 24 24",
+              height: "16",
+              width: "16",
+              fill: "none",
+              stroke: "currentColor",
+              strokeWidth: "2",
+              strokeLinecap: "round",
+              strokeLinejoin: "round",
+              children: [
+                /* @__PURE__ */ jsx54("path", { d: "M12 5v14" }),
+                /* @__PURE__ */ jsx54("path", { d: "m19 12-7 7-7-7" })
+              ]
+            }
+          ),
+          "Load more"
+        ]
+      }
+    )
+  ] });
 }
 
 // src/third-party/collection-view-list.tsx
 import "notion-types";
-import { jsx as jsx55, jsxs as jsxs17 } from "react/jsx-runtime";
+import { getBlockValue as getBlockValue5 } from "notion-utils";
+import React20 from "react";
+import { jsx as jsx55, jsxs as jsxs18 } from "react/jsx-runtime";
 var defaultBlockIds2 = [];
 function CollectionViewList({
   collection,
@@ -6370,68 +6464,107 @@ function List({
   collectionView
 }) {
   const { components, recordMap, mapPageUrl } = useNotionContext();
-  return /* @__PURE__ */ jsx55("div", { className: "notion-list-collection", children: /* @__PURE__ */ jsx55("div", { className: "notion-list-view", children: /* @__PURE__ */ jsx55("div", { className: "notion-list-body", children: blockIds == null ? void 0 : blockIds.map((blockId) => {
-    var _a, _b, _c, _d;
-    const block = (_a = recordMap.block[blockId]) == null ? void 0 : _a.value;
-    if (!block) return null;
-    const titleSchema = collection.schema.title;
-    const titleData = (_b = block == null ? void 0 : block.properties) == null ? void 0 : _b.title;
-    return /* @__PURE__ */ jsxs17(
-      components.PageLink,
+  const [isExpanded, setIsExpanded] = React20.useState(false);
+  const { inline_collection_first_load_limit } = collectionView.format || {};
+  const loadLimit = inline_collection_first_load_limit == null ? void 0 : inline_collection_first_load_limit.limit;
+  const shouldLimit = typeof loadLimit === "number";
+  const showLoadMore = shouldLimit && !isExpanded && ((blockIds == null ? void 0 : blockIds.length) || 0) > loadLimit;
+  const visibleBlockIds = showLoadMore ? blockIds == null ? void 0 : blockIds.slice(0, loadLimit) : blockIds;
+  return /* @__PURE__ */ jsxs18("div", { className: "notion-list-collection", children: [
+    /* @__PURE__ */ jsx55("div", { className: "notion-list-view", children: /* @__PURE__ */ jsx55("div", { className: "notion-list-body", children: visibleBlockIds == null ? void 0 : visibleBlockIds.map((blockId) => {
+      var _a, _b, _c;
+      const block = getBlockValue5(recordMap.block[blockId]);
+      if (!block) return null;
+      const titleSchema = collection.schema.title;
+      const titleData = (_a = block == null ? void 0 : block.properties) == null ? void 0 : _a.title;
+      return /* @__PURE__ */ jsxs18(
+        components.PageLink,
+        {
+          className: "notion-list-item notion-page-link",
+          href: mapPageUrl(block.id),
+          children: [
+            /* @__PURE__ */ jsxs18("div", { className: "notion-list-item-title", children: [
+              /* @__PURE__ */ jsx55(
+                PageIcon,
+                {
+                  block,
+                  className: "notion-page-title-icon",
+                  hideDefaultIcon: true
+                }
+              ),
+              /* @__PURE__ */ jsx55(
+                Property,
+                {
+                  schema: titleSchema,
+                  data: titleData,
+                  block,
+                  collection,
+                  linkToTitlePage: false
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsx55("div", { className: "notion-list-item-body", children: (_c = (_b = collectionView.format) == null ? void 0 : _b.list_properties) == null ? void 0 : _c.filter((p) => p.visible && p.property !== "title").map((p) => {
+              var _a2;
+              const schema = collection.schema[p.property];
+              const data = block && ((_a2 = block.properties) == null ? void 0 : _a2[p.property]);
+              if (!schema) {
+                return null;
+              }
+              return /* @__PURE__ */ jsx55(
+                "div",
+                {
+                  className: "notion-list-item-property",
+                  children: /* @__PURE__ */ jsx55(
+                    Property,
+                    {
+                      schema,
+                      data,
+                      block,
+                      collection
+                    }
+                  )
+                },
+                p.property
+              );
+            }) })
+          ]
+        },
+        blockId
+      );
+    }) }) }),
+    showLoadMore && /* @__PURE__ */ jsxs18(
+      "div",
       {
-        className: "notion-list-item notion-page-link",
-        href: mapPageUrl(block.id),
+        className: "notion-collection-load-more",
+        onClick: () => setIsExpanded(true),
         children: [
-          /* @__PURE__ */ jsxs17("div", { className: "notion-list-item-title", children: [
-            /* @__PURE__ */ jsx55(
-              PageIcon,
-              {
-                block,
-                className: "notion-page-title-icon",
-                hideDefaultIcon: true
-              }
-            ),
-            /* @__PURE__ */ jsx55(
-              Property,
-              {
-                schema: titleSchema,
-                data: titleData,
-                block,
-                collection,
-                linkToTitlePage: false
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsx55("div", { className: "notion-list-item-body", children: (_d = (_c = collectionView.format) == null ? void 0 : _c.list_properties) == null ? void 0 : _d.filter((p) => p.visible).map((p) => {
-            var _a2;
-            const schema = collection.schema[p.property];
-            const data = block && ((_a2 = block.properties) == null ? void 0 : _a2[p.property]);
-            if (!schema) {
-              return null;
+          /* @__PURE__ */ jsxs18(
+            "svg",
+            {
+              viewBox: "0 0 24 24",
+              height: "16",
+              width: "16",
+              fill: "none",
+              stroke: "currentColor",
+              strokeWidth: "2",
+              strokeLinecap: "round",
+              strokeLinejoin: "round",
+              children: [
+                /* @__PURE__ */ jsx55("path", { d: "M12 5v14" }),
+                /* @__PURE__ */ jsx55("path", { d: "m19 12-7 7-7-7" })
+              ]
             }
-            return /* @__PURE__ */ jsx55(
-              "div",
-              {
-                className: "notion-list-item-property",
-                children: /* @__PURE__ */ jsx55(
-                  Property,
-                  {
-                    schema,
-                    data,
-                    block,
-                    collection
-                  }
-                )
-              },
-              p.property
-            );
-          }) })
+          ),
+          "Load more"
         ]
-      },
-      blockId
-    );
-  }) }) }) });
+      }
+    )
+  ] });
 }
+
+// src/third-party/collection-view-table.tsx
+import { getBlockValue as getBlockValue6 } from "notion-utils";
+import React22 from "react";
 
 // src/third-party/react-use.ts
 import {
@@ -6547,7 +6680,6 @@ var useLocalStorage = (key, initialValue, options) => {
       } catch (e) {
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [key, setState]
   );
   const remove = useCallback(() => {
@@ -6567,8 +6699,103 @@ var useClientStyle = (clientStyle, serverStyle = {}) => {
   return isMounted ? clientStyle : serverStyle;
 };
 
+// src/third-party/table-cell-tooltip.tsx
+import React21 from "react";
+import { createPortal } from "react-dom";
+import { jsx as jsx56 } from "react/jsx-runtime";
+function TableCellTooltip({
+  tableRef
+}) {
+  const [tooltip, setTooltip] = React21.useState(null);
+  const hideTimeout = React21.useRef(void 0);
+  React21.useEffect(() => {
+    const tableEl = tableRef.current;
+    if (!tableEl) return;
+    function handleMouseEnter(e) {
+      var _a, _b;
+      const cell = (_b = (_a = e.target).closest) == null ? void 0 : _b.call(
+        _a,
+        ".notion-table-cell-nowrap"
+      );
+      if (!cell) return;
+      if (cell.classList.contains("notion-table-cell-url")) return;
+      let isTruncated = cell.scrollWidth > cell.clientWidth;
+      let tooltipEl = cell;
+      if (!isTruncated) {
+        const selectItem = cell.querySelector(
+          ".notion-property-select-item, .notion-property-multi_select-item"
+        );
+        if (selectItem && selectItem.scrollWidth > selectItem.clientWidth) {
+          isTruncated = true;
+          tooltipEl = selectItem;
+        }
+      }
+      if (!isTruncated) return;
+      if (hideTimeout.current) {
+        clearTimeout(hideTimeout.current);
+        hideTimeout.current = void 0;
+      }
+      const rect = cell.getBoundingClientRect();
+      setTooltip({ html: tooltipEl.innerHTML, rect });
+    }
+    function handleMouseLeave(e) {
+      var _a, _b;
+      const cell = (_b = (_a = e.target).closest) == null ? void 0 : _b.call(
+        _a,
+        ".notion-table-cell-nowrap"
+      );
+      if (!cell) return;
+      hideTimeout.current = window.setTimeout(() => {
+        setTooltip(null);
+      }, 50);
+    }
+    tableEl.addEventListener("mouseenter", handleMouseEnter, true);
+    tableEl.addEventListener("mouseleave", handleMouseLeave, true);
+    return () => {
+      tableEl.removeEventListener("mouseenter", handleMouseEnter, true);
+      tableEl.removeEventListener("mouseleave", handleMouseLeave, true);
+      if (hideTimeout.current) {
+        clearTimeout(hideTimeout.current);
+      }
+    };
+  }, [tableRef]);
+  if (!tooltip || typeof document === "undefined") return null;
+  const style = {
+    position: "fixed",
+    left: tooltip.rect.left,
+    top: tooltip.rect.top - 6,
+    transform: "translateY(-100%)",
+    minWidth: tooltip.rect.width,
+    maxWidth: "calc(100vw - 24px)",
+    zIndex: 100,
+    background: "rgb(44, 44, 43)",
+    color: "rgb(240, 239, 237)",
+    borderRadius: 6,
+    padding: "5px 8px",
+    fontSize: 12,
+    lineHeight: 1.4,
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+    boxShadow: "rgba(0,0,0,0.08) 0 4px 12px -2px, rgba(255,255,255,0.05) 0 0 0 1px inset",
+    pointerEvents: "none",
+    opacity: 1,
+    transition: "opacity 50ms ease-out"
+  };
+  return createPortal(
+    /* @__PURE__ */ jsx56(
+      "div",
+      {
+        className: "notion-table-cell-tooltip",
+        style,
+        dangerouslySetInnerHTML: { __html: tooltip.html }
+      }
+    ),
+    document.body
+  );
+}
+
 // src/third-party/collection-view-table.tsx
-import { Fragment as Fragment7, jsx as jsx56, jsxs as jsxs18 } from "react/jsx-runtime";
+import { Fragment as Fragment7, jsx as jsx57, jsxs as jsxs19 } from "react/jsx-runtime";
 var defaultBlockIds3 = [];
 function CollectionViewTable({
   collection,
@@ -6587,11 +6814,11 @@ function CollectionViewTable({
       padding,
       width
     );
-    return collectionGroups.map((group, index) => /* @__PURE__ */ jsx56(
+    return collectionGroups.map((group, index) => /* @__PURE__ */ jsx57(
       CollectionGroup,
       {
         ...group,
-        collectionViewComponent: (props) => /* @__PURE__ */ jsx56(Table, { ...props, padding, width }),
+        collectionViewComponent: (props) => /* @__PURE__ */ jsx57(Table, { ...props, padding, width }),
         summaryProps: {
           style: {
             paddingLeft: padding,
@@ -6603,7 +6830,7 @@ function CollectionViewTable({
     ));
   }
   const blockIds = ((_c = (_b = collectionData.collection_group_results) == null ? void 0 : _b.blockIds) != null ? _c : collectionData.blockIds) || defaultBlockIds3;
-  return /* @__PURE__ */ jsx56(
+  return /* @__PURE__ */ jsx57(
     Table,
     {
       blockIds,
@@ -6621,8 +6848,16 @@ function Table({
   width,
   padding
 }) {
-  var _a;
+  var _a, _b, _c;
   const { recordMap, linkTableTitleProperties } = useNotionContext();
+  const [isExpanded, setIsExpanded] = React22.useState(false);
+  const tableWrap = (_b = (_a = collectionView.format) == null ? void 0 : _a.table_wrap) != null ? _b : false;
+  const tableRef = React22.useRef(null);
+  const { inline_collection_first_load_limit } = collectionView.format || {};
+  const loadLimit = inline_collection_first_load_limit == null ? void 0 : inline_collection_first_load_limit.limit;
+  const shouldLimit = typeof loadLimit === "number";
+  const showLoadMore = shouldLimit && !isExpanded && ((blockIds == null ? void 0 : blockIds.length) || 0) > loadLimit;
+  const visibleBlockIds = showLoadMore ? blockIds == null ? void 0 : blockIds.slice(0, loadLimit) : blockIds;
   const tableStyle = useClientStyle(
     {
       width,
@@ -6635,7 +6870,7 @@ function Table({
     paddingRight: padding
   });
   let properties = [];
-  if ((_a = collectionView.format) == null ? void 0 : _a.table_properties) {
+  if ((_c = collectionView.format) == null ? void 0 : _c.table_properties) {
     properties = collectionView.format.table_properties.filter(
       (p) => p.visible && collection.schema[p.property]
     );
@@ -6644,97 +6879,129 @@ function Table({
       Object.keys(collection.schema).filter((p) => p !== "title").map((property) => ({ property }))
     );
   }
-  return /* @__PURE__ */ jsx56("div", { className: "notion-table", style: tableStyle, children: /* @__PURE__ */ jsx56("div", { className: "notion-table-view", style: tableViewStyle, children: !!properties.length && /* @__PURE__ */ jsxs18(Fragment7, { children: [
-    /* @__PURE__ */ jsx56("div", { className: "notion-table-header", children: /* @__PURE__ */ jsx56("div", { className: "notion-table-header-inner", children: properties.map((p) => {
-      var _a2;
-      const schema = (_a2 = collection.schema) == null ? void 0 : _a2[p.property];
-      const isTitle = p.property === "title";
-      const style = {};
-      if (p.width) {
-        style.width = p.width;
-      } else if (isTitle) {
-        style.width = 280;
-      } else {
-        style.width = 200;
-      }
-      return /* @__PURE__ */ jsx56("div", { className: "notion-table-th", children: /* @__PURE__ */ jsx56(
-        "div",
-        {
-          className: "notion-table-view-header-cell",
-          style,
-          children: /* @__PURE__ */ jsx56("div", { className: "notion-table-view-header-cell-inner", children: schema && /* @__PURE__ */ jsx56(CollectionColumnTitle, { schema }) })
+  return /* @__PURE__ */ jsxs19("div", { className: "notion-table", style: tableStyle, ref: tableRef, children: [
+    /* @__PURE__ */ jsx57("div", { className: "notion-table-view", style: tableViewStyle, children: !!properties.length && /* @__PURE__ */ jsxs19(Fragment7, { children: [
+      /* @__PURE__ */ jsx57("div", { className: "notion-table-header", children: /* @__PURE__ */ jsx57("div", { className: "notion-table-header-inner", children: properties.map((p) => {
+        var _a2;
+        const schema = (_a2 = collection.schema) == null ? void 0 : _a2[p.property];
+        const isTitle = p.property === "title";
+        const style = {};
+        if (p.width) {
+          style.width = p.width;
+        } else if (isTitle) {
+          style.width = 280;
+        } else {
+          style.width = 200;
         }
-      ) }, p.property);
-    }) }) }),
-    /* @__PURE__ */ jsx56("div", { className: "notion-table-header-placeholder" }),
-    /* @__PURE__ */ jsx56("div", { className: "notion-table-body", children: blockIds == null ? void 0 : blockIds.map((blockId) => /* @__PURE__ */ jsx56("div", { className: "notion-table-row", children: properties.map((p) => {
-      var _a2, _b, _c;
-      const schema = (_a2 = collection.schema) == null ? void 0 : _a2[p.property];
-      const block = (_b = recordMap.block[blockId]) == null ? void 0 : _b.value;
-      const data = (_c = block == null ? void 0 : block.properties) == null ? void 0 : _c[p.property];
-      const isTitle = p.property === "title";
-      const style = {};
-      if (p.width) {
-        style.width = p.width;
-      } else if (isTitle) {
-        style.width = 280;
-      } else {
-        style.width = 200;
-      }
-      return /* @__PURE__ */ jsx56(
-        "div",
-        {
-          className: cs(
-            "notion-table-cell",
-            `notion-table-cell-${schema == null ? void 0 : schema.type}`
-          ),
-          style,
-          children: /* @__PURE__ */ jsx56(
-            Property,
+        return /* @__PURE__ */ jsx57("div", { className: "notion-table-th", children: /* @__PURE__ */ jsx57(
+          "div",
+          {
+            className: "notion-table-view-header-cell",
+            style,
+            children: /* @__PURE__ */ jsx57("div", { className: "notion-table-view-header-cell-inner", children: schema && /* @__PURE__ */ jsx57(CollectionColumnTitle, { schema }) })
+          }
+        ) }, p.property);
+      }) }) }),
+      /* @__PURE__ */ jsx57("div", { className: "notion-table-header-placeholder" }),
+      /* @__PURE__ */ jsx57("div", { className: "notion-table-body", children: visibleBlockIds == null ? void 0 : visibleBlockIds.map((blockId) => /* @__PURE__ */ jsx57("div", { className: "notion-table-row", children: properties.map((p) => {
+        var _a2, _b2, _c2;
+        const schema = (_a2 = collection.schema) == null ? void 0 : _a2[p.property];
+        const block = getBlockValue6(recordMap.block[blockId]);
+        const data = (_b2 = block == null ? void 0 : block.properties) == null ? void 0 : _b2[p.property];
+        const isTitle = p.property === "title";
+        const style = {};
+        if (p.width) {
+          style.width = p.width;
+        } else if (isTitle) {
+          style.width = 280;
+        } else {
+          style.width = 200;
+        }
+        const cellWrap = (_c2 = p.wrap) != null ? _c2 : tableWrap;
+        return /* @__PURE__ */ jsx57(
+          "div",
+          {
+            className: cs(
+              "notion-table-cell",
+              `notion-table-cell-${schema == null ? void 0 : schema.type}`,
+              !cellWrap && "notion-table-cell-nowrap"
+            ),
+            style,
+            children: /* @__PURE__ */ jsx57(
+              Property,
+              {
+                schema,
+                data,
+                block,
+                collection,
+                linkToTitlePage: linkTableTitleProperties
+              }
+            )
+          },
+          p.property
+        );
+      }) }, blockId)) }),
+      /* @__PURE__ */ jsx57(TableCellTooltip, { tableRef })
+    ] }) }),
+    showLoadMore && /* @__PURE__ */ jsxs19(
+      "div",
+      {
+        className: "notion-collection-load-more",
+        onClick: () => setIsExpanded(true),
+        children: [
+          /* @__PURE__ */ jsxs19(
+            "svg",
             {
-              schema,
-              data,
-              block,
-              collection,
-              linkToTitlePage: linkTableTitleProperties
+              viewBox: "0 0 24 24",
+              height: "16",
+              width: "16",
+              fill: "none",
+              stroke: "currentColor",
+              strokeWidth: "2",
+              strokeLinecap: "round",
+              strokeLinejoin: "round",
+              children: [
+                /* @__PURE__ */ jsx57("path", { d: "M12 5v14" }),
+                /* @__PURE__ */ jsx57("path", { d: "m19 12-7 7-7-7" })
+              ]
             }
-          )
-        },
-        p.property
-      );
-    }) }, blockId)) })
-  ] }) }) });
+          ),
+          "Load more"
+        ]
+      }
+    )
+  ] });
 }
 
 // src/third-party/collection-view.tsx
-import { jsx as jsx57 } from "react/jsx-runtime";
+import { jsx as jsx58 } from "react/jsx-runtime";
 function CollectionViewImpl(props) {
   const { collectionView } = props;
   switch (collectionView.type) {
     case "table":
-      return /* @__PURE__ */ jsx57(CollectionViewTable, { ...props });
+      return /* @__PURE__ */ jsx58(CollectionViewTable, { ...props });
     case "gallery":
-      return /* @__PURE__ */ jsx57(CollectionViewGallery, { ...props });
+      return /* @__PURE__ */ jsx58(CollectionViewGallery, { ...props });
     case "list":
-      return /* @__PURE__ */ jsx57(CollectionViewList, { ...props });
+      return /* @__PURE__ */ jsx58(CollectionViewList, { ...props });
     case "board":
-      return /* @__PURE__ */ jsx57(CollectionViewBoard, { ...props });
+      return /* @__PURE__ */ jsx58(CollectionViewBoard, { ...props });
     default:
       console.warn("unsupported collection view", collectionView);
       return null;
   }
 }
-var CollectionView = React19.memo(CollectionViewImpl);
+var CollectionView = React23.memo(CollectionViewImpl);
 
 // src/third-party/collection.tsx
-import { Fragment as Fragment8, jsx as jsx58, jsxs as jsxs19 } from "react/jsx-runtime";
+import { Fragment as Fragment8, jsx as jsx59, jsxs as jsxs20 } from "react/jsx-runtime";
 var isServer2 = !globalThis.window;
 function Collection({
   block,
   className,
   ctx: ctx2
 }) {
-  const context = React20.useMemo(
+  const context = React24.useMemo(
     () => ({
       ...ctx2
     }),
@@ -6744,7 +7011,7 @@ function Collection({
     if (block.parent_table !== "collection") {
       return null;
     }
-    return /* @__PURE__ */ jsx58(NotionContextProvider, { ...context, children: /* @__PURE__ */ jsx58("div", { className: "notion-collection-page-properties", children: /* @__PURE__ */ jsx58(
+    return /* @__PURE__ */ jsx59(NotionContextProvider, { ...context, children: /* @__PURE__ */ jsx59("div", { className: "notion-collection-page-properties", children: /* @__PURE__ */ jsx59(
       CollectionRow,
       {
         block,
@@ -6753,19 +7020,19 @@ function Collection({
       }
     ) }) });
   } else {
-    return /* @__PURE__ */ jsx58(NotionContextProvider, { ...context, children: /* @__PURE__ */ jsx58(CollectionViewBlock, { block, className }) });
+    return /* @__PURE__ */ jsx59(NotionContextProvider, { ...context, children: /* @__PURE__ */ jsx59(CollectionViewBlock, { block, className }) });
   }
 }
 function CollectionViewBlock({
   block,
   className
 }) {
-  var _a, _b, _c, _d;
+  var _a, _b, _c;
   const { recordMap, showCollectionViewDropdown } = useNotionContext();
   const { view_ids: viewIds } = block;
   const collectionId = getBlockCollectionId(block, recordMap);
-  const [isMounted, setIsMounted] = React20.useState(false);
-  React20.useEffect(() => {
+  const [isMounted, setIsMounted] = React24.useState(false);
+  React24.useEffect(() => {
     setIsMounted(true);
   }, []);
   const defaultCollectionViewId = viewIds[0];
@@ -6773,7 +7040,7 @@ function CollectionViewBlock({
     collectionViewId: defaultCollectionViewId
   });
   const collectionViewId = isMounted && viewIds.find((id) => id && id === (collectionState == null ? void 0 : collectionState.collectionViewId)) || defaultCollectionViewId;
-  const onChangeView = React20.useCallback(
+  const onChangeView = React24.useCallback(
     (collectionViewId2) => {
       console.log("change collection view", collectionViewId2);
       setCollectionState({
@@ -6787,11 +7054,13 @@ function CollectionViewBlock({
   if (isServer2) {
     windowWidth = 1024;
   }
-  const collection = (_a = recordMap.collection[collectionId]) == null ? void 0 : _a.value;
-  const collectionView = (_b = recordMap.collection_view[collectionViewId]) == null ? void 0 : _b.value;
-  const collectionData = (_c = recordMap.collection_query[collectionId]) == null ? void 0 : _c[collectionViewId];
+  const collection = getBlockValue7(recordMap.collection[collectionId]);
+  const collectionView = getBlockValue7(
+    recordMap.collection_view[collectionViewId]
+  );
+  const collectionData = (_a = recordMap.collection_query[collectionId]) == null ? void 0 : _a[collectionViewId];
   const parentPage = getBlockParentPage2(block, recordMap);
-  const { width, padding } = React20.useMemo(() => {
+  const { width, padding } = React24.useMemo(() => {
     var _a2;
     const style = {};
     if ((collectionView == null ? void 0 : collectionView.type) !== "table" && (collectionView == null ? void 0 : collectionView.type) !== "board") {
@@ -6829,16 +7098,16 @@ function CollectionViewBlock({
     return null;
   }
   const title = getTextContent5(collection.name).trim();
-  const showTitle = ((_d = collectionView.format) == null ? void 0 : _d.hide_linked_collection_name) !== true && title;
+  const showTitle = ((_b = block.format) == null ? void 0 : _b.hide_inline_collection_name) !== true && ((_c = collectionView.format) == null ? void 0 : _c.hide_linked_collection_name) !== true && title;
   if (collection.icon) {
     block.format = {
       ...block.format,
       page_icon: collection.icon
     };
   }
-  return /* @__PURE__ */ jsxs19(Fragment8, { children: [
-    /* @__PURE__ */ jsxs19("div", { children: [
-      /* @__PURE__ */ jsx58("div", { children: viewIds.length > 1 && showCollectionViewDropdown && /* @__PURE__ */ jsx58(
+  return /* @__PURE__ */ jsxs20(Fragment8, { children: [
+    /* @__PURE__ */ jsxs20("div", { children: [
+      /* @__PURE__ */ jsx59("div", { children: viewIds.length > 1 && showCollectionViewDropdown && /* @__PURE__ */ jsx59(
         CollectionViewTabs,
         {
           collectionViewId,
@@ -6846,8 +7115,8 @@ function CollectionViewBlock({
           onChangeView
         }
       ) }),
-      showTitle && /* @__PURE__ */ jsx58("div", { className: "notion-collection-header", children: /* @__PURE__ */ jsxs19("div", { className: "notion-collection-header-title", children: [
-        /* @__PURE__ */ jsx58(
+      showTitle && /* @__PURE__ */ jsx59("div", { className: "notion-collection-header", children: /* @__PURE__ */ jsxs20("div", { className: "notion-collection-header-title", children: [
+        /* @__PURE__ */ jsx59(
           PageIcon,
           {
             block,
@@ -6858,7 +7127,7 @@ function CollectionViewBlock({
         title
       ] }) })
     ] }),
-    /* @__PURE__ */ jsx58("div", { className: cs("notion-collection", className), children: /* @__PURE__ */ jsx58(
+    /* @__PURE__ */ jsx59("div", { className: cs("notion-collection", className), children: /* @__PURE__ */ jsx59(
       CollectionView,
       {
         collection,
@@ -6876,26 +7145,23 @@ function CollectionViewTabs({
   onChangeView
 }) {
   const { recordMap } = useNotionContext();
-  return /* @__PURE__ */ jsx58("div", { className: "notion-collection-view-tabs-row", children: viewIds.map((viewId) => {
-    var _a;
-    return /* @__PURE__ */ jsx58(
-      "button",
-      {
-        onClick: () => onChangeView(viewId),
-        className: cs(
-          "notion-collection-view-tabs-content-item",
-          collectionViewId === viewId && "notion-collection-view-tabs-content-item-active"
-        ),
-        children: /* @__PURE__ */ jsx58(
-          CollectionViewColumnDesc,
-          {
-            collectionView: (_a = recordMap.collection_view[viewId]) == null ? void 0 : _a.value
-          }
-        )
-      },
-      viewId
-    );
-  }) });
+  return /* @__PURE__ */ jsx59("div", { className: "notion-collection-view-tabs-row", children: viewIds.map((viewId) => /* @__PURE__ */ jsx59(
+    "button",
+    {
+      onClick: () => onChangeView(viewId),
+      className: cs(
+        "notion-collection-view-tabs-content-item",
+        collectionViewId === viewId && "notion-collection-view-tabs-content-item-active"
+      ),
+      children: /* @__PURE__ */ jsx59(
+        CollectionViewColumnDesc,
+        {
+          collectionView: getBlockValue7(recordMap.collection_view[viewId])
+        }
+      )
+    },
+    viewId
+  )) });
 }
 function CollectionViewColumnDesc({
   collectionView,
@@ -6906,15 +7172,15 @@ function CollectionViewColumnDesc({
   if (!collectionView) return null;
   const { type } = collectionView;
   const name = collectionView.name || `${type[0].toUpperCase()}${type.slice(1)} view`;
-  return /* @__PURE__ */ jsxs19("div", { className: cs("notion-collection-view-type", className), ...rest, children: [
-    /* @__PURE__ */ jsx58(
+  return /* @__PURE__ */ jsxs20("div", { className: cs("notion-collection-view-type", className), ...rest, children: [
+    /* @__PURE__ */ jsx59(
       CollectionViewIcon,
       {
         className: "notion-collection-view-type-icon",
         type
       }
     ),
-    /* @__PURE__ */ jsx58("span", { className: "notion-collection-view-type-title", children: name }),
+    /* @__PURE__ */ jsx59("span", { className: "notion-collection-view-type-title", children: name }),
     children
   ] });
 }
