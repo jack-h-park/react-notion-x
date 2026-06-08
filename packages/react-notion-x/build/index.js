@@ -178,17 +178,674 @@ var require_lodash = __commonJS({
 // src/components/button.tsx
 import React16 from "react";
 
+// ../../node_modules/.pnpm/is-url-superb@6.1.0/node_modules/is-url-superb/index.js
+function isUrl(string, { lenient = false } = {}) {
+  if (typeof string !== "string") {
+    throw new TypeError("Expected a string");
+  }
+  string = string.trim();
+  if (string.includes(" ")) {
+    return false;
+  }
+  try {
+    new URL(string);
+    return true;
+  } catch (e) {
+    if (lenient) {
+      return isUrl(`https://${string}`);
+    }
+    return false;
+  }
+}
+
+// ../../node_modules/.pnpm/mimic-function@5.0.1/node_modules/mimic-function/index.js
+var copyProperty = (to, from, property, ignoreNonConfigurable) => {
+  if (property === "length" || property === "prototype") {
+    return;
+  }
+  if (property === "arguments" || property === "caller") {
+    return;
+  }
+  const toDescriptor = Object.getOwnPropertyDescriptor(to, property);
+  const fromDescriptor = Object.getOwnPropertyDescriptor(from, property);
+  if (!canCopyProperty(toDescriptor, fromDescriptor) && ignoreNonConfigurable) {
+    return;
+  }
+  Object.defineProperty(to, property, fromDescriptor);
+};
+var canCopyProperty = function(toDescriptor, fromDescriptor) {
+  return toDescriptor === void 0 || toDescriptor.configurable || toDescriptor.writable === fromDescriptor.writable && toDescriptor.enumerable === fromDescriptor.enumerable && toDescriptor.configurable === fromDescriptor.configurable && (toDescriptor.writable || toDescriptor.value === fromDescriptor.value);
+};
+var changePrototype = (to, from) => {
+  const fromPrototype = Object.getPrototypeOf(from);
+  if (fromPrototype === Object.getPrototypeOf(to)) {
+    return;
+  }
+  Object.setPrototypeOf(to, fromPrototype);
+};
+var wrappedToString = (withName, fromBody) => `/* Wrapped ${withName}*/
+${fromBody}`;
+var toStringDescriptor = Object.getOwnPropertyDescriptor(Function.prototype, "toString");
+var toStringName = Object.getOwnPropertyDescriptor(Function.prototype.toString, "name");
+var changeToString = (to, from, name) => {
+  const withName = name === "" ? "" : `with ${name.trim()}() `;
+  const newToString = wrappedToString.bind(null, withName, from.toString());
+  Object.defineProperty(newToString, "name", toStringName);
+  const { writable, enumerable, configurable } = toStringDescriptor;
+  Object.defineProperty(to, "toString", { value: newToString, writable, enumerable, configurable });
+};
+function mimicFunction(to, from, { ignoreNonConfigurable = false } = {}) {
+  const { name } = to;
+  for (const property of Reflect.ownKeys(from)) {
+    copyProperty(to, from, property, ignoreNonConfigurable);
+  }
+  changePrototype(to, from);
+  changeToString(to, from, name);
+  return to;
+}
+
+// ../../node_modules/.pnpm/memoize@10.1.0/node_modules/memoize/distribution/index.js
+var cacheStore = /* @__PURE__ */ new WeakMap();
+var cacheTimerStore = /* @__PURE__ */ new WeakMap();
+function memoize(function_, { cacheKey, cache = /* @__PURE__ */ new Map(), maxAge } = {}) {
+  if (maxAge === 0) {
+    return function_;
+  }
+  if (typeof maxAge === "number") {
+    const maxSetIntervalValue = 2147483647;
+    if (maxAge > maxSetIntervalValue) {
+      throw new TypeError(`The \`maxAge\` option cannot exceed ${maxSetIntervalValue}.`);
+    }
+    if (maxAge < 0) {
+      throw new TypeError("The `maxAge` option should not be a negative number.");
+    }
+  }
+  const memoized = function(...arguments_) {
+    var _a, _b;
+    const key = cacheKey ? cacheKey(arguments_) : arguments_[0];
+    const cacheItem = cache.get(key);
+    if (cacheItem) {
+      return cacheItem.data;
+    }
+    const result = function_.apply(this, arguments_);
+    const computedMaxAge = typeof maxAge === "function" ? maxAge(...arguments_) : maxAge;
+    cache.set(key, {
+      data: result,
+      maxAge: computedMaxAge ? Date.now() + computedMaxAge : Number.POSITIVE_INFINITY
+    });
+    if (computedMaxAge && computedMaxAge > 0 && computedMaxAge !== Number.POSITIVE_INFINITY) {
+      const timer = setTimeout(() => {
+        cache.delete(key);
+      }, computedMaxAge);
+      (_a = timer.unref) == null ? void 0 : _a.call(timer);
+      const timers = (_b = cacheTimerStore.get(function_)) != null ? _b : /* @__PURE__ */ new Set();
+      timers.add(timer);
+      cacheTimerStore.set(function_, timers);
+    }
+    return result;
+  };
+  mimicFunction(memoized, function_, {
+    ignoreNonConfigurable: true
+  });
+  cacheStore.set(memoized, cache);
+  return memoized;
+}
+
+// ../../node_modules/.pnpm/normalize-url@8.0.1/node_modules/normalize-url/index.js
+var DATA_URL_DEFAULT_MIME_TYPE = "text/plain";
+var DATA_URL_DEFAULT_CHARSET = "us-ascii";
+var testParameter = (name, filters) => filters.some((filter) => filter instanceof RegExp ? filter.test(name) : filter === name);
+var supportedProtocols = /* @__PURE__ */ new Set([
+  "https:",
+  "http:",
+  "file:"
+]);
+var hasCustomProtocol = (urlString) => {
+  try {
+    const { protocol } = new URL(urlString);
+    return protocol.endsWith(":") && !protocol.includes(".") && !supportedProtocols.has(protocol);
+  } catch (e) {
+    return false;
+  }
+};
+var normalizeDataURL = (urlString, { stripHash }) => {
+  var _a, _b;
+  const match = /^data:(?<type>[^,]*?),(?<data>[^#]*?)(?:#(?<hash>.*))?$/.exec(urlString);
+  if (!match) {
+    throw new Error(`Invalid URL: ${urlString}`);
+  }
+  let { type, data, hash } = match.groups;
+  const mediaType = type.split(";");
+  hash = stripHash ? "" : hash;
+  let isBase64 = false;
+  if (mediaType[mediaType.length - 1] === "base64") {
+    mediaType.pop();
+    isBase64 = true;
+  }
+  const mimeType = (_b = (_a = mediaType.shift()) == null ? void 0 : _a.toLowerCase()) != null ? _b : "";
+  const attributes = mediaType.map((attribute) => {
+    let [key, value = ""] = attribute.split("=").map((string) => string.trim());
+    if (key === "charset") {
+      value = value.toLowerCase();
+      if (value === DATA_URL_DEFAULT_CHARSET) {
+        return "";
+      }
+    }
+    return `${key}${value ? `=${value}` : ""}`;
+  }).filter(Boolean);
+  const normalizedMediaType = [
+    ...attributes
+  ];
+  if (isBase64) {
+    normalizedMediaType.push("base64");
+  }
+  if (normalizedMediaType.length > 0 || mimeType && mimeType !== DATA_URL_DEFAULT_MIME_TYPE) {
+    normalizedMediaType.unshift(mimeType);
+  }
+  return `data:${normalizedMediaType.join(";")},${isBase64 ? data.trim() : data}${hash ? `#${hash}` : ""}`;
+};
+function normalizeUrl(urlString, options) {
+  options = {
+    defaultProtocol: "http",
+    normalizeProtocol: true,
+    forceHttp: false,
+    forceHttps: false,
+    stripAuthentication: true,
+    stripHash: false,
+    stripTextFragment: true,
+    stripWWW: true,
+    removeQueryParameters: [/^utm_\w+/i],
+    removeTrailingSlash: true,
+    removeSingleSlash: true,
+    removeDirectoryIndex: false,
+    removeExplicitPort: false,
+    sortQueryParameters: true,
+    ...options
+  };
+  if (typeof options.defaultProtocol === "string" && !options.defaultProtocol.endsWith(":")) {
+    options.defaultProtocol = `${options.defaultProtocol}:`;
+  }
+  urlString = urlString.trim();
+  if (/^data:/i.test(urlString)) {
+    return normalizeDataURL(urlString, options);
+  }
+  if (hasCustomProtocol(urlString)) {
+    return urlString;
+  }
+  const hasRelativeProtocol = urlString.startsWith("//");
+  const isRelativeUrl = !hasRelativeProtocol && /^\.*\//.test(urlString);
+  if (!isRelativeUrl) {
+    urlString = urlString.replace(/^(?!(?:\w+:)?\/\/)|^\/\//, options.defaultProtocol);
+  }
+  const urlObject = new URL(urlString);
+  if (options.forceHttp && options.forceHttps) {
+    throw new Error("The `forceHttp` and `forceHttps` options cannot be used together");
+  }
+  if (options.forceHttp && urlObject.protocol === "https:") {
+    urlObject.protocol = "http:";
+  }
+  if (options.forceHttps && urlObject.protocol === "http:") {
+    urlObject.protocol = "https:";
+  }
+  if (options.stripAuthentication) {
+    urlObject.username = "";
+    urlObject.password = "";
+  }
+  if (options.stripHash) {
+    urlObject.hash = "";
+  } else if (options.stripTextFragment) {
+    urlObject.hash = urlObject.hash.replace(/#?:~:text.*?$/i, "");
+  }
+  if (urlObject.pathname) {
+    const protocolRegex = /\b[a-z][a-z\d+\-.]{1,50}:\/\//g;
+    let lastIndex = 0;
+    let result = "";
+    for (; ; ) {
+      const match = protocolRegex.exec(urlObject.pathname);
+      if (!match) {
+        break;
+      }
+      const protocol = match[0];
+      const protocolAtIndex = match.index;
+      const intermediate = urlObject.pathname.slice(lastIndex, protocolAtIndex);
+      result += intermediate.replace(/\/{2,}/g, "/");
+      result += protocol;
+      lastIndex = protocolAtIndex + protocol.length;
+    }
+    const remnant = urlObject.pathname.slice(lastIndex, urlObject.pathname.length);
+    result += remnant.replace(/\/{2,}/g, "/");
+    urlObject.pathname = result;
+  }
+  if (urlObject.pathname) {
+    try {
+      urlObject.pathname = decodeURI(urlObject.pathname);
+    } catch (e) {
+    }
+  }
+  if (options.removeDirectoryIndex === true) {
+    options.removeDirectoryIndex = [/^index\.[a-z]+$/];
+  }
+  if (Array.isArray(options.removeDirectoryIndex) && options.removeDirectoryIndex.length > 0) {
+    let pathComponents = urlObject.pathname.split("/");
+    const lastComponent = pathComponents[pathComponents.length - 1];
+    if (testParameter(lastComponent, options.removeDirectoryIndex)) {
+      pathComponents = pathComponents.slice(0, -1);
+      urlObject.pathname = pathComponents.slice(1).join("/") + "/";
+    }
+  }
+  if (urlObject.hostname) {
+    urlObject.hostname = urlObject.hostname.replace(/\.$/, "");
+    if (options.stripWWW && /^www\.(?!www\.)[a-z\-\d]{1,63}\.[a-z.\-\d]{2,63}$/.test(urlObject.hostname)) {
+      urlObject.hostname = urlObject.hostname.replace(/^www\./, "");
+    }
+  }
+  if (Array.isArray(options.removeQueryParameters)) {
+    for (const key of [...urlObject.searchParams.keys()]) {
+      if (testParameter(key, options.removeQueryParameters)) {
+        urlObject.searchParams.delete(key);
+      }
+    }
+  }
+  if (!Array.isArray(options.keepQueryParameters) && options.removeQueryParameters === true) {
+    urlObject.search = "";
+  }
+  if (Array.isArray(options.keepQueryParameters) && options.keepQueryParameters.length > 0) {
+    for (const key of [...urlObject.searchParams.keys()]) {
+      if (!testParameter(key, options.keepQueryParameters)) {
+        urlObject.searchParams.delete(key);
+      }
+    }
+  }
+  if (options.sortQueryParameters) {
+    urlObject.searchParams.sort();
+    try {
+      urlObject.search = decodeURIComponent(urlObject.search);
+    } catch (e) {
+    }
+  }
+  if (options.removeTrailingSlash) {
+    urlObject.pathname = urlObject.pathname.replace(/\/$/, "");
+  }
+  if (options.removeExplicitPort && urlObject.port) {
+    urlObject.port = "";
+  }
+  const oldUrlString = urlString;
+  urlString = urlObject.toString();
+  if (!options.removeSingleSlash && urlObject.pathname === "/" && !oldUrlString.endsWith("/") && urlObject.hash === "") {
+    urlString = urlString.replace(/\/$/, "");
+  }
+  if ((options.removeTrailingSlash || urlObject.pathname === "/") && urlObject.hash === "" && options.removeSingleSlash) {
+    urlString = urlString.replace(/\/$/, "");
+  }
+  if (hasRelativeProtocol && !options.normalizeProtocol) {
+    urlString = urlString.replace(/^http:\/\//, "//");
+  }
+  if (options.stripProtocol) {
+    urlString = urlString.replace(/^(?:https?:)?\/\//, "");
+  }
+  return urlString;
+}
+
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+function getBlockValue(block) {
+  if (!block) {
+    return void 0;
+  }
+  if (block.value) {
+    return getBlockValue(block.value);
+  }
+  if (!block.id) {
+    return void 0;
+  }
+  return block;
+}
+function getBlockCollectionId(block, recordMap) {
+  var _a, _b, _c, _d, _e, _f;
+  const collectionId = block.collection_id || ((_b = (_a = block.format) == null ? void 0 : _a.collection_pointer) == null ? void 0 : _b.id);
+  if (collectionId) {
+    return collectionId;
+  }
+  const collectionViewId = (_c = block == null ? void 0 : block.view_ids) == null ? void 0 : _c[0];
+  if (collectionViewId) {
+    const collectionView = getBlockValue(
+      (_d = recordMap.collection_view) == null ? void 0 : _d[collectionViewId]
+    );
+    if (collectionView) {
+      const collectionId2 = (_f = (_e = collectionView.format) == null ? void 0 : _e.collection_pointer) == null ? void 0 : _f.id;
+      return collectionId2;
+    }
+  }
+  return null;
+}
+var getTextContent = (text) => {
+  var _a;
+  if (!text) {
+    return "";
+  } else if (Array.isArray(text)) {
+    return (_a = text == null ? void 0 : text.reduce(
+      (prev, current) => prev + (current[0] !== "\u204D" && current[0] !== "\u2023" ? current[0] : ""),
+      ""
+    )) != null ? _a : "";
+  } else {
+    return text;
+  }
+};
+function getBlockTitle(block, recordMap) {
+  var _a;
+  if ((_a = block.properties) == null ? void 0 : _a.title) {
+    return getTextContent(block.properties.title);
+  }
+  if (block.type === "collection_view_page" || block.type === "collection_view") {
+    const collectionId = getBlockCollectionId(block, recordMap);
+    if (collectionId) {
+      const collection = getBlockValue(recordMap.collection[collectionId]);
+      if (collection) {
+        return getTextContent(collection.name);
+      }
+    }
+  }
+  return "";
+}
+var indentLevels = {
+  header: 0,
+  sub_header: 1,
+  sub_sub_header: 2,
+  header_4: 3
+};
+var getPageTableOfContents = (page, recordMap) => {
+  function mapContentToEntries(content) {
+    return (content != null ? content : []).map((blockId) => {
+      var _a;
+      const block = getBlockValue(recordMap.block[blockId]);
+      if (block) {
+        const { type } = block;
+        if (type === "header" || type === "sub_header" || type === "sub_sub_header" || type === "header_4") {
+          return {
+            id: blockId,
+            type,
+            text: getTextContent((_a = block.properties) == null ? void 0 : _a.title),
+            indentLevel: indentLevels[type]
+          };
+        }
+        if (type === "transclusion_container" || type === "column_list" || type === "column") {
+          return mapContentToEntries(block.content);
+        }
+      }
+      return null;
+    });
+  }
+  function flattenResults(results) {
+    return results.flatMap((r) => {
+      if (r == null) return [];
+      return Array.isArray(r) ? flattenResults(r) : [r];
+    });
+  }
+  const toc = flattenResults(mapContentToEntries(page.content));
+  const indentLevelStack = [
+    {
+      actual: -1,
+      effective: -1
+    }
+  ];
+  for (const tocItem of toc) {
+    const { indentLevel } = tocItem;
+    const actual = indentLevel;
+    do {
+      const prevIndent = indentLevelStack.at(-1);
+      const { actual: prevActual, effective: prevEffective } = prevIndent;
+      if (actual > prevActual) {
+        tocItem.indentLevel = prevEffective + 1;
+        indentLevelStack.push({
+          actual,
+          effective: tocItem.indentLevel
+        });
+      } else if (actual === prevActual) {
+        tocItem.indentLevel = prevEffective;
+        break;
+      } else {
+        indentLevelStack.pop();
+      }
+    } while (true);
+  }
+  return toc;
+};
+var formatDate = (input, { month = "short" } = {}) => {
+  const date = new Date(input);
+  const monthLocale = date.toLocaleString("en-US", { month });
+  return `${monthLocale} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
+};
+var formatNotionDateTime = (datetime) => {
+  const dateString = `${datetime.start_date}T${datetime.start_time || "00:00"}+00:00`;
+  return formatDate(dateString);
+};
+var idToUuid = (id = "") => `${id.slice(0, 8)}-${id.slice(8, 12)}-${id.slice(12, 16)}-${id.slice(
+  16,
+  20
+)}-${id.slice(20)}`;
+var pageIdRe = /\b([\da-f]{32})\b/;
+var pageId2Re = /\b([\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12})\b/;
+var parsePageId = (id = "", { uuid = true } = {}) => {
+  if (!id) return;
+  id = id.split("?")[0];
+  if (!id) return;
+  const match = id.match(pageIdRe);
+  if (match) {
+    return uuid ? idToUuid(match[1]) : match[1];
+  }
+  const match2 = id.match(pageId2Re);
+  if (match2) {
+    return uuid ? match2[1] : match2[1].replaceAll("-", "");
+  }
+  return;
+};
+function getBlockIcon(block, recordMap) {
+  var _a, _b;
+  if ((_a = block.format) == null ? void 0 : _a.page_icon) {
+    return (_b = block.format) == null ? void 0 : _b.page_icon;
+  }
+  if (block.type === "collection_view_page" || block.type === "collection_view") {
+    const collectionId = getBlockCollectionId(block, recordMap);
+    if (collectionId) {
+      const collection = getBlockValue(recordMap.collection[collectionId]);
+      if (collection) {
+        return collection.icon;
+      }
+    }
+  }
+  return null;
+}
+var getBlockParentPage = (block, recordMap, {
+  inclusive = false
+} = {}) => {
+  let currentRecord = block;
+  while (currentRecord) {
+    if (inclusive && (currentRecord == null ? void 0 : currentRecord.type) === "page") {
+      return currentRecord;
+    }
+    const parentId = currentRecord.parent_id;
+    const parentTable = currentRecord.parent_table;
+    if (!parentId) {
+      break;
+    }
+    if (parentTable === "collection") {
+      currentRecord = getBlockValue(recordMap.collection[parentId]);
+    } else {
+      currentRecord = getBlockValue(recordMap.block[parentId]);
+      if ((currentRecord == null ? void 0 : currentRecord.type) === "page") {
+        return currentRecord;
+      }
+    }
+  }
+  return null;
+};
+var uuidToId = (uuid) => uuid.replaceAll("-", "");
+var getListNestingLevel = (blockId, blockMap) => {
+  var _a;
+  let level = 0;
+  let currentBlockId = blockId;
+  while (true) {
+    const parentId = (_a = getBlockValue(blockMap[currentBlockId])) == null ? void 0 : _a.parent_id;
+    if (!parentId) break;
+    const parentBlock = getBlockValue(blockMap[parentId]);
+    if (!parentBlock) break;
+    if (parentBlock.type === "numbered_list") {
+      level++;
+      currentBlockId = parentId;
+    } else {
+      break;
+    }
+  }
+  return level;
+};
+function groupBlockContent(blockMap) {
+  var _a, _b;
+  const output = [];
+  let lastType;
+  let index = -1;
+  for (const id of Object.keys(blockMap)) {
+    const blockValue = getBlockValue(blockMap[id]);
+    if (blockValue) {
+      if (blockValue.content)
+        for (const blockId of blockValue.content) {
+          const blockType = (_a = getBlockValue(blockMap[blockId])) == null ? void 0 : _a.type;
+          if (blockType && blockType !== lastType) {
+            index++;
+            lastType = blockType;
+            output[index] = [];
+          }
+          if (index > -1) {
+            (_b = output[index]) == null ? void 0 : _b.push(blockId);
+          }
+        }
+    }
+    lastType = void 0;
+  }
+  return output;
+}
+function getListNumber(blockId, blockMap) {
+  var _a, _b, _c;
+  const groups = groupBlockContent(blockMap);
+  const group = groups.find((g) => g.includes(blockId));
+  if (!group) {
+    return;
+  }
+  const groupIndex = group.indexOf(blockId) + 1;
+  const startIndex = (_b = (_a = getBlockValue(blockMap[blockId])) == null ? void 0 : _a.format) == null ? void 0 : _b.list_start_index;
+  return ((_c = getBlockValue(blockMap[blockId])) == null ? void 0 : _c.type) === "numbered_list" ? startIndex != null ? startIndex : groupIndex : groupIndex;
+}
+function getListStyle(level) {
+  const styles = ["decimal", "lower-alpha", "lower-roman"];
+  const index = (level % styles.length + styles.length) % styles.length;
+  return styles[index];
+}
+var getPageBreadcrumbs = (recordMap, activePageId) => {
+  const blockMap = recordMap.block;
+  const breadcrumbs = [];
+  let currentPageId = activePageId;
+  do {
+    const block = getBlockValue(blockMap[currentPageId]);
+    if (!block) {
+      break;
+    }
+    const title = getBlockTitle(block, recordMap);
+    const icon = getBlockIcon(block, recordMap);
+    if (!(title || icon)) {
+      break;
+    }
+    breadcrumbs.push({
+      block,
+      active: currentPageId === activePageId,
+      pageId: currentPageId,
+      title,
+      icon
+    });
+    const parentBlock = getBlockParentPage(block, recordMap);
+    const parentId = parentBlock == null ? void 0 : parentBlock.id;
+    if (!parentId) {
+      break;
+    }
+    currentPageId = parentId;
+  } while (true);
+  breadcrumbs.reverse();
+  return breadcrumbs;
+};
+var GIF_REGEXP = /(?:https?:\/\/)?[^\s]+\.gif(?=$|\?|#)/;
+var defaultMapImageUrl = (url, block) => {
+  if (!url) {
+    return void 0;
+  }
+  if (url.startsWith("data:")) {
+    return url;
+  }
+  if (GIF_REGEXP.test(url)) {
+    return url;
+  }
+  if (url.startsWith("https://images.unsplash.com")) {
+    return url;
+  }
+  try {
+    const u = new URL(url);
+    if (u.pathname.startsWith("/secure.notion-static.com") && u.hostname.endsWith(".amazonaws.com")) {
+      if (u.searchParams.has("X-Amz-Credential") && u.searchParams.has("X-Amz-Signature") && u.searchParams.has("X-Amz-Algorithm")) {
+        return url;
+      }
+    }
+    if (u.hostname === "img.notionusercontent.com") {
+      return url;
+    }
+  } catch (e) {
+  }
+  if (url.startsWith("/images")) {
+    url = `https://www.notion.so${url}`;
+  }
+  url = `https://www.notion.so${url.startsWith("/image") ? url : `/image/${encodeURIComponent(url)}`}`;
+  const notionImageUrlV2 = new URL(url);
+  let table = block.parent_table === "space" ? "block" : block.parent_table;
+  if (table === "collection" || table === "team") {
+    table = "block";
+  }
+  notionImageUrlV2.searchParams.set("table", table);
+  notionImageUrlV2.searchParams.set("id", block.id);
+  notionImageUrlV2.searchParams.set("cache", "v2");
+  url = notionImageUrlV2.toString();
+  return url;
+};
+var defaultMapPageUrl = (rootPageId) => (pageId) => {
+  pageId = (pageId || "").replaceAll("-", "");
+  if (rootPageId && pageId === rootPageId) {
+    return "/";
+  } else {
+    return `/${pageId}`;
+  }
+};
+var normalizeUrl2 = memoize((url) => {
+  if (!url) {
+    return "";
+  }
+  try {
+    if (url.startsWith("https://www.notion.so/image/")) {
+      const u = new URL(url);
+      const subUrl = decodeURIComponent(u.pathname.slice("/image/".length));
+      const normalizedSubUrl = normalizeUrl2(subUrl);
+      u.pathname = `/image/${encodeURIComponent(normalizedSubUrl)}`;
+      url = u.toString();
+    }
+    return normalizeUrl(url, {
+      stripProtocol: true,
+      stripWWW: true,
+      stripHash: true,
+      stripTextFragment: true,
+      removeQueryParameters: true
+    });
+  } catch (e) {
+    return "";
+  }
+});
+
 // src/context.tsx
-import "notion-types";
-import { defaultMapImageUrl, defaultMapPageUrl } from "notion-utils";
 import React15 from "react";
 
-// src/components/asset-wrapper.tsx
-import "notion-types";
-import { parsePageId as parsePageId2 } from "notion-utils";
-
 // src/utils.ts
-import { formatDate, formatNotionDateTime, isUrl } from "notion-utils";
 var cs = (...classes) => classes.filter((a) => !!a).join(" ");
 var getHashFragmentValue = (url) => {
   return url.includes("#") ? url.replace(/^.+(#.+)$/, "$1") : "";
@@ -230,12 +887,7 @@ var getUrlParams = (url) => {
   return;
 };
 
-// src/components/asset.tsx
-import "notion-types";
-import { getTextContent } from "notion-utils";
-
 // src/components/lazy-image.tsx
-import { normalizeUrl } from "notion-utils";
 import React from "react";
 
 // src/components/lazy-image-full.tsx
@@ -456,7 +1108,7 @@ function LazyImage({
   var _a, _b, _c;
   const { recordMap, zoom, previewImages, forceCustomImages, components } = useNotionContext();
   const zoomRef = React.useRef(zoom ? zoom.clone() : null);
-  const previewImage = previewImages ? (_c = (_a = recordMap == null ? void 0 : recordMap.preview_images) == null ? void 0 : _a[src]) != null ? _c : (_b = recordMap == null ? void 0 : recordMap.preview_images) == null ? void 0 : _b[normalizeUrl(src)] : null;
+  const previewImage = previewImages ? (_c = (_a = recordMap == null ? void 0 : recordMap.preview_images) == null ? void 0 : _a[src]) != null ? _c : (_b = recordMap == null ? void 0 : recordMap.preview_images) == null ? void 0 : _b[normalizeUrl2(src)] : null;
   const onLoad = React.useCallback(
     (e) => {
       if (zoomable && (e.target.src || e.target.srcset)) {
@@ -954,12 +1606,7 @@ function Asset({
 }
 
 // src/components/text.tsx
-import "notion-types";
-import { getBlockValue, parsePageId } from "notion-utils";
 import React8 from "react";
-
-// src/components/eoi.tsx
-import "notion-types";
 
 // src/icons/type-github.tsx
 import { jsx as jsx5 } from "react/jsx-runtime";
@@ -1166,13 +1813,9 @@ function LinkMentionPreview({ metadata }) {
 }
 
 // src/components/page-title.tsx
-import "notion-types";
-import { getBlockTitle as getBlockTitle2 } from "notion-utils";
 import React7 from "react";
 
 // src/components/page-icon.tsx
-import "notion-types";
-import { getBlockIcon, getBlockTitle } from "notion-utils";
 import React6 from "react";
 
 // src/icons/default-page-icon.tsx
@@ -1275,7 +1918,7 @@ function PageTitleImpl({
   const { recordMap } = useNotionContext();
   if (!block) return null;
   if (block.type === "collection_view_page" || block.type === "collection_view") {
-    const title = getBlockTitle2(block, recordMap);
+    const title = getBlockTitle(block, recordMap);
     if (!title) {
       return null;
     }
@@ -1522,7 +2165,7 @@ function AssetWrapper({
   if (block.type === "image") {
     const caption = (_c = (_b = (_a = value == null ? void 0 : value.properties) == null ? void 0 : _a.caption) == null ? void 0 : _b[0]) == null ? void 0 : _c[0];
     if (caption) {
-      const id = parsePageId2(caption, { uuid: true });
+      const id = parsePageId(caption, { uuid: true });
       const isPage = caption.charAt(0) === "/" && id;
       if (isPage || isValidURL(caption)) {
         isURL = true;
@@ -1543,7 +2186,7 @@ function AssetWrapper({
   );
   if (isURL) {
     const caption = (_h = (_g = (_f = value == null ? void 0 : value.properties) == null ? void 0 : _f.caption) == null ? void 0 : _g[0]) == null ? void 0 : _h[0];
-    const id = parsePageId2(caption, { uuid: true });
+    const id = parsePageId(caption, { uuid: true });
     const isPage = (caption == null ? void 0 : caption.charAt(0)) === "/" && id;
     const captionHostname = extractHostname(caption);
     return /* @__PURE__ */ jsx14(
@@ -1596,7 +2239,6 @@ function Checkbox({
 }
 
 // src/components/header.tsx
-import { getPageBreadcrumbs } from "notion-utils";
 import React13 from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
@@ -1610,7 +2252,6 @@ function SearchIcon(props) {
 
 // src/components/search-dialog.tsx
 var import_lodash = __toESM(require_lodash(), 1);
-import { getBlockParentPage, getBlockTitle as getBlockTitle3 } from "notion-utils";
 import React12 from "react";
 
 // src/icons/clear-icon.tsx
@@ -1746,7 +2387,7 @@ var SearchDialog = class extends React12.Component {
           var _a, _b;
           const block = (_a = searchResult.recordMap.block[result2.id]) == null ? void 0 : _a.value;
           if (!block) return;
-          const title = getBlockTitle3(block, searchResult.recordMap);
+          const title = getBlockTitle(block, searchResult.recordMap);
           if (!title) {
             return;
           }
@@ -2221,7 +2862,6 @@ var useNotionContext = () => {
 };
 
 // src/components/button.tsx
-import { getBlockValue as getBlockValue2 } from "notion-utils";
 import { jsx as jsx24 } from "react/jsx-runtime";
 function Button({
   block,
@@ -2249,7 +2889,7 @@ function Button({
       }
     ) });
   }
-  const automation = getBlockValue2(
+  const automation = getBlockValue(
     (_d = recordMap.automation) == null ? void 0 : _d[automationId]
   );
   if (!automation) {
@@ -2282,7 +2922,7 @@ function Button({
       console.warn("No actions defined for automation:", automationId);
       return;
     }
-    const actionData = getBlockValue2(
+    const actionData = getBlockValue(
       (_b2 = recordMap.automation_action) == null ? void 0 : _b2[firstActionId]
     );
     if (!actionData) {
@@ -2455,27 +3095,12 @@ function getTextContent2(text) {
 
 // src/renderer.tsx
 import mediumZoom from "@fisch0920/medium-zoom";
-import "notion-types";
-import { getBlockValue as getBlockValue5 } from "notion-utils";
 import * as React22 from "react";
 
 // src/block.tsx
-import {
-  getBlockCollectionId,
-  getBlockIcon as getBlockIcon2,
-  getBlockParentPage as getBlockParentPage2,
-  getBlockValue as getBlockValue4,
-  getListNestingLevel,
-  getListNumber,
-  getListStyle,
-  getPageTableOfContents,
-  getTextContent as getTextContent4,
-  uuidToId as uuidToId3
-} from "notion-utils";
 import React21 from "react";
 
 // src/components/audio.tsx
-import "notion-types";
 import { jsx as jsx25 } from "react/jsx-runtime";
 function Audio({
   block,
@@ -2494,9 +3119,6 @@ function Audio({
   }
   return /* @__PURE__ */ jsx25("div", { className: cs("notion-audio", className), children: /* @__PURE__ */ jsx25("audio", { controls: true, preload: "none", src: source }) });
 }
-
-// src/components/file.tsx
-import "notion-types";
 
 // src/icons/file-icon.tsx
 import "react";
@@ -2542,7 +3164,6 @@ function File({
 }
 
 // src/components/google-drive.tsx
-import "notion-types";
 import { jsx as jsx28, jsxs as jsxs12 } from "react/jsx-runtime";
 function GoogleDrive({
   block,
@@ -2596,7 +3217,6 @@ function GoogleDrive({
 
 // src/components/page-aside.tsx
 var import_lodash2 = __toESM(require_lodash(), 1);
-import { uuidToId } from "notion-utils";
 import React18 from "react";
 import { jsx as jsx29, jsxs as jsxs13 } from "react/jsx-runtime";
 function PageAside({
@@ -2684,7 +3304,6 @@ function PageAside({
 }
 
 // src/components/sync-pointer-block.tsx
-import "notion-types";
 import { jsx as jsx30 } from "react/jsx-runtime";
 function SyncPointerBlock({
   block,
@@ -2713,7 +3332,6 @@ function SyncPointerBlock({
 }
 
 // src/components/tab-block.tsx
-import { getBlockValue as getBlockValue3, getTextContent as getTextContent3, uuidToId as uuidToId2 } from "notion-utils";
 import React19 from "react";
 import { jsx as jsx31, jsxs as jsxs14 } from "react/jsx-runtime";
 function TabBlock(props) {
@@ -2756,7 +3374,7 @@ function TabBlock(props) {
   }, [tabIds.length]);
   const renderSubtree = (childBlockId, lvl) => {
     var _a2;
-    const b = getBlockValue3(recordMap.block[childBlockId]);
+    const b = getBlockValue(recordMap.block[childBlockId]);
     if (!b) return null;
     return /* @__PURE__ */ jsx31(Block, { ...forwardProps, block: b, level: lvl, children: (_a2 = b.content) == null ? void 0 : _a2.map((cid) => renderSubtree(cid, lvl + 1)) }, childBlockId);
   };
@@ -2768,14 +3386,14 @@ function TabBlock(props) {
   if (!activeTabId) {
     return /* @__PURE__ */ jsx31("div", { className: cs("notion-tab-block", "notion-blank", blockId) });
   }
-  const activeTabBlock = getBlockValue3(recordMap.block[activeTabId]);
+  const activeTabBlock = getBlockValue(recordMap.block[activeTabId]);
   const panelBlocks = (_b = activeTabBlock == null ? void 0 : activeTabBlock.content) != null ? _b : [];
-  const baseId = `notion-tab-${uuidToId2(block.id)}`;
+  const baseId = `notion-tab-${uuidToId(block.id)}`;
   return /* @__PURE__ */ jsx31(
     "div",
     {
       className: cs("notion-selectable", "notion-tab-block", blockId),
-      "data-block-id": uuidToId2(block.id),
+      "data-block-id": uuidToId(block.id),
       dir: "ltr",
       children: /* @__PURE__ */ jsxs14("div", { className: "notion-tab-block-inner", children: [
         /* @__PURE__ */ jsxs14("div", { className: "notion-tab-header-row", children: [
@@ -2794,8 +3412,8 @@ function TabBlock(props) {
                     className: "notion-tab-list-inner",
                     children: tabIds.map((tabId, i) => {
                       var _a2;
-                      const tabLabelBlock = getBlockValue3(recordMap.block[tabId]);
-                      const rawTitle = tabLabelBlock ? getTextContent3((_a2 = tabLabelBlock.properties) == null ? void 0 : _a2.title) : "";
+                      const tabLabelBlock = getBlockValue(recordMap.block[tabId]);
+                      const rawTitle = tabLabelBlock ? getTextContent((_a2 = tabLabelBlock.properties) == null ? void 0 : _a2.title) : "";
                       const label = rawTitle.trim() !== "" ? rawTitle : `Tab ${i + 1}`;
                       const isSelected = i === safeIndex;
                       return /* @__PURE__ */ jsx31("div", { className: "notion-tab-pill-wrap", children: /* @__PURE__ */ jsx31(
@@ -2930,7 +3548,7 @@ function Block(props) {
     ;
     block.type = "collection_view_page";
   }
-  const blockId = hideBlockId ? "notion-block" : `notion-block-${uuidToId3(block.id)}`;
+  const blockId = hideBlockId ? "notion-block" : `notion-block-${uuidToId(block.id)}`;
   switch (block.type) {
     case "collection_view_page":
     // fallthrough
@@ -2945,7 +3563,7 @@ function Block(props) {
         } = block.format || {};
         if (fullPage) {
           const properties = block.type === "page" ? block.properties : {
-            title: (_a = getBlockValue4(
+            title: (_a = getBlockValue(
               recordMap.collection[getBlockCollectionId(block, recordMap)]
             )) == null ? void 0 : _a.name
           };
@@ -2957,7 +3575,7 @@ function Block(props) {
               objectPosition: pageCoverObjectPosition
             };
           }
-          const pageIcon = (_b = getBlockIcon2(block, recordMap)) != null ? _b : defaultPageIcon;
+          const pageIcon = (_b = getBlockIcon(block, recordMap)) != null ? _b : defaultPageIcon;
           const isPageIconUrl = pageIcon && isUrl(pageIcon);
           const toc = getPageTableOfContents(
             block,
@@ -2986,7 +3604,7 @@ function Block(props) {
                       LazyImage,
                       {
                         src: mapImageUrl(page_cover, block),
-                        alt: getTextContent4(properties == null ? void 0 : properties.title),
+                        alt: getTextContent(properties == null ? void 0 : properties.title),
                         priority: true,
                         className: "notion-page-cover",
                         style: pageCoverStyle
@@ -3099,12 +3717,12 @@ function Block(props) {
     case "header_4": {
       if (!block.properties) return null;
       const blockColor = (_d = block.format) == null ? void 0 : _d.block_color;
-      const id = uuidToId3(block.id);
-      const title = getTextContent4(block.properties.title) || `Notion Header ${id}`;
+      const id = uuidToId(block.id);
+      const title = getTextContent(block.properties.title) || `Notion Header ${id}`;
       let indentLevel = tocIndentLevelCache[block.id];
       let indentLevelClass;
       if (indentLevel === void 0) {
-        const page = getBlockParentPage2(block, recordMap);
+        const page = getBlockParentPage(block, recordMap);
         if (page) {
           const toc = getPageTableOfContents(page, recordMap);
           const tocItem = toc.find((tocItem2) => tocItem2.id === block.id);
@@ -3193,7 +3811,7 @@ function Block(props) {
         }
       );
       let output = null;
-      const isTopLevel = block.type !== ((_j = getBlockValue4(recordMap.block[block.parent_id])) == null ? void 0 : _j.type);
+      const isTopLevel = block.type !== ((_j = getBlockValue(recordMap.block[block.parent_id])) == null ? void 0 : _j.type);
       const start = getListNumber(block.id, recordMap.block);
       if (block.content) {
         const listItem = block.properties ? /* @__PURE__ */ jsx33("li", { children: /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }) }) : null;
@@ -3282,7 +3900,7 @@ function Block(props) {
     case "column": {
       const spacerWidth = `min(32px, 4vw)`;
       const ratio = ((_m = block.format) == null ? void 0 : _m.column_ratio) || 0.5;
-      const parent = getBlockValue4(recordMap.block[block.parent_id]);
+      const parent = getBlockValue(recordMap.block[block.parent_id]);
       const columns = ((_n = parent == null ? void 0 : parent.content) == null ? void 0 : _n.length) || Math.max(2, Math.ceil(1 / ratio));
       const width = `calc((100% - (${columns - 1} * ${spacerWidth})) * ${ratio})`;
       const style = { width };
@@ -3337,9 +3955,9 @@ function Block(props) {
       if (!block.properties) return null;
       const link = block.properties.link;
       if (!link || !((_s = link[0]) == null ? void 0 : _s[0])) return null;
-      let title = getTextContent4(block.properties.title);
+      let title = getTextContent(block.properties.title);
       if (!title) {
-        title = getTextContent4(link);
+        title = getTextContent(link);
       }
       if (title) {
         if (title.startsWith("http")) {
@@ -3380,7 +3998,7 @@ function Block(props) {
               LazyImage,
               {
                 src: mapImageUrl((_z = block.format) == null ? void 0 : _z.bookmark_cover, block),
-                alt: getTextContent4((_A = block.properties) == null ? void 0 : _A.title),
+                alt: getTextContent((_A = block.properties) == null ? void 0 : _A.title),
                 style: {
                   objectFit: "cover"
                 }
@@ -3407,7 +4025,7 @@ function Block(props) {
       );
     }
     case "table_of_contents": {
-      const page = getBlockParentPage2(block, recordMap);
+      const page = getBlockParentPage(block, recordMap);
       if (!page) return null;
       const toc = getPageTableOfContents(page, recordMap);
       const blockColor = (_C = block.format) == null ? void 0 : _C.block_color;
@@ -3422,7 +4040,7 @@ function Block(props) {
           children: toc.map((tocItem) => /* @__PURE__ */ jsx33(
             "a",
             {
-              href: `#${uuidToId3(tocItem.id)}`,
+              href: `#${uuidToId(tocItem.id)}`,
               className: "notion-table-of-contents-item",
               children: /* @__PURE__ */ jsx33(
                 "span",
@@ -3466,7 +4084,7 @@ function Block(props) {
       return /* @__PURE__ */ jsx33(SyncPointerBlock, { ...props, level: level + 1 });
     case "alias": {
       const blockPointerId = (_I = (_H = block == null ? void 0 : block.format) == null ? void 0 : _H.alias_pointer) == null ? void 0 : _I.id;
-      const linkedBlock = getBlockValue4(recordMap.block[blockPointerId]);
+      const linkedBlock = getBlockValue(recordMap.block[blockPointerId]);
       if (!linkedBlock) {
         console.log('"alias" missing block', blockPointerId);
         return null;
@@ -3483,7 +4101,7 @@ function Block(props) {
     case "table":
       return /* @__PURE__ */ jsx33("table", { className: cs("notion-simple-table", blockId), children: /* @__PURE__ */ jsx33("tbody", { children }) });
     case "table_row": {
-      const tableBlock = getBlockValue4(
+      const tableBlock = getBlockValue(
         recordMap.block[block.parent_id]
       );
       if (!tableBlock) {
@@ -3632,7 +4250,7 @@ function NotionBlockRenderer({
   var _a;
   const { recordMap } = useNotionContext();
   const id = blockId || Object.keys(recordMap.block)[0];
-  const block = getBlockValue5(recordMap.block[id]);
+  const block = getBlockValue(recordMap.block[id]);
   if (!block) {
     if (true) {
       console.warn("missing block", blockId);
