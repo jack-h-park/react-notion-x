@@ -19,5 +19,5 @@ export default defineConfig({
   minify: false,
   sourcemap: true,
   external: ['react-pdf', 'react', 'react-dom'],
-  noExternal: ['notion-utils', 'notion-types']
+  noExternal: ['notion-utils']
 })

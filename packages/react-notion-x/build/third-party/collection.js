@@ -389,6 +389,15 @@ var require_format_number = __commonJS({
   }
 });
 
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+
 // ../../node_modules/.pnpm/is-url-superb@6.1.0/node_modules/is-url-superb/index.js
 function isUrl(string, { lenient = false } = {}) {
   if (typeof string !== "string") {
@@ -408,6 +417,11 @@ function isUrl(string, { lenient = false } = {}) {
     return false;
   }
 }
+
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+import "notion-types";
+import "notion-types";
+import "notion-types";
 
 // ../../node_modules/.pnpm/mimic-function@5.0.1/node_modules/mimic-function/index.js
 var copyProperty = (to, from, property, ignoreNonConfigurable) => {
@@ -949,10 +963,15 @@ var normalizeUrl2 = memoize((url) => {
 import React24 from "react";
 
 // src/components/page-icon.tsx
+import "notion-types";
 import React15 from "react";
 
 // src/context.tsx
+import "notion-types";
 import React13 from "react";
+
+// src/components/asset-wrapper.tsx
+import "notion-types";
 
 // src/utils.ts
 var cs = (...classes) => classes.filter((a) => !!a).join(" ");
@@ -997,7 +1016,11 @@ var getUrlParams = (url) => {
 };
 
 // src/components/text.tsx
+import "notion-types";
 import React4 from "react";
+
+// src/components/eoi.tsx
+import "notion-types";
 
 // src/icons/type-github.tsx
 import { jsx } from "react/jsx-runtime";
@@ -1204,6 +1227,7 @@ function LinkMentionPreview({ metadata }) {
 }
 
 // src/components/page-title.tsx
+import "notion-types";
 import React3 from "react";
 import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
 function PageTitleImpl({
@@ -2184,6 +2208,9 @@ function LazyImage({
   }
 }
 
+// src/components/asset.tsx
+import "notion-types";
+
 // src/components/lite-youtube-embed.tsx
 import React11 from "react";
 import { Fragment as Fragment4, jsx as jsx15, jsxs as jsxs9 } from "react/jsx-runtime";
@@ -2965,6 +2992,9 @@ function PageIconImpl({
 }
 var PageIcon = React15.memo(PageIconImpl);
 
+// src/icons/collection-view-icon.tsx
+import "notion-types";
+
 // src/icons/collection-view-board.tsx
 import { jsx as jsx24 } from "react/jsx-runtime";
 function SvgCollectionViewBoard(props) {
@@ -3015,6 +3045,15 @@ function CollectionViewIcon({ type, ...rest }) {
   }
   return icon(rest);
 }
+
+// src/third-party/collection-row.tsx
+import "notion-types";
+
+// src/third-party/collection-column-title.tsx
+import "notion-types";
+
+// src/icons/property-icon.tsx
+import "notion-types";
 
 // src/icons/type-auto-increment-id.tsx
 import { jsx as jsx29 } from "react/jsx-runtime";
@@ -4765,6 +4804,7 @@ function cleanEscapedString(input) {
 
 // src/third-party/property.tsx
 var import_format_number = __toESM(require_format_number(), 1);
+import "notion-types";
 import React16 from "react";
 
 // ../../node_modules/.pnpm/date-fns@4.1.0/node_modules/date-fns/addDays.js
@@ -5960,6 +6000,7 @@ function CollectionRow({
 import React23 from "react";
 
 // src/third-party/collection-view-board.tsx
+import "notion-types";
 import React18 from "react";
 
 // src/icons/empty-icon.tsx
@@ -6822,6 +6863,7 @@ function Board({
 }
 
 // src/third-party/collection-view-gallery.tsx
+import "notion-types";
 import React19 from "react";
 import { jsx as jsx54, jsxs as jsxs17 } from "react/jsx-runtime";
 var defaultBlockIds = [];
@@ -6932,6 +6974,7 @@ function Gallery({
 }
 
 // src/third-party/collection-view-list.tsx
+import "notion-types";
 import React20 from "react";
 import { jsx as jsx55, jsxs as jsxs18 } from "react/jsx-runtime";
 var defaultBlockIds2 = [];
