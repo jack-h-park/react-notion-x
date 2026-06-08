@@ -389,8 +389,8 @@ importers:
         specifier: ^0.16.21
         version: 0.16.21
       notion-types:
-        specifier: 7.10.0
-        version: 7.10.0
+        specifier: 7.7.1
+        version: 7.7.1
       notion-utils:
         specifier: 7.10.0
         version: 7.10.0
