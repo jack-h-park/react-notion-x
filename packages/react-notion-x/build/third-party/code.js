@@ -236,6 +236,16 @@ import "prismjs/components/prism-json.min.js";
 import "prismjs/components/prism-jsx.min.js";
 import "prismjs/components/prism-tsx.min.js";
 import "prismjs/components/prism-typescript.min.js";
+import "notion-types";
+
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
 
 // ../../node_modules/.pnpm/is-url-superb@6.1.0/node_modules/is-url-superb/index.js
 function isUrl(string, { lenient = false } = {}) {
@@ -256,6 +266,11 @@ function isUrl(string, { lenient = false } = {}) {
     return false;
   }
 }
+
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+import "notion-types";
+import "notion-types";
+import "notion-types";
 
 // ../../node_modules/.pnpm/mimic-function@5.0.1/node_modules/mimic-function/index.js
 var copyProperty = (to, from, property, ignoreNonConfigurable) => {
@@ -783,10 +798,15 @@ import prism from "prismjs";
 import React16 from "react";
 
 // src/components/text.tsx
+import "notion-types";
 import React15 from "react";
 
 // src/context.tsx
+import "notion-types";
 import React13 from "react";
+
+// src/components/asset-wrapper.tsx
+import "notion-types";
 
 // src/utils.ts
 var cs = (...classes) => classes.filter((a) => !!a).join(" ");
@@ -843,6 +863,7 @@ function SearchIcon(props) {
 }
 
 // src/components/page-icon.tsx
+import "notion-types";
 import React4 from "react";
 
 // src/icons/default-page-icon.tsx
@@ -1361,6 +1382,7 @@ function LoadingIcon(props) {
 }
 
 // src/components/page-title.tsx
+import "notion-types";
 import React7 from "react";
 import { jsx as jsx8, jsxs as jsxs3 } from "react/jsx-runtime";
 function PageTitleImpl({
@@ -1703,6 +1725,9 @@ function Search({
   ] });
 }
 
+// src/components/eoi.tsx
+import "notion-types";
+
 // src/icons/type-github.tsx
 import { jsx as jsx11 } from "react/jsx-runtime";
 function SvgTypeGitHub(props) {
@@ -1844,6 +1869,9 @@ function GracefulImage(props) {
     return /* @__PURE__ */ jsx14("img", { ...props });
   }
 }
+
+// src/components/asset.tsx
+import "notion-types";
 
 // src/components/lite-youtube-embed.tsx
 import React11 from "react";

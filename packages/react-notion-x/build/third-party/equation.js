@@ -177,6 +177,16 @@ var require_lodash = __commonJS({
 
 // src/third-party/equation.tsx
 import Katex from "@matejmazur/react-katex";
+import "notion-types";
+
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
 
 // ../../node_modules/.pnpm/is-url-superb@6.1.0/node_modules/is-url-superb/index.js
 function isUrl(string, { lenient = false } = {}) {
@@ -197,6 +207,11 @@ function isUrl(string, { lenient = false } = {}) {
     return false;
   }
 }
+
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+import "notion-types";
+import "notion-types";
+import "notion-types";
 
 // ../../node_modules/.pnpm/mimic-function@5.0.1/node_modules/mimic-function/index.js
 var copyProperty = (to, from, property, ignoreNonConfigurable) => {
@@ -720,7 +735,11 @@ var normalizeUrl2 = memoize((url) => {
 });
 
 // src/context.tsx
+import "notion-types";
 import React15 from "react";
+
+// src/components/asset-wrapper.tsx
+import "notion-types";
 
 // src/utils.ts
 var cs = (...classes) => classes.filter((a) => !!a).join(" ");
@@ -765,7 +784,11 @@ var getUrlParams = (url) => {
 };
 
 // src/components/text.tsx
+import "notion-types";
 import React7 from "react";
+
+// src/components/eoi.tsx
+import "notion-types";
 
 // src/icons/type-github.tsx
 import { jsx } from "react/jsx-runtime";
@@ -972,9 +995,11 @@ function LinkMentionPreview({ metadata }) {
 }
 
 // src/components/page-title.tsx
+import "notion-types";
 import React6 from "react";
 
 // src/components/page-icon.tsx
+import "notion-types";
 import React5 from "react";
 
 // src/icons/default-page-icon.tsx
@@ -2044,6 +2069,9 @@ function Search({
     )
   ] });
 }
+
+// src/components/asset.tsx
+import "notion-types";
 
 // src/components/lite-youtube-embed.tsx
 import React13 from "react";

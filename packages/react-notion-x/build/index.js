@@ -178,6 +178,18 @@ var require_lodash = __commonJS({
 // src/components/button.tsx
 import React16 from "react";
 
+// src/context.tsx
+import "notion-types";
+
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+import "notion-types";
+
 // ../../node_modules/.pnpm/is-url-superb@6.1.0/node_modules/is-url-superb/index.js
 function isUrl(string, { lenient = false } = {}) {
   if (typeof string !== "string") {
@@ -197,6 +209,11 @@ function isUrl(string, { lenient = false } = {}) {
     return false;
   }
 }
+
+// ../../node_modules/.pnpm/notion-utils@7.10.0/node_modules/notion-utils/build/index.js
+import "notion-types";
+import "notion-types";
+import "notion-types";
 
 // ../../node_modules/.pnpm/mimic-function@5.0.1/node_modules/mimic-function/index.js
 var copyProperty = (to, from, property, ignoreNonConfigurable) => {
@@ -845,6 +862,9 @@ var normalizeUrl2 = memoize((url) => {
 // src/context.tsx
 import React15 from "react";
 
+// src/components/asset-wrapper.tsx
+import "notion-types";
+
 // src/utils.ts
 var cs = (...classes) => classes.filter((a) => !!a).join(" ");
 var getHashFragmentValue = (url) => {
@@ -886,6 +906,9 @@ var getUrlParams = (url) => {
   }
   return;
 };
+
+// src/components/asset.tsx
+import "notion-types";
 
 // src/components/lazy-image.tsx
 import React from "react";
@@ -1606,7 +1629,11 @@ function Asset({
 }
 
 // src/components/text.tsx
+import "notion-types";
 import React8 from "react";
+
+// src/components/eoi.tsx
+import "notion-types";
 
 // src/icons/type-github.tsx
 import { jsx as jsx5 } from "react/jsx-runtime";
@@ -1813,9 +1840,11 @@ function LinkMentionPreview({ metadata }) {
 }
 
 // src/components/page-title.tsx
+import "notion-types";
 import React7 from "react";
 
 // src/components/page-icon.tsx
+import "notion-types";
 import React6 from "react";
 
 // src/icons/default-page-icon.tsx
@@ -3095,12 +3124,14 @@ function getTextContent2(text) {
 
 // src/renderer.tsx
 import mediumZoom from "@fisch0920/medium-zoom";
+import "notion-types";
 import * as React22 from "react";
 
 // src/block.tsx
 import React21 from "react";
 
 // src/components/audio.tsx
+import "notion-types";
 import { jsx as jsx25 } from "react/jsx-runtime";
 function Audio({
   block,
@@ -3119,6 +3150,9 @@ function Audio({
   }
   return /* @__PURE__ */ jsx25("div", { className: cs("notion-audio", className), children: /* @__PURE__ */ jsx25("audio", { controls: true, preload: "none", src: source }) });
 }
+
+// src/components/file.tsx
+import "notion-types";
 
 // src/icons/file-icon.tsx
 import "react";
@@ -3164,6 +3198,7 @@ function File({
 }
 
 // src/components/google-drive.tsx
+import "notion-types";
 import { jsx as jsx28, jsxs as jsxs12 } from "react/jsx-runtime";
 function GoogleDrive({
   block,
@@ -3304,6 +3339,7 @@ function PageAside({
 }
 
 // src/components/sync-pointer-block.tsx
+import "notion-types";
 import { jsx as jsx30 } from "react/jsx-runtime";
 function SyncPointerBlock({
   block,
