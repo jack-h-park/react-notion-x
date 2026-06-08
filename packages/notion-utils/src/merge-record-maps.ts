@@ -32,6 +32,14 @@ export function mergeRecordMaps(
     preview_images: {
       ...recordMapA.preview_images,
       ...recordMapB.preview_images
+    },
+    automation: {
+      ...(recordMapA as any).automation,
+      ...(recordMapB as any).automation
+    },
+    automation_action: {
+      ...(recordMapA as any).automation_action,
+      ...(recordMapB as any).automation_action
     }
   }
 

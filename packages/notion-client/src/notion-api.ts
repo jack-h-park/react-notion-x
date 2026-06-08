@@ -112,6 +112,9 @@ export class NotionAPI {
     recordMap.collection = recordMap.collection ?? {}
     recordMap.collection_view = recordMap.collection_view ?? {}
     recordMap.notion_user = recordMap.notion_user ?? {}
+    ;(recordMap as any).automation = (recordMap as any).automation ?? {}
+    ;(recordMap as any).automation_action =
+      (recordMap as any).automation_action ?? {}
 
     // additional mappings added for convenience
     // note: these are not native notion objects

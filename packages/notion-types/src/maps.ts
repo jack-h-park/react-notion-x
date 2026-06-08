@@ -51,6 +51,10 @@ export interface ExtendedRecordMap extends RecordMap {
   collection_view: CollectionViewMap
   notion_user: UserMap
 
+  // automation data for button blocks
+  automation?: Record<string, any>
+  automation_action?: Record<string, any>
+
   // added for convenience
   collection_query: {
     [collectionId: string]: {

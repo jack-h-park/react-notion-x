@@ -1,9 +1,9 @@
 import type * as types from 'notion-types'
+import { getBlockValue } from 'notion-utils'
 import React from 'react'
 
 import { useNotionContext } from '../context'
 import { cs } from '../utils'
-import { getBlockValue } from 'notion-utils'
 import { Text } from './text'
 
 interface AutomationValue {
@@ -26,6 +26,7 @@ interface AutomationActionValue {
       type?: 'url' | 'page'
       url?: string
       pageId?: string
+      page?: { id: string }
     }
     url?: string
     method?: string
@@ -87,20 +88,19 @@ export function Button({
 
   if (!automation) {
     // Fallback to title if no automation found
-    const buttonText = title ? getTextContent(title) : 'Button'
     return (
       <div className={cs('notion-button-block', blockId)}>
         <button
           type='button'
           className={cs('notion-button', `notion-${blockColor}`, className)}
         >
-          {buttonText}
+          {title ? <Text value={title} block={block} /> : 'Button'}
         </button>
       </div>
     )
   }
 
-  // Get button text from automation properties or fall back to title
+  const icon = automation.properties?.icon
   const buttonText =
     automation.properties?.name || (title ? getTextContent(title) : 'Button')
 
@@ -139,16 +139,17 @@ export function Button({
     // Execute action based on type
     switch (actionData.type) {
       case 'open_page': {
-        // Handle open_page action
         const target = actionData.config?.target
         if (target?.type === 'url' && target.url) {
-          // Open URL in new tab
           window.open(target.url, '_blank', 'noopener,noreferrer')
-        } else if (target?.type === 'page' && target.pageId) {
-          // Navigate to Notion page using mapPageUrl
-          const pageUrl = mapPageUrl(target.pageId)
-          if (pageUrl) {
-            window.location.href = pageUrl
+        } else if (target?.type === 'page') {
+          // API returns target.page.id (newer) or target.pageId (older)
+          const pageId = target.page?.id || target.pageId
+          if (pageId) {
+            const pageUrl = mapPageUrl(pageId)
+            if (pageUrl) {
+              window.location.href = pageUrl
+            }
           }
         }
         break
@@ -321,7 +322,8 @@ export function Button({
         title={buttonText}
         disabled={isLoading}
       >
-        {buttonText}
+        {icon && <span className='notion-button-icon'>{icon}</span>}
+        <span>{buttonText}</span>
       </button>
     </div>
   )

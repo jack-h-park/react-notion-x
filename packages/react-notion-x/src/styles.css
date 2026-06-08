@@ -1338,24 +1338,39 @@ svg.notion-page-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   padding: 6px 12px;
   border: 1px solid var(--notion-gray);
   border-radius: 3px;
   font-size: 14px;
   font-weight: 400;
-  color: #000;
+  color: var(--fg-color);
   background-color: transparent;
   cursor: pointer;
   min-height: 32px;
   transition: background-color 0.15s ease;
 }
 
+.notion-button-icon {
+  display: inline-flex;
+  align-items: center;
+  font-style: normal;
+}
+
 .notion-button:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(55, 53, 47, 0.04);
 }
 
 .notion-button:active {
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: rgba(55, 53, 47, 0.08);
+}
+
+.dark-mode .notion-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .notion-button:active {
+  background-color: rgba(255, 255, 255, 0.10);
 }
 
 .notion-button:focus-visible {
@@ -1561,30 +1576,34 @@ svg.notion-page-icon {
   box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.08);
 }
 
-/* Default variant */
+/* Default variant — transparent background to match Notion */
 .notion-button.notion-default {
-  background-color: var(--notion-item-default);
+  background-color: transparent;
   border-color: var(--notion-gray);
 }
 
 .notion-button.notion-default:hover {
-  background-color: var(--notion-item-default);
-  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.04);
+  background-color: rgba(55, 53, 47, 0.04);
+  box-shadow: none;
 }
 
 .notion-button.notion-default:active {
-  background-color: var(--notion-item-default);
-  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.08);
+  background-color: rgba(55, 53, 47, 0.08);
+  box-shadow: none;
+}
+
+.dark-mode .notion-button.notion-default:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .notion-button.notion-default:active {
+  background-color: rgba(255, 255, 255, 0.10);
 }
 
 /* Success state - darker green */
 .notion-button.notion-success {
   background-color: rgb(175, 210, 175) !important;
   border-color: rgb(175, 210, 175) !important;
-}
-
-.notion-button.notion-default:hover {
-  background-color: var(--fg-color-1);
 }
 
 /* Success state */
