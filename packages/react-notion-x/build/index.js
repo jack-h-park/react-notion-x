@@ -2891,13 +2891,13 @@ var useNotionContext = () => {
 };
 
 // src/components/button.tsx
-import { jsx as jsx24 } from "react/jsx-runtime";
+import { jsx as jsx24, jsxs as jsxs11 } from "react/jsx-runtime";
 function Button({
   block,
   blockId,
   className
 }) {
-  var _a, _b, _c, _d, _e;
+  var _a, _b, _c, _d, _e, _f;
   const { recordMap, mapPageUrl } = useNotionContext();
   const [isSuccess, setIsSuccess] = React16.useState(false);
   const [isLoading, setIsLoading] = React16.useState(false);
@@ -2922,17 +2922,17 @@ function Button({
     (_d = recordMap.automation) == null ? void 0 : _d[automationId]
   );
   if (!automation) {
-    const buttonText2 = title ? getTextContent2(title) : "Button";
     return /* @__PURE__ */ jsx24("div", { className: cs("notion-button-block", blockId), children: /* @__PURE__ */ jsx24(
       "button",
       {
         type: "button",
         className: cs("notion-button", `notion-${blockColor}`, className),
-        children: buttonText2
+        children: title ? /* @__PURE__ */ jsx24(Text, { value: title, block }) : "Button"
       }
     ) });
   }
-  const buttonText = ((_e = automation.properties) == null ? void 0 : _e.name) || (title ? getTextContent2(title) : "Button");
+  const icon = (_e = automation.properties) == null ? void 0 : _e.icon;
+  const buttonText = ((_f = automation.properties) == null ? void 0 : _f.name) || (title ? getTextContent2(title) : "Button");
   const handleClick = async (e) => {
     e.preventDefault();
     if (isLoading) return;
@@ -2945,7 +2945,7 @@ function Button({
     }
   };
   const executeAction = async () => {
-    var _a2, _b2, _c2, _d2, _e2, _f, _g, _h, _i, _j;
+    var _a2, _b2, _c2, _d2, _e2, _f2, _g, _h, _i, _j, _k;
     const firstActionId = (_a2 = automation.action_ids) == null ? void 0 : _a2[0];
     if (!firstActionId) {
       console.warn("No actions defined for automation:", automationId);
@@ -2963,17 +2963,20 @@ function Button({
         const target = (_c2 = actionData.config) == null ? void 0 : _c2.target;
         if ((target == null ? void 0 : target.type) === "url" && target.url) {
           window.open(target.url, "_blank", "noopener,noreferrer");
-        } else if ((target == null ? void 0 : target.type) === "page" && target.pageId) {
-          const pageUrl = mapPageUrl(target.pageId);
-          if (pageUrl) {
-            window.location.href = pageUrl;
+        } else if ((target == null ? void 0 : target.type) === "page") {
+          const pageId = ((_d2 = target.page) == null ? void 0 : _d2.id) || target.pageId;
+          if (pageId) {
+            const pageUrl = mapPageUrl(pageId);
+            if (pageUrl) {
+              window.location.href = pageUrl;
+            }
           }
         }
         break;
       }
       case "send_webhook":
       case "http_request": {
-        const webhookUrl = (_e2 = (_d2 = actionData.config) == null ? void 0 : _d2.url) == null ? void 0 : _e2.trim();
+        const webhookUrl = (_f2 = (_e2 = actionData.config) == null ? void 0 : _e2.url) == null ? void 0 : _f2.trim();
         if (webhookUrl) {
           try {
             if (typeof window !== "undefined" && "/api/webhook-proxy") {
@@ -2984,7 +2987,7 @@ function Button({
                   return b && "type" in b && b.type === "page";
                 }
               );
-              const pageBlock = pageBlockId ? (_f = recordMap.block[pageBlockId]) == null ? void 0 : _f.value : null;
+              const pageBlock = pageBlockId ? (_g = recordMap.block[pageBlockId]) == null ? void 0 : _g.value : null;
               if (!pageBlock) {
                 console.warn("No page block found for webhook payload");
                 return;
@@ -3013,13 +3016,13 @@ function Button({
                     object: "user",
                     id: pageBlock.last_edited_by_id || "unknown"
                   },
-                  cover: ((_g = pageBlock.format) == null ? void 0 : _g.page_cover) ? {
+                  cover: ((_h = pageBlock.format) == null ? void 0 : _h.page_cover) ? {
                     type: "external",
                     external: {
                       url: pageBlock.format.page_cover.startsWith("/") ? `https://www.notion.so${pageBlock.format.page_cover}` : pageBlock.format.page_cover
                     }
                   } : null,
-                  icon: ((_h = pageBlock.format) == null ? void 0 : _h.page_icon) ? {
+                  icon: ((_i = pageBlock.format) == null ? void 0 : _i.page_icon) ? {
                     type: "external",
                     external: { url: pageBlock.format.page_icon }
                   } : null,
@@ -3034,7 +3037,7 @@ function Button({
                     title: {
                       id: "title",
                       type: "title",
-                      title: ((_i = pageBlock.properties) == null ? void 0 : _i.title) ? pageBlock.properties.title.map((t) => {
+                      title: ((_j = pageBlock.properties) == null ? void 0 : _j.title) ? pageBlock.properties.title.map((t) => {
                         const text = typeof t === "string" ? t : t[0] || "";
                         return {
                           type: "text",
@@ -3061,7 +3064,7 @@ function Button({
               const headers = {
                 "Content-Type": "application/json"
               };
-              if ((_j = actionData.config) == null ? void 0 : _j.customHeaders) {
+              if ((_k = actionData.config) == null ? void 0 : _k.customHeaders) {
                 for (const header of actionData.config.customHeaders) {
                   headers[header.key] = header.value;
                 }
@@ -3101,7 +3104,7 @@ function Button({
         console.warn("Unsupported action type:", actionData.type);
     }
   };
-  return /* @__PURE__ */ jsx24("div", { className: cs("notion-button-block", blockId), children: /* @__PURE__ */ jsx24(
+  return /* @__PURE__ */ jsx24("div", { className: cs("notion-button-block", blockId), children: /* @__PURE__ */ jsxs11(
     "button",
     {
       type: "button",
@@ -3114,7 +3117,10 @@ function Button({
       onClick: handleClick,
       title: buttonText,
       disabled: isLoading,
-      children: buttonText
+      children: [
+        icon && /* @__PURE__ */ jsx24("span", { className: "notion-button-icon", children: icon }),
+        /* @__PURE__ */ jsx24("span", { children: buttonText })
+      ]
     }
   ) });
 }
@@ -3163,7 +3169,7 @@ function FileIcon(props) {
 }
 
 // src/components/file.tsx
-import { jsx as jsx27, jsxs as jsxs11 } from "react/jsx-runtime";
+import { jsx as jsx27, jsxs as jsxs12 } from "react/jsx-runtime";
 function File({
   block,
   className
@@ -3179,7 +3185,7 @@ function File({
     url.searchParams.set("spaceId", block.space_id);
     source = url.toString();
   }
-  return /* @__PURE__ */ jsx27("div", { className: cs("notion-file", className), children: /* @__PURE__ */ jsxs11(
+  return /* @__PURE__ */ jsx27("div", { className: cs("notion-file", className), children: /* @__PURE__ */ jsxs12(
     components.Link,
     {
       className: "notion-file-link",
@@ -3188,7 +3194,7 @@ function File({
       rel: "noopener noreferrer",
       children: [
         /* @__PURE__ */ jsx27(FileIcon, { className: "notion-file-icon" }),
-        /* @__PURE__ */ jsxs11("div", { className: "notion-file-info", children: [
+        /* @__PURE__ */ jsxs12("div", { className: "notion-file-info", children: [
           /* @__PURE__ */ jsx27("div", { className: "notion-file-title", children: /* @__PURE__ */ jsx27(Text, { value: ((_d = block.properties) == null ? void 0 : _d.title) || [["File"]], block }) }),
           ((_e = block.properties) == null ? void 0 : _e.size) && /* @__PURE__ */ jsx27("div", { className: "notion-file-size", children: /* @__PURE__ */ jsx27(Text, { value: block.properties.size, block }) })
         ] })
@@ -3199,7 +3205,7 @@ function File({
 
 // src/components/google-drive.tsx
 import "notion-types";
-import { jsx as jsx28, jsxs as jsxs12 } from "react/jsx-runtime";
+import { jsx as jsx28, jsxs as jsxs13 } from "react/jsx-runtime";
 function GoogleDrive({
   block,
   className
@@ -3214,7 +3220,7 @@ function GoogleDrive({
     domain = url.hostname;
   } catch (e) {
   }
-  return /* @__PURE__ */ jsx28("div", { className: cs("notion-google-drive", className), children: /* @__PURE__ */ jsxs12(
+  return /* @__PURE__ */ jsx28("div", { className: cs("notion-google-drive", className), children: /* @__PURE__ */ jsxs13(
     components.Link,
     {
       className: "notion-google-drive-link",
@@ -3230,9 +3236,9 @@ function GoogleDrive({
             loading: "lazy"
           }
         ) }),
-        /* @__PURE__ */ jsxs12("div", { className: "notion-google-drive-body", children: [
+        /* @__PURE__ */ jsxs13("div", { className: "notion-google-drive-body", children: [
           properties.title && /* @__PURE__ */ jsx28("div", { className: "notion-google-drive-body-title", children: properties.title }),
-          properties.icon && domain && /* @__PURE__ */ jsxs12("div", { className: "notion-google-drive-body-source", children: [
+          properties.icon && domain && /* @__PURE__ */ jsxs13("div", { className: "notion-google-drive-body-source", children: [
             properties.icon && /* @__PURE__ */ jsx28(
               "div",
               {
@@ -3253,7 +3259,7 @@ function GoogleDrive({
 // src/components/page-aside.tsx
 var import_lodash2 = __toESM(require_lodash(), 1);
 import React18 from "react";
-import { jsx as jsx29, jsxs as jsxs13 } from "react/jsx-runtime";
+import { jsx as jsx29, jsxs as jsxs14 } from "react/jsx-runtime";
 function PageAside({
   toc,
   activeSection,
@@ -3304,8 +3310,8 @@ function PageAside({
   if (!hasAside) {
     return null;
   }
-  return /* @__PURE__ */ jsxs13("aside", { className: cs("notion-aside", className), children: [
-    hasToc && /* @__PURE__ */ jsxs13("div", { className: "notion-aside-table-of-contents", children: [
+  return /* @__PURE__ */ jsxs14("aside", { className: cs("notion-aside", className), children: [
+    hasToc && /* @__PURE__ */ jsxs14("div", { className: "notion-aside-table-of-contents", children: [
       /* @__PURE__ */ jsx29("div", { className: "notion-aside-table-of-contents-header", children: "Table of Contents" }),
       /* @__PURE__ */ jsx29("nav", { className: "notion-table-of-contents", children: toc.map((tocItem) => {
         const id = uuidToId(tocItem.id);
@@ -3369,7 +3375,7 @@ function SyncPointerBlock({
 
 // src/components/tab-block.tsx
 import React19 from "react";
-import { jsx as jsx31, jsxs as jsxs14 } from "react/jsx-runtime";
+import { jsx as jsx31, jsxs as jsxs15 } from "react/jsx-runtime";
 function TabBlock(props) {
   var _a, _b;
   const { recordMap } = useNotionContext();
@@ -3431,9 +3437,9 @@ function TabBlock(props) {
       className: cs("notion-selectable", "notion-tab-block", blockId),
       "data-block-id": uuidToId(block.id),
       dir: "ltr",
-      children: /* @__PURE__ */ jsxs14("div", { className: "notion-tab-block-inner", children: [
-        /* @__PURE__ */ jsxs14("div", { className: "notion-tab-header-row", children: [
-          /* @__PURE__ */ jsxs14("div", { className: "notion-tab-scroll-host", children: [
+      children: /* @__PURE__ */ jsxs15("div", { className: "notion-tab-block-inner", children: [
+        /* @__PURE__ */ jsxs15("div", { className: "notion-tab-header-row", children: [
+          /* @__PURE__ */ jsxs15("div", { className: "notion-tab-scroll-host", children: [
             /* @__PURE__ */ jsx31(
               "div",
               {
@@ -3541,7 +3547,7 @@ function LinkIcon(props) {
 }
 
 // src/block.tsx
-import { Fragment as Fragment6, jsx as jsx33, jsxs as jsxs15 } from "react/jsx-runtime";
+import { Fragment as Fragment6, jsx as jsx33, jsxs as jsxs16 } from "react/jsx-runtime";
 var tocIndentLevelCache = {};
 var pageCoverStyleCache = {};
 function Block(props) {
@@ -3620,7 +3626,7 @@ function Block(props) {
           const hasToc = showTableOfContents && toc.length >= minTableOfContentsItems;
           const hasAside = !!((hasToc || pageAside) && !page_full_width);
           const hasPageCover = !!(pageCover || page_cover);
-          return /* @__PURE__ */ jsxs15(
+          return /* @__PURE__ */ jsxs16(
             "div",
             {
               className: cs(
@@ -3632,10 +3638,10 @@ function Block(props) {
               ),
               children: [
                 /* @__PURE__ */ jsx33("div", { className: "notion-viewport" }),
-                /* @__PURE__ */ jsxs15("div", { className: "notion-frame", children: [
+                /* @__PURE__ */ jsxs16("div", { className: "notion-frame", children: [
                   !disableHeader && /* @__PURE__ */ jsx33(components.Header, { block }),
                   header,
-                  /* @__PURE__ */ jsxs15("div", { className: "notion-page-scroller", children: [
+                  /* @__PURE__ */ jsxs16("div", { className: "notion-page-scroller", children: [
                     hasPageCover && (pageCover != null ? pageCover : /* @__PURE__ */ jsx33("div", { className: "notion-page-cover-wrapper", children: /* @__PURE__ */ jsx33(
                       LazyImage,
                       {
@@ -3646,7 +3652,7 @@ function Block(props) {
                         style: pageCoverStyle
                       }
                     ) })),
-                    /* @__PURE__ */ jsxs15(
+                    /* @__PURE__ */ jsxs16(
                       "main",
                       {
                         className: cs(
@@ -3671,7 +3677,7 @@ function Block(props) {
                           pageHeader,
                           /* @__PURE__ */ jsx33("h1", { className: "notion-title", children: pageTitle != null ? pageTitle : /* @__PURE__ */ jsx33(Text, { value: properties == null ? void 0 : properties.title, block }) }),
                           (block.type === "collection_view_page" || block.type === "page" && block.parent_table === "collection") && /* @__PURE__ */ jsx33(components.Collection, { block, ctx: ctx2 }),
-                          block.type !== "collection_view_page" && /* @__PURE__ */ jsxs15(
+                          block.type !== "collection_view_page" && /* @__PURE__ */ jsxs16(
                             "div",
                             {
                               className: cs(
@@ -3706,7 +3712,7 @@ function Block(props) {
             }
           );
         } else {
-          return /* @__PURE__ */ jsxs15(
+          return /* @__PURE__ */ jsxs16(
             "main",
             {
               className: cs(
@@ -3784,7 +3790,7 @@ function Block(props) {
         indentLevelClass,
         blockId
       );
-      const innerHeader = /* @__PURE__ */ jsxs15("span", { children: [
+      const innerHeader = /* @__PURE__ */ jsxs16("span", { children: [
         /* @__PURE__ */ jsx33("div", { id, className: "notion-header-anchor" }),
         !((_e = block.format) == null ? void 0 : _e.toggleable) && /* @__PURE__ */ jsx33("a", { className: "notion-hash-link", href: `#${id}`, title, children: /* @__PURE__ */ jsx33(LinkIcon, {}) }),
         /* @__PURE__ */ jsx33("span", { className: "notion-h-title", children: /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }) })
@@ -3800,7 +3806,7 @@ function Block(props) {
         headerBlock = /* @__PURE__ */ jsx33("h5", { className: classNameStr, "data-id": id, children: innerHeader });
       }
       if ((_f = block.format) == null ? void 0 : _f.toggleable) {
-        return /* @__PURE__ */ jsxs15("details", { className: cs("notion-toggle", blockId), children: [
+        return /* @__PURE__ */ jsxs16("details", { className: cs("notion-toggle", blockId), children: [
           /* @__PURE__ */ jsx33("summary", { children: headerBlock }),
           /* @__PURE__ */ jsx33("div", { children })
         ] });
@@ -3815,7 +3821,7 @@ function Block(props) {
         return /* @__PURE__ */ jsx33("div", { className: cs("notion-blank", blockId), children: "\xA0" });
       }
       const blockColor = (_h = block.format) == null ? void 0 : _h.block_color;
-      return /* @__PURE__ */ jsxs15(
+      return /* @__PURE__ */ jsxs16(
         "div",
         {
           className: cs(
@@ -3852,13 +3858,13 @@ function Block(props) {
       if (block.content) {
         const listItem = block.properties ? /* @__PURE__ */ jsx33("li", { children: /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }) }) : null;
         if (block.type === "bulleted_list") {
-          output = /* @__PURE__ */ jsxs15(Fragment6, { children: [
+          output = /* @__PURE__ */ jsxs16(Fragment6, { children: [
             listItem,
             /* @__PURE__ */ jsx33("ul", { className: cs("notion-list", "notion-list-disc", blockId), children })
           ] });
         } else {
           const nestingLevel = getListNestingLevel(block.id, recordMap.block);
-          output = /* @__PURE__ */ jsxs15(Fragment6, { children: [
+          output = /* @__PURE__ */ jsxs16(Fragment6, { children: [
             listItem,
             /* @__PURE__ */ jsx33(
               "ol",
@@ -3940,15 +3946,15 @@ function Block(props) {
       const columns = ((_n = parent == null ? void 0 : parent.content) == null ? void 0 : _n.length) || Math.max(2, Math.ceil(1 / ratio));
       const width = `calc((100% - (${columns - 1} * ${spacerWidth})) * ${ratio})`;
       const style = { width };
-      return /* @__PURE__ */ jsxs15(Fragment6, { children: [
+      return /* @__PURE__ */ jsxs16(Fragment6, { children: [
         /* @__PURE__ */ jsx33("div", { className: cs("notion-column", blockId), style, children }),
         /* @__PURE__ */ jsx33("div", { className: "notion-spacer" })
       ] });
     }
     case "quote": {
-      if (!block.properties) return null;
+      if (!block.properties && !children) return null;
       const blockColor = (_o = block.format) == null ? void 0 : _o.block_color;
-      return /* @__PURE__ */ jsxs15(
+      return /* @__PURE__ */ jsxs16(
         "blockquote",
         {
           className: cs(
@@ -3957,7 +3963,7 @@ function Block(props) {
             blockId
           ),
           children: [
-            /* @__PURE__ */ jsx33("div", { children: /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }) }),
+            block.properties && /* @__PURE__ */ jsx33("div", { children: /* @__PURE__ */ jsx33(Text, { value: block.properties.title, block }) }),
             children
           ]
         }
@@ -3969,7 +3975,7 @@ function Block(props) {
       if (components.Callout) {
         return /* @__PURE__ */ jsx33(components.Callout, { block, className: blockId });
       } else {
-        return /* @__PURE__ */ jsxs15(
+        return /* @__PURE__ */ jsxs16(
           "div",
           {
             className: cs(
@@ -3979,7 +3985,7 @@ function Block(props) {
             ),
             children: [
               /* @__PURE__ */ jsx33(PageIcon, { block, hideDefaultIcon: true }),
-              /* @__PURE__ */ jsxs15("div", { className: "notion-callout-text", children: [
+              /* @__PURE__ */ jsxs16("div", { className: "notion-callout-text", children: [
                 /* @__PURE__ */ jsx33(Text, { value: (_r = block.properties) == null ? void 0 : _r.title, block }),
                 children
               ] })
@@ -4004,7 +4010,7 @@ function Block(props) {
           }
         }
       }
-      return /* @__PURE__ */ jsx33("div", { className: "notion-row", children: /* @__PURE__ */ jsxs15(
+      return /* @__PURE__ */ jsx33("div", { className: "notion-row", children: /* @__PURE__ */ jsxs16(
         components.Link,
         {
           target: "_blank",
@@ -4016,10 +4022,10 @@ function Block(props) {
           ),
           href: link[0][0],
           children: [
-            /* @__PURE__ */ jsxs15("div", { children: [
+            /* @__PURE__ */ jsxs16("div", { children: [
               title && /* @__PURE__ */ jsx33("div", { className: "notion-bookmark-title", children: /* @__PURE__ */ jsx33(Text, { value: [[title]], block }) }),
               ((_u = block.properties) == null ? void 0 : _u.description) && /* @__PURE__ */ jsx33("div", { className: "notion-bookmark-description", children: /* @__PURE__ */ jsx33(Text, { value: (_v = block.properties) == null ? void 0 : _v.description, block }) }),
-              /* @__PURE__ */ jsxs15("div", { className: "notion-bookmark-link", children: [
+              /* @__PURE__ */ jsxs16("div", { className: "notion-bookmark-link", children: [
                 ((_w = block.format) == null ? void 0 : _w.bookmark_icon) && /* @__PURE__ */ jsx33("div", { className: "notion-bookmark-link-icon", children: /* @__PURE__ */ jsx33(
                   LazyImage,
                   {
@@ -4045,7 +4051,7 @@ function Block(props) {
       ) });
     }
     case "toggle":
-      return /* @__PURE__ */ jsxs15("details", { className: cs("notion-toggle", blockId), children: [
+      return /* @__PURE__ */ jsxs16("details", { className: cs("notion-toggle", blockId), children: [
         /* @__PURE__ */ jsx33("summary", { children: /* @__PURE__ */ jsx33(Text, { value: (_B = block.properties) == null ? void 0 : _B.title, block }) }),
         /* @__PURE__ */ jsx33("div", { children })
       ] });
@@ -4097,8 +4103,8 @@ function Block(props) {
     }
     case "to_do": {
       const isChecked = ((_F = (_E = (_D = block.properties) == null ? void 0 : _D.checked) == null ? void 0 : _E[0]) == null ? void 0 : _F[0]) === "Yes";
-      return /* @__PURE__ */ jsxs15("div", { className: cs("notion-to-do", blockId), children: [
-        /* @__PURE__ */ jsxs15("div", { className: "notion-to-do-item", children: [
+      return /* @__PURE__ */ jsxs16("div", { className: cs("notion-to-do", blockId), children: [
+        /* @__PURE__ */ jsxs16("div", { className: "notion-to-do-item", children: [
           /* @__PURE__ */ jsx33(components.Checkbox, { blockId, isChecked }),
           /* @__PURE__ */ jsx33(
             "div",

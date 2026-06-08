@@ -599,7 +599,9 @@ export function Block(props: BlockProps) {
     }
 
     case 'quote': {
-      if (!block.properties) return null
+      // A quote block may have its text in properties.title (inline) or entirely
+      // in child blocks (content). Skip only when both are absent.
+      if (!block.properties && !children) return null
 
       const blockColor = block.format?.block_color
 
@@ -611,9 +613,11 @@ export function Block(props: BlockProps) {
             blockId
           )}
         >
-          <div>
-            <Text value={block.properties.title} block={block} />
-          </div>
+          {block.properties && (
+            <div>
+              <Text value={block.properties.title} block={block} />
+            </div>
+          )}
           {children}
         </blockquote>
       )
