@@ -157,43 +157,7 @@ Notion에서 quote 블록의 텍스트가 `properties.title`이 아닌 **자식 
 
 ---
 
-## 6. Gallery Card Cover Teaser — 대안 구현 (`claude/infallible-lovelace`)
-
-`feat/text-thumbnail-preview`의 `collection-card-cover.ts` 방식과 별도로, `collection-card.tsx` 내부에 인라인으로 구현된 더 단순한 Teaser 방식입니다. 두 브랜치는 **병렬로 개발 중인 대안 설계**입니다.
-
-**`feat/text-thumbnail-preview` 방식과의 차이점**
-
-| 항목 | `feat/text-thumbnail-preview` | `claude/infallible-lovelace` |
-|------|-------------------------------|-------------------------------|
-| 구현 위치 | 별도 `collection-card-cover.ts` | `collection-card.tsx` 인라인 |
-| 이미지 탐색 | BFS + 투명 컨테이너 재귀 | 없음 (텍스트 전용 fallback) |
-| Eyebrow 소스 | heading/callout/toggle 다양 | h2/h3만 (`sub_header`, `sub_sub_header`) |
-| Heading 발견 시 | 이전 body 유지 | **body 초기화** (해당 섹션 body만 수집) |
-| Tone 분류 | callout/quote/default | 없음 (단일 스타일) |
-| Icon 소스 | callout 블록 이모지 | 페이지 icon (`format.page_icon`) |
-| CSS 복잡도 | callout/quote 변형 포함 | 단순 3 클래스 |
-
-**핵심 로직 (`buildTeaserCandidate` 인라인)**
-
-```
-h1(header) → 무시 (페이지 제목 반복이므로)
-h2/h3 발견 → eyebrow 설정, 기존 bodyParts 초기화
-text/list/quote/callout 등 → bodyParts에 누적 (240자 이내)
-```
-
-**신규 CSS 클래스** (단순화된 버전)
-
-| 클래스 | 역할 |
-|--------|------|
-| `.notion-collection-card-cover-teaser` | 전체 영역, `background: var(--bg-color-1)` |
-| `.notion-collection-card-cover-teaser-panel` | flex column, gap 6px |
-| `.notion-collection-card-cover-teaser-eyebrow` | 13px, 600 weight, 1줄 clamp |
-| `.notion-collection-card-cover-teaser-body` | 13px, `fg-color-3`, 4줄 clamp |
-| `.notion-collection-card-cover-teaser-icon` | 17px, flex 고정 |
-
----
-
-## 7. 패키징 — GitHub tarball 직접 설치 지원
+## 6. 패키징 — GitHub tarball 직접 설치 지원
 
 upstream은 npm 배포만을 지원합니다. 이 포크는 GitHub 저장소를 npm 의존성으로 직접 설치(`github:jack-h-park/react-notion-x#tag`)할 수 있도록 패키지 구조를 수정했습니다.
 
