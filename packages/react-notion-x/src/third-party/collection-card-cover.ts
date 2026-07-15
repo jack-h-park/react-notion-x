@@ -3,7 +3,12 @@ import type {
   CollectionCardCover,
   ExtendedRecordMap
 } from 'notion-types'
-import { getBlockIcon, getTextContent, normalizeUrl } from 'notion-utils'
+import {
+  getBlockIcon,
+  getBlockValue,
+  getTextContent,
+  normalizeUrl
+} from 'notion-utils'
 
 import type { MapImageUrlFn } from '../types'
 
@@ -91,7 +96,7 @@ function traversePageContent(
     if (!blockId || visited.has(blockId)) return
     visited.add(blockId)
 
-    const block = recordMap.block[blockId]?.value
+    const block = getBlockValue(recordMap.block[blockId])
     if (!block) return
 
     if (!isRoot) {
@@ -125,7 +130,7 @@ function getFlattenedPreviewBlocks(
     if (!blockId || visited.has(blockId)) continue
     visited.add(blockId)
 
-    const block = recordMap.block[blockId]?.value
+    const block = getBlockValue(recordMap.block[blockId])
     if (!block) continue
 
     if (block.type === 'page' || block.type === 'collection_view_page') {
@@ -157,7 +162,7 @@ function getLoadedDescendantBlocks(
     if (!blockId || visited.has(blockId)) continue
     visited.add(blockId)
 
-    const block = recordMap.block[blockId]?.value
+    const block = getBlockValue(recordMap.block[blockId])
     if (!block) continue
 
     if (block.type === 'page' || block.type === 'collection_view_page') {

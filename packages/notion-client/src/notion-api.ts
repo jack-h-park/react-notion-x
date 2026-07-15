@@ -327,6 +327,11 @@ export class NotionAPI {
     recordMap: notion.ExtendedRecordMap,
     ofetchOptions: OfetchOptions | undefined
   ) {
+    // Blocks that Notion never returns (deleted, permission-gated, etc.) would
+    // otherwise be re-requested forever, so we remember the ids we've already
+    // asked for and stop as soon as a pass fails to resolve anything new.
+    const requestedBlockIds = new Set<string>()
+
     while (true) {
       const pendingBlockIds = Array.from(
         new Set(
@@ -334,10 +339,14 @@ export class NotionAPI {
             getPageContentBlockIds(recordMap, pageId)
           )
         )
-      ).filter((id) => !recordMap.block[id])
+      ).filter((id) => !recordMap.block[id] && !requestedBlockIds.has(id))
 
       if (!pendingBlockIds.length) {
         break
+      }
+
+      for (const id of pendingBlockIds) {
+        requestedBlockIds.add(id)
       }
 
       const newBlocks = await this.getBlocks(
@@ -345,7 +354,15 @@ export class NotionAPI {
         ofetchOptions
       ).then((res) => res.recordMap.block)
 
+      const resolvedCount = pendingBlockIds.filter((id) => newBlocks[id]).length
+
       recordMap.block = { ...recordMap.block, ...newBlocks }
+
+      // No progress this pass — the remaining ids are unresolvable, so bail out
+      // instead of looping indefinitely.
+      if (!resolvedCount) {
+        break
+      }
     }
   }
 
