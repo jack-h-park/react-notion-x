@@ -18,6 +18,26 @@ export type ComponentOverrideFn = (
   defaultValueFn: () => React.ReactNode
 ) => any
 
+/**
+ * Lets a host app take over what a gallery collection card renders inside its
+ * cover area (e.g. a text "teaser" thumbnail for pages with no image). The
+ * library calls this override (when provided) with the raw card context and its
+ * own default cover node, and renders whatever the override returns. Return
+ * `defaultCover()` to keep the built-in behavior for a given card.
+ */
+export type CollectionCardCoverOverrideFn = (
+  props: {
+    block: types.PageBlock
+    cover: types.CollectionCardCover
+    coverSize: types.CollectionCardCoverSize
+    coverAspect: types.CollectionCardCoverAspect
+    recordMap: types.ExtendedRecordMap
+    mapImageUrl: MapImageUrlFn
+    coverPosition: number
+  },
+  defaultCover: () => React.ReactNode
+) => React.ReactNode
+
 export interface NotionComponents {
   // TODO: better typing for arbitrary react components
   Image: any
@@ -38,6 +58,9 @@ export interface NotionComponents {
   // collection
   Collection: any
   Property?: any
+
+  /** Optional override for gallery collection-card cover rendering. */
+  collectionCardCover?: CollectionCardCoverOverrideFn
 
   propertyTextValue: ComponentOverrideFn
   propertySelectValue: ComponentOverrideFn

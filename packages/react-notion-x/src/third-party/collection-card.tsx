@@ -34,10 +34,7 @@ export function CollectionCard({
   const cardCoverPosition = (1 - card_cover_position) * 100
 
   // 1. Try to find an image cover
-  if (
-    cover?.type === 'page_content' ||
-    cover?.type === 'page_content_first'
-  ) {
+  if (cover?.type === 'page_content' || cover?.type === 'page_content_first') {
     const candidate = getCollectionCardCoverCandidate({
       block,
       cover,
@@ -161,6 +158,25 @@ export function CollectionCard({
     ) {
       coverContent = <div className='notion-collection-card-cover-empty' />
     }
+  }
+
+  // Seam: let the host app own cover content (e.g. a text teaser thumbnail).
+  // It receives the raw card context plus the default cover node and returns
+  // whatever should render; returning defaultCover() keeps built-in behavior.
+  if (components.collectionCardCover) {
+    const defaultCoverContent = coverContent
+    coverContent = components.collectionCardCover(
+      {
+        block,
+        cover,
+        coverSize,
+        coverAspect,
+        recordMap,
+        mapImageUrl,
+        coverPosition: cardCoverPosition
+      },
+      () => defaultCoverContent
+    )
   }
 
   let linkProperties: any[] = []

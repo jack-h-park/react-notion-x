@@ -18,5 +18,8 @@ export default defineConfig({
   dts: true,
   minify: false,
   sourcemap: true,
-  external: ['react-pdf', 'react', 'react-dom']
+  external: ['react-pdf', 'react', 'react-dom'],
+  // Inline the notion-* packages so github-tarball consumers (which pin an
+  // older published notion-utils) don't hit "getBlockValue is not exported".
+  noExternal: [/^notion-/]
 })
