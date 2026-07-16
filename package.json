@@ -22,7 +22,7 @@
     "test:unit": "turbo test:unit",
     "release": "bumpp -r && pnpm publish -r",
     "pretest": "run-s build",
-    "prepare": "simple-git-hooks"
+    "setup:hooks": "simple-git-hooks"
   },
   "devDependencies": {
     "@fisch0920/config": "catalog:",
