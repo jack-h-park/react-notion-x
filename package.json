@@ -1,5 +1,5 @@
 {
-  "name": "notion",
+  "name": "react-notion-x",
   "private": true,
   "description": "Fast and accurate React renderer for Notion. TS batteries included.",
   "repository": "NotionX/react-notion-x",
@@ -54,5 +54,21 @@
       "prettier --ignore-unknown --write",
       "eslint --fix"
     ]
+  },
+  "main": "packages/react-notion-x/build/index.js",
+  "exports": {
+    ".": {
+      "import": "./packages/react-notion-x/build/index.js",
+      "require": "./packages/react-notion-x/build/index.js",
+      "types": "./packages/react-notion-x/build/index.d.ts"
+    },
+    "./build/third-party/collection": "./packages/react-notion-x/build/third-party/collection.js",
+    "./build/third-party/code": "./packages/react-notion-x/build/third-party/code.js",
+    "./build/third-party/equation": "./packages/react-notion-x/build/third-party/equation.js",
+    "./build/third-party/modal": "./packages/react-notion-x/build/third-party/modal.js",
+    "./build/third-party/pdf": "./packages/react-notion-x/build/third-party/pdf.js",
+    "./build/styles.css": "./packages/react-notion-x/build/styles.css",
+    "./styles.css": "./packages/react-notion-x/src/styles.css",
+    "./src/styles.css": "./packages/react-notion-x/src/styles.css"
   }
 }
