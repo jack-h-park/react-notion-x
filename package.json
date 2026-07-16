@@ -7,6 +7,10 @@
   "license": "MIT",
   "version": "7.10.0",
   "packageManager": "pnpm@10.32.1",
+  "files": [
+    "packages/react-notion-x/build",
+    "packages/react-notion-x/src/styles.css"
+  ],
   "engines": {
     "node": ">=20"
   },
