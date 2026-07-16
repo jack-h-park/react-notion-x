@@ -70,5 +70,25 @@
     "./build/styles.css": "./packages/react-notion-x/build/styles.css",
     "./styles.css": "./packages/react-notion-x/src/styles.css",
     "./src/styles.css": "./packages/react-notion-x/src/styles.css"
+  },
+  "module": "packages/react-notion-x/build/index.js",
+  "types": "packages/react-notion-x/build/index.d.ts",
+  "dependencies": {
+    "@fisch0920/medium-zoom": "^1.0.7",
+    "@matejmazur/react-katex": "^3.1.3",
+    "katex": "^0.16.21",
+    "prismjs": "^1.30.0",
+    "react-fast-compare": "^3.2.0",
+    "react-hotkeys-hook": "^4.5.1",
+    "react-image": "^4.0.3",
+    "react-intersection-observer": "^9.16.0",
+    "react-modal": "^3.16.3",
+    "unionize": "^3.1.0",
+    "notion-utils": "7.7.1",
+    "notion-types": "7.7.1"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
   }
 }
