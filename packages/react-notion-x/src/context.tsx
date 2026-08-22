@@ -31,10 +31,12 @@ export interface NotionContext {
   previewImages: boolean
   forceCustomImages: boolean
   showCollectionViewDropdown: boolean
-  showTableOfContents: boolean
-  minTableOfContentsItems: number
   linkTableTitleProperties: boolean
   isLinkCollectionToUrlProperty: boolean
+
+  showTableOfContents: boolean
+  minTableOfContentsItems: number
+  tableOfContentsTitle?: string | null
 
   defaultPageIcon?: string | null
   defaultPageCover?: string | null
@@ -66,6 +68,7 @@ export interface PartialNotionContext {
 
   showTableOfContents?: boolean
   minTableOfContentsItems?: number
+  tableOfContentsTitle?: string | null
 
   defaultPageIcon?: string | null
   defaultPageCover?: string | null
