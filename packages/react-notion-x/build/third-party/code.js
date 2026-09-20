@@ -26,9 +26,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
-// ../../../../../node_modules/.pnpm/clipboard-copy@4.0.1/node_modules/clipboard-copy/index.js
+// ../../node_modules/.pnpm/clipboard-copy@4.0.1/node_modules/clipboard-copy/index.js
 var require_clipboard_copy = __commonJS({
-  "../../../../../node_modules/.pnpm/clipboard-copy@4.0.1/node_modules/clipboard-copy/index.js"(exports, module) {
+  "../../node_modules/.pnpm/clipboard-copy@4.0.1/node_modules/clipboard-copy/index.js"(exports, module) {
     "use strict";
     module.exports = clipboardCopy;
     function makeError() {
@@ -75,9 +75,9 @@ var require_clipboard_copy = __commonJS({
   }
 });
 
-// ../../../../../node_modules/.pnpm/lodash.throttle@4.1.1/node_modules/lodash.throttle/index.js
+// ../../node_modules/.pnpm/lodash.throttle@4.1.1/node_modules/lodash.throttle/index.js
 var require_lodash = __commonJS({
-  "../../../../../node_modules/.pnpm/lodash.throttle@4.1.1/node_modules/lodash.throttle/index.js"(exports, module) {
+  "../../node_modules/.pnpm/lodash.throttle@4.1.1/node_modules/lodash.throttle/index.js"(exports, module) {
     "use strict";
     var FUNC_ERROR_TEXT = "Expected a function";
     var NAN = 0 / 0;
@@ -418,7 +418,7 @@ var getPageBreadcrumbs = (recordMap, activePageId) => {
   return breadcrumbs;
 };
 
-// ../../../../../node_modules/.pnpm/is-url-superb@6.1.0/node_modules/is-url-superb/index.js
+// ../../node_modules/.pnpm/is-url-superb@6.1.0/node_modules/is-url-superb/index.js
 function isUrl(string, { lenient = false } = {}) {
   if (typeof string !== "string") {
     throw new TypeError("Expected a string");
@@ -491,7 +491,7 @@ var defaultMapPageUrl = (rootPageId) => (pageId) => {
   }
 };
 
-// ../../../../../node_modules/.pnpm/mimic-function@5.0.1/node_modules/mimic-function/index.js
+// ../../node_modules/.pnpm/mimic-function@5.0.1/node_modules/mimic-function/index.js
 var copyProperty = (to, from, property, ignoreNonConfigurable) => {
   if (property === "length" || property === "prototype") {
     return;
@@ -537,7 +537,7 @@ function mimicFunction(to, from, { ignoreNonConfigurable = false } = {}) {
   return to;
 }
 
-// ../../../../../node_modules/.pnpm/memoize@10.1.0/node_modules/memoize/distribution/index.js
+// ../../node_modules/.pnpm/memoize@10.1.0/node_modules/memoize/distribution/index.js
 var cacheStore = /* @__PURE__ */ new WeakMap();
 var cacheTimerStore = /* @__PURE__ */ new WeakMap();
 function memoize(function_, { cacheKey, cache = /* @__PURE__ */ new Map(), maxAge } = {}) {
@@ -584,7 +584,7 @@ function memoize(function_, { cacheKey, cache = /* @__PURE__ */ new Map(), maxAg
   return memoized;
 }
 
-// ../../../../../node_modules/.pnpm/normalize-url@8.0.1/node_modules/normalize-url/index.js
+// ../../node_modules/.pnpm/normalize-url@8.0.1/node_modules/normalize-url/index.js
 var DATA_URL_DEFAULT_MIME_TYPE = "text/plain";
 var DATA_URL_DEFAULT_CHARSET = "us-ascii";
 var testParameter = (name, filters) => filters.some((filter) => filter instanceof RegExp ? filter.test(name) : filter === name);
@@ -1483,7 +1483,6 @@ var SearchDialog = class extends React8.Component {
         query,
         ancestorId: rootBlockId
       });
-      console.log("search", query, result);
       let searchResult = null;
       let searchError = null;
       if (result.error || result.errorId) {
@@ -1491,8 +1490,8 @@ var SearchDialog = class extends React8.Component {
       } else {
         searchResult = { ...result };
         const results = searchResult.results.map((result2) => {
-          var _a, _b;
-          const block = (_a = searchResult.recordMap.block[result2.id]) == null ? void 0 : _a.value;
+          var _a;
+          const block = getBlockValue(searchResult.recordMap.block[result2.id]);
           if (!block) return;
           const title = getBlockTitle(block, searchResult.recordMap);
           if (!title) {
@@ -1507,7 +1506,7 @@ var SearchDialog = class extends React8.Component {
           if (!result2.page.id) {
             return;
           }
-          if ((_b = result2.highlight) == null ? void 0 : _b.text) {
+          if ((_a = result2.highlight) == null ? void 0 : _a.text) {
             result2.highlight.html = result2.highlight.text.replaceAll(/<gzknfouu>/gi, "<b>").replaceAll(/<\/gzknfouu>/gi, "</b>");
           }
           return result2;

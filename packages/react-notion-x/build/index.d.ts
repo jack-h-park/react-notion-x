@@ -3,8 +3,8 @@ import * as types from 'notion-types';
 import { Block, Decoration, ExtendedRecordMap } from 'notion-types';
 import * as React from 'react';
 import React__default from 'react';
-import { S as SearchNotionFn, a as NotionComponents, M as MapPageUrlFn, b as MapImageUrlFn } from './context-ClaalJT0.js';
-export { C as CollectionCardCoverOverrideFn, c as CollectionCardProps, d as CollectionGroupProps, e as CollectionViewProps, f as ComponentOverrideFn, N as NotionContext, g as NotionContextConsumer, h as NotionContextProvider, P as PartialNotionContext, i as dummyLink, u as useNotionContext } from './context-ClaalJT0.js';
+import { S as SearchNotionFn, a as NotionComponents, M as MapPageUrlFn, b as MapImageUrlFn } from './context-Dq40Yz7J.js';
+export { C as CollectionCardCoverOverrideFn, c as CollectionCardProps, d as CollectionGroupProps, e as CollectionViewProps, f as ComponentOverrideFn, N as NotionContext, g as NotionContextConsumer, h as NotionContextProvider, P as PartialNotionContext, i as dummyLink, u as useNotionContext } from './context-Dq40Yz7J.js';
 export { formatDate, formatNotionDateTime, isUrl } from 'notion-utils';
 
 declare function Button({ block, blockId, className }: {
@@ -51,7 +51,7 @@ declare function Text({ value, block, linkProps, linkProtocol }: {
     inline?: boolean;
 }): react_jsx_runtime.JSX.Element;
 
-declare function NotionRenderer({ components, recordMap, mapPageUrl, mapImageUrl, searchNotion, isShowingSearch, onHideSearch, fullPage, rootPageId, rootDomain, darkMode, previewImages, forceCustomImages, showCollectionViewDropdown, linkTableTitleProperties, isLinkCollectionToUrlProperty, isImageZoomable, showTableOfContents, minTableOfContentsItems, defaultPageIcon, defaultPageCover, defaultPageCoverPosition, ...rest }: {
+declare function NotionRenderer({ components, recordMap, mapPageUrl, mapImageUrl, searchNotion, isShowingSearch, onHideSearch, fullPage, rootPageId, rootDomain, darkMode, previewImages, forceCustomImages, showCollectionViewDropdown, linkTableTitleProperties, isLinkCollectionToUrlProperty, isImageZoomable, showTableOfContents, minTableOfContentsItems, tableOfContentsTitle, defaultPageIcon, defaultPageCover, defaultPageCoverPosition, ...rest }: {
     recordMap: ExtendedRecordMap;
     components?: Partial<NotionComponents>;
     mapPageUrl?: MapPageUrlFn;
@@ -71,6 +71,7 @@ declare function NotionRenderer({ components, recordMap, mapPageUrl, mapImageUrl
     isImageZoomable?: boolean;
     showTableOfContents?: boolean;
     minTableOfContentsItems?: number;
+    tableOfContentsTitle?: string | null;
     defaultPageIcon?: string;
     defaultPageCover?: string;
     defaultPageCoverPosition?: number;
