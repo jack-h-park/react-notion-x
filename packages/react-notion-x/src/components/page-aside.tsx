@@ -6,14 +6,16 @@ import { cs } from '../utils'
 
 export function PageAside({
   toc,
+  tocTitle,
   activeSection,
   setActiveSection,
-  pageAside,
   hasToc,
   hasAside,
+  pageAside,
   className
 }: {
   toc: Array<TableOfContentsEntry>
+  tocTitle?: string | null
   activeSection: string | null
   setActiveSection: (activeSection: string | null) => unknown
   hasToc: boolean
@@ -84,9 +86,11 @@ export function PageAside({
     <aside className={cs('notion-aside', className)}>
       {hasToc && (
         <div className='notion-aside-table-of-contents'>
-          <div className='notion-aside-table-of-contents-header'>
-            Table of Contents
-          </div>
+          {tocTitle !== null && (
+            <div className='notion-aside-table-of-contents-header'>
+              {tocTitle ?? 'Table of Contents'}
+            </div>
+          )}
 
           <nav className='notion-table-of-contents'>
             {toc.map((tocItem) => {

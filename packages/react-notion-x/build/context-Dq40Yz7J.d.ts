@@ -113,10 +113,11 @@ interface NotionContext {
     previewImages: boolean;
     forceCustomImages: boolean;
     showCollectionViewDropdown: boolean;
-    showTableOfContents: boolean;
-    minTableOfContentsItems: number;
     linkTableTitleProperties: boolean;
     isLinkCollectionToUrlProperty: boolean;
+    showTableOfContents: boolean;
+    minTableOfContentsItems: number;
+    tableOfContentsTitle?: string | null;
     defaultPageIcon?: string | null;
     defaultPageCover?: string | null;
     defaultPageCoverPosition?: number;
@@ -141,6 +142,7 @@ interface PartialNotionContext {
     isLinkCollectionToUrlProperty?: boolean;
     showTableOfContents?: boolean;
     minTableOfContentsItems?: number;
+    tableOfContentsTitle?: string | null;
     defaultPageIcon?: string | null;
     defaultPageCover?: string | null;
     defaultPageCoverPosition?: number;

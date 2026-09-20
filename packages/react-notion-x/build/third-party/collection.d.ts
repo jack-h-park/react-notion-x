@@ -1,6 +1,6 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import * as types from 'notion-types';
-import { N as NotionContext } from '../context-ClaalJT0.js';
+import { N as NotionContext } from '../context-Dq40Yz7J.js';
 import React__default from 'react';
 
 interface IPropertyProps {

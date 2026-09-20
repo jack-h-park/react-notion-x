@@ -177,3 +177,40 @@ Upstream only supports npm distribution. This fork modifies the package structur
 ```
 
 The `-jp.N` suffix distinguishes fork releases from upstream versions.
+
+---
+
+## 7. Upstream Cherry-Picks
+
+This fork's release lineage (`feat/gallery-card-cover`) diverged from
+`upstream/master` at `73ae5a9` (2026-05-25). Upstream has since moved on to
+v8.0.x, whose image-handling rewrite and build-system change are not adopted
+here. Instead, individual upstream fixes are cherry-picked with `-x`, so the
+original commit is recorded in each message.
+
+| Upstream commit | What it fixes | In fork since |
+|------|------|------|
+| `eb12073` | Bookmark images — `.notion-bookmark-image .lazy-image-wrapper` padding | `7.10.0-jp.13` |
+| `66fdef2` | Search — unwrap results with `getBlockValue`; drops a stray `console.log` | `7.10.0-jp.13` |
+| `c0120f8` | New `tableOfContentsTitle` option: `null` hides the aside's "Table of Contents" header, a string renames it | `7.10.0-jp.13` |
+
+**Deliberately not taken** (as of `jp.13`): the v8 image rewrite
+(`b6b270d`, `d59e533`, and follow-ups) changes `mapImageUrl` inputs to
+already-resolved `app.notion.com` URLs, which breaks consumers still on
+notion-utils 7.7.1; the tsup-to-tsdown migration (`7b265f4`), which the
+committed `build/` depends on; and oxlint/oxfmt tooling (`bbc0549`).
+
+### Rebuilding `build/` for a release
+
+`build/` is gitignored, so its files are force-added. tsup names the shared
+`.d.ts` chunk by content hash (`context-<hash>.d.ts`), so a rebuild usually
+renames it: force-add the new file and remove the stale one, or `index.d.ts`
+ends up importing a chunk that was never committed — the types then break only
+for consumers installing from the tarball, not in this repo.
+
+```bash
+cd packages/react-notion-x && pnpm build   # root `pnpm build` also builds
+                                           # notion-client, which is not needed
+                                           # here and currently fails its dts step
+git add -f build && git status --porcelain packages/react-notion-x/build
+```
